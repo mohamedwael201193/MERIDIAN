@@ -1,7 +1,15 @@
 'use client'
 
 import { useState, useEffect, ReactElement } from 'react'
-import { Box, LinearProgress, MenuItem, Stack, TextField, Typography, keyframes } from '@mui/material'
+import {
+  Box,
+  LinearProgress,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+  keyframes,
+} from '@mui/material'
 import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
 import GlassCard from '@/design/components/GlassCard'
 import PremiumButton from '@/design/components/PremiumButton'
@@ -67,6 +75,101 @@ const STEPS = [
 
 const FIRST_MISSION = 'What is the current MRWA yield APY?'
 
+function StepRail({ step, onSelect }: { step: number; onSelect: (index: number) => void }) {
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: 'repeat(7, minmax(0, 1fr))', md: '1fr' },
+        gap: { xs: 0.5, md: 1 },
+        mb: { xs: 3, md: 0 },
+      }}
+    >
+      {STEPS.map((s, index) => {
+        const done = index < step
+        const active = index === step
+        return (
+          <Box
+            key={s.id}
+            component="button"
+            type="button"
+            onClick={() => (index <= step ? onSelect(index) : undefined)}
+            disabled={index > step}
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: { xs: 'center', md: 'flex-start' },
+              gap: { xs: 0.5, md: 1.5 },
+              p: { xs: 0.75, md: 1.5 },
+              border: '1px solid',
+              borderColor: active
+                ? 'rgba(153,27,27,0.55)'
+                : done
+                  ? 'rgba(34,197,94,0.35)'
+                  : 'rgba(255,255,255,0.08)',
+              borderRadius: `${meridianTokens.radius.md}px`,
+              bgcolor: active
+                ? meridianTokens.color.accentMuted
+                : done
+                  ? 'rgba(34,197,94,0.08)'
+                  : 'rgba(255,255,255,0.02)',
+              cursor: index <= step ? 'pointer' : 'default',
+              opacity: index > step ? 0.45 : 1,
+              textAlign: { xs: 'center', md: 'left' },
+              transition: 'border-color 0.2s, background-color 0.2s',
+              '&:hover': index <= step
+                ? { borderColor: active ? 'rgba(153,27,27,0.7)' : 'rgba(255,255,255,0.18)' }
+                : undefined,
+            }}
+          >
+            <Box
+              sx={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                bgcolor: active
+                  ? meridianTokens.color.accent
+                  : done
+                    ? 'rgba(34,197,94,0.2)'
+                    : 'rgba(255,255,255,0.06)',
+                color: active || done ? '#fff' : meridianTokens.color.textMuted,
+              }}
+            >
+              {done ? (
+                <IconifyIcon icon="mdi:check" width={16} />
+              ) : (
+                <IconifyIcon icon={s.icon} width={16} />
+              )}
+            </Box>
+            <Box sx={{ display: { xs: 'none', md: 'block' }, minWidth: 0 }}>
+              <Typography
+                variant="caption"
+                color={active ? 'primary.main' : done ? 'success.light' : 'text.disabled'}
+                fontWeight={600}
+                display="block"
+              >
+                Step {index + 1}
+              </Typography>
+              <Typography
+                variant="body2"
+                color={active ? 'common.white' : 'text.secondary'}
+                fontWeight={active ? 600 : 400}
+                noWrap
+              >
+                {s.title}
+              </Typography>
+            </Box>
+          </Box>
+        )
+      })}
+    </Box>
+  )
+}
+
 export default function SetupWizard(): ReactElement {
   const [step, setStep] = useState(0)
   const [client, setClient] = useState<AiClient>('cursor')
@@ -97,198 +200,345 @@ export default function SetupWizard(): ReactElement {
   const current = STEPS[step]
 
   return (
-    <Box maxWidth={720} mx="auto" px={{ xs: 2, sm: 3 }} py={5}>
-      <Typography
-        variant="h3"
-        color="common.white"
-        fontWeight={700}
-        mb={1}
-        sx={{ animation: `${fadeIn} 0.5s ease-out`, letterSpacing: '-0.03em' }}
-      >
-        Setup
-      </Typography>
-      <Typography variant="body1" color="text.secondary" mb={4}>
-        Connect MERIDIAN to your AI client in {STEPS.length} steps
-      </Typography>
-
-      <LinearProgress
-        variant="determinate"
-        value={progress}
-        sx={{ mb: 4, height: 6, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.08)' }}
-      />
-
-      <GlassCard padding={4} sx={{ animation: `${fadeIn} 0.5s ease-out 0.1s both` }}>
-        <Stack direction="row" gap={2} alignItems="center" mb={3}>
-          <Box
+    <Box maxWidth={960} mx="auto" px={{ xs: 2, sm: 3 }} py={{ xs: 3, sm: 5 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="flex-end" mb={3} gap={2}>
+        <Box>
+          <Typography
             sx={{
-              width: 48,
-              height: 48,
-              borderRadius: `${meridianTokens.radius.md}px`,
-              bgcolor: meridianTokens.color.accentMuted,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              ...meridianTokens.typography.label,
+              color: 'primary.main',
+              mb: 1,
+              animation: `${fadeIn} 0.5s ease-out`,
             }}
           >
-            <IconifyIcon icon={current.icon} width={24} color={meridianTokens.color.accent} />
-          </Box>
-          <Box>
-            <Typography sx={{ ...meridianTokens.typography.label, color: 'primary.main' }}>
-              Step {step + 1} of {STEPS.length}
-            </Typography>
-            <Typography variant="h5" color="common.white" fontWeight={600}>
-              {current.title}
-            </Typography>
-          </Box>
-        </Stack>
-
-        <Typography variant="body2" color="text.secondary" mb={3}>
-          {current.subtitle}
+            Agent setup
+          </Typography>
+          <Typography
+            variant="h3"
+            color="common.white"
+            fontWeight={700}
+            sx={{ animation: `${fadeIn} 0.5s ease-out`, letterSpacing: '-0.03em' }}
+          >
+            Connect MERIDIAN
+          </Typography>
+          <Typography variant="body1" color="text.secondary" mt={1}>
+            Wire your AI client to live Casper testnet tools in {STEPS.length} steps
+          </Typography>
+        </Box>
+        <Typography
+          variant="h4"
+          color="text.disabled"
+          fontWeight={700}
+          sx={{ fontFamily: meridianTokens.typography.fontFamilyMono, display: { xs: 'none', sm: 'block' } }}
+        >
+          {String(step + 1).padStart(2, '0')}/{STEPS.length}
         </Typography>
+      </Stack>
 
-        {step === 0 && (
-          <Stack gap={2}>
-            <TextField
-              select
-              label="AI client"
-              value={client}
-              onChange={(e) => setClient(e.target.value as AiClient)}
-              fullWidth
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
-            >
-              <MenuItem value="cursor">Cursor</MenuItem>
-              <MenuItem value="claude">Claude Desktop</MenuItem>
-              <MenuItem value="vscode">VS Code (MCP extension)</MenuItem>
-              <MenuItem value="other">Other MCP client</MenuItem>
-            </TextField>
-            <Typography variant="caption" color="text.disabled">
-              MERIDIAN works with any client that supports Model Context Protocol over HTTP.
-            </Typography>
-            <PremiumButton onClick={() => setStep(1)} icon="mdi:arrow-right">
-              Continue
-            </PremiumButton>
-          </Stack>
-        )}
+      <Box mb={3}>
+        <Stack direction="row" justifyContent="space-between" mb={1}>
+          <Typography variant="caption" color="text.secondary">
+            {current.title}
+          </Typography>
+          <Typography variant="caption" color="text.disabled">
+            {Math.round(progress)}%
+          </Typography>
+        </Stack>
+        <LinearProgress
+          variant="determinate"
+          value={progress}
+          sx={{
+            height: 8,
+            borderRadius: 4,
+            bgcolor: 'rgba(255,255,255,0.06)',
+            '& .MuiLinearProgress-bar': {
+              borderRadius: 4,
+              background: `linear-gradient(90deg, ${meridianTokens.color.accent}, #dc2626)`,
+            },
+          }}
+        />
+      </Box>
 
-        {step === 1 && (
-          <Stack gap={2}>
-            <AgentInstaller defaultClient={client === 'vscode' || client === 'other' ? 'cursor' : client} />
-            <PremiumButton onClick={() => setStep(2)} icon="mdi:arrow-right">
-              MCP config copied
-            </PremiumButton>
-          </Stack>
-        )}
+      <Box
+        display="grid"
+        gridTemplateColumns={{ xs: '1fr', md: '220px 1fr' }}
+        gap={meridianTokens.spacing.panelGap}
+        alignItems="start"
+      >
+        <Box sx={{ display: { xs: 'block', md: 'block' } }}>
+          <StepRail step={step} onSelect={setStep} />
+        </Box>
 
-        {step === 2 && (
-          <Stack gap={2}>
-            <Typography variant="body2" color="text.secondary">
-              Install the MERIDIAN skill so your {client} assistant understands yield, compliance, and wallet approval flows.
-            </Typography>
-            <PremiumButton
-              onClick={() => window.open('/meridian-skill.md', '_blank')}
-              variant="outlined"
-              icon="mdi:open-in-new"
-            >
-              Open skill file
-            </PremiumButton>
-            <PremiumButton
-              onClick={() => {
-                updateAgentProfile({ installedSkills: ['meridian'] })
-                setStep(3)
+        <GlassCard
+          padding={4}
+          sx={{
+            animation: `${fadeIn} 0.5s ease-out 0.1s both`,
+            p: { xs: 3, sm: 4 },
+          }}
+        >
+          <Stack direction="row" gap={2.5} alignItems="flex-start" mb={3}>
+            <Box
+              sx={{
+                width: 56,
+                height: 56,
+                borderRadius: `${meridianTokens.radius.lg}px`,
+                bgcolor: meridianTokens.color.accentMuted,
+                border: '1px solid rgba(153,27,27,0.35)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
               }}
-              icon="mdi:check"
             >
-              Skill installed
-            </PremiumButton>
-          </Stack>
-        )}
-
-        {step === 3 && (
-          <Stack gap={2}>
-            {checking ? (
-              <Typography color="text.secondary">Verifying MCP connection…</Typography>
-            ) : mcpOk ? (
-              <Stack direction="row" alignItems="center" gap={1}>
-                <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={20} />
-                <Typography color="success.light">MCP verified and tools available</Typography>
-              </Stack>
-            ) : (
-              <Stack gap={1}>
-                <Typography color="warning.light">Could not verify MCP. Check your connection and retry.</Typography>
-                <PremiumButton onClick={() => void verifyMcp()} loading={checking}>
-                  Retry verification
-                </PremiumButton>
-              </Stack>
-            )}
-            <PremiumButton onClick={() => setStep(4)} disabled={!mcpOk && !checking} icon="mdi:arrow-right">
-              Continue
-            </PremiumButton>
-          </Stack>
-        )}
-
-        {step === 4 && (
-          <Stack gap={2}>
-            {wallet.connected ? (
-              <Stack direction="row" alignItems="center" gap={1}>
-                <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={20} />
-                <Typography color="success.light">Wallet connected · {wallet.accountLabel}</Typography>
-              </Stack>
-            ) : (
-              <>
-                <Typography variant="body2" color="text.secondary">
-                  Connect Casper Wallet for staking and transfers. Read-only missions work without a wallet.
-                </Typography>
-                <PremiumButton onClick={() => void connectCasperWallet(clickRef)} icon="mdi:wallet-outline">
-                  Connect wallet
-                </PremiumButton>
-              </>
-            )}
-            <PremiumButton onClick={() => setStep(5)} icon="mdi:arrow-right">
-              {wallet.connected ? 'Continue' : 'Skip wallet for now'}
-            </PremiumButton>
-          </Stack>
-        )}
-
-        {step === 5 && (
-          <Stack gap={2}>
-            <Typography variant="body2" color="text.secondary">
-              Run a read-only yield check. No wallet signature required.
-            </Typography>
-            <Typography variant="body1" color="common.white" sx={{ fontFamily: 'var(--font-geist-mono, monospace)' }}>
-              {FIRST_MISSION}
-            </Typography>
-            <PremiumButton
-              component={Link}
-              href={`/agent?objective=${encodeURIComponent(FIRST_MISSION)}`}
-              icon="mdi:play"
-            >
-              Run first mission
-            </PremiumButton>
-            <PremiumButton variant="text" onClick={() => setStep(6)} sx={{ color: 'text.secondary' }}>
-              Skip to finish
-            </PremiumButton>
-          </Stack>
-        )}
-
-        {step === 6 && (
-          <Stack gap={2}>
-            <Stack direction="row" alignItems="center" gap={1}>
-              <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={24} />
-              <Typography variant="h6" color="success.light">
-                Everything ready
+              <IconifyIcon icon={current.icon} width={28} color={meridianTokens.color.accent} />
+            </Box>
+            <Box flex={1}>
+              <Typography sx={{ ...meridianTokens.typography.label, color: 'primary.main', mb: 0.5 }}>
+                Step {step + 1} of {STEPS.length}
               </Typography>
-            </Stack>
-            <Typography variant="body2" color="text.secondary">
-              {profile.installedSkills.includes('meridian')
-                ? 'MCP, skill, and briefing are configured. Assign tasks from the command bar anytime.'
-                : 'Finish skill installation from Setup when you are ready.'}
-            </Typography>
-            <PremiumButton component={Link} href="/agent" icon="mdi:view-dashboard-outline">
-              Open briefing
-            </PremiumButton>
+              <Typography variant="h5" color="common.white" fontWeight={700} letterSpacing="-0.02em">
+                {current.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" mt={0.75}>
+                {current.subtitle}
+              </Typography>
+            </Box>
           </Stack>
-        )}
-      </GlassCard>
+
+          <Box
+            sx={{
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+              pt: 3,
+            }}
+          >
+            {step === 0 && (
+              <Stack gap={2.5}>
+                <TextField
+                  select
+                  label="AI client"
+                  value={client}
+                  onChange={(e) => setClient(e.target.value as AiClient)}
+                  fullWidth
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
+                >
+                  <MenuItem value="cursor">Cursor</MenuItem>
+                  <MenuItem value="claude">Claude Desktop</MenuItem>
+                  <MenuItem value="vscode">VS Code (MCP extension)</MenuItem>
+                  <MenuItem value="other">Other MCP client</MenuItem>
+                </TextField>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: `${meridianTokens.radius.md}px`,
+                    bgcolor: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    MERIDIAN works with any client that supports Model Context Protocol over HTTP.
+                  </Typography>
+                </Box>
+                <PremiumButton fullWidth onClick={() => setStep(1)} icon="mdi:arrow-right">
+                  Continue
+                </PremiumButton>
+              </Stack>
+            )}
+
+            {step === 1 && (
+              <AgentInstaller
+                defaultClient={client === 'vscode' || client === 'other' ? 'cursor' : client}
+                onConfirmed={() => setStep(2)}
+              />
+            )}
+
+            {step === 2 && (
+              <Stack gap={2.5}>
+                <Box
+                  sx={{
+                    p: 2.5,
+                    borderRadius: `${meridianTokens.radius.md}px`,
+                    bgcolor: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Install the MERIDIAN skill so your {client} assistant understands yield,
+                    compliance, and wallet approval flows.
+                  </Typography>
+                </Box>
+                <PremiumButton
+                  fullWidth
+                  onClick={() => window.open('/meridian-skill.md', '_blank')}
+                  variant="outlined"
+                  icon="mdi:open-in-new"
+                >
+                  Open skill file
+                </PremiumButton>
+                <PremiumButton
+                  fullWidth
+                  onClick={() => {
+                    updateAgentProfile({ installedSkills: ['meridian'] })
+                    setStep(3)
+                  }}
+                  icon="mdi:check"
+                >
+                  Skill installed — continue
+                </PremiumButton>
+              </Stack>
+            )}
+
+            {step === 3 && (
+              <Stack gap={2.5}>
+                <Box
+                  sx={{
+                    p: 2.5,
+                    borderRadius: `${meridianTokens.radius.md}px`,
+                    border: '1px solid',
+                    borderColor: mcpOk ? 'rgba(34,197,94,0.35)' : 'rgba(255,255,255,0.08)',
+                    bgcolor: mcpOk ? 'rgba(34,197,94,0.08)' : 'rgba(255,255,255,0.03)',
+                  }}
+                >
+                  {checking ? (
+                    <Stack direction="row" alignItems="center" gap={1.5}>
+                      <IconifyIcon icon="mdi:loading" width={20} />
+                      <Typography color="text.secondary">Verifying MCP connection…</Typography>
+                    </Stack>
+                  ) : mcpOk ? (
+                    <Stack direction="row" alignItems="center" gap={1.5}>
+                      <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={22} />
+                      <Typography color="success.light" fontWeight={600}>
+                        MCP verified — tools available
+                      </Typography>
+                    </Stack>
+                  ) : (
+                    <Stack gap={1.5}>
+                      <Typography color="warning.light">
+                        Could not verify MCP. Check your connection and retry.
+                      </Typography>
+                      <PremiumButton onClick={() => void verifyMcp()} loading={checking}>
+                        Retry verification
+                      </PremiumButton>
+                    </Stack>
+                  )}
+                </Box>
+                <PremiumButton
+                  fullWidth
+                  onClick={() => setStep(4)}
+                  disabled={!mcpOk && !checking}
+                  icon="mdi:arrow-right"
+                >
+                  Continue
+                </PremiumButton>
+              </Stack>
+            )}
+
+            {step === 4 && (
+              <Stack gap={2.5}>
+                {wallet.connected ? (
+                  <Box
+                    sx={{
+                      p: 2.5,
+                      borderRadius: `${meridianTokens.radius.md}px`,
+                      border: '1px solid rgba(34,197,94,0.35)',
+                      bgcolor: 'rgba(34,197,94,0.08)',
+                    }}
+                  >
+                    <Stack direction="row" alignItems="center" gap={1.5}>
+                      <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={22} />
+                      <Typography color="success.light" fontWeight={600}>
+                        Wallet connected · {wallet.accountLabel}
+                      </Typography>
+                    </Stack>
+                  </Box>
+                ) : (
+                  <>
+                    <Typography variant="body2" color="text.secondary">
+                      Connect Casper Wallet for staking and transfers. Read-only missions work without
+                      a wallet.
+                    </Typography>
+                    <PremiumButton
+                      fullWidth
+                      onClick={() => void connectCasperWallet(clickRef)}
+                      icon="mdi:wallet-outline"
+                    >
+                      Connect wallet
+                    </PremiumButton>
+                  </>
+                )}
+                <PremiumButton fullWidth onClick={() => setStep(5)} icon="mdi:arrow-right">
+                  {wallet.connected ? 'Continue' : 'Skip wallet for now'}
+                </PremiumButton>
+              </Stack>
+            )}
+
+            {step === 5 && (
+              <Stack gap={2.5}>
+                <Typography variant="body2" color="text.secondary">
+                  Run a read-only yield check. No wallet signature required.
+                </Typography>
+                <Box
+                  sx={{
+                    p: 2.5,
+                    borderRadius: `${meridianTokens.radius.md}px`,
+                    bgcolor: '#0a0a0e',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    fontFamily: meridianTokens.typography.fontFamilyMono,
+                  }}
+                >
+                  <Typography variant="body1" color="common.white">
+                    {FIRST_MISSION}
+                  </Typography>
+                </Box>
+                <PremiumButton
+                  fullWidth
+                  component={Link}
+                  href={`/agent?objective=${encodeURIComponent(FIRST_MISSION)}`}
+                  icon="mdi:play"
+                >
+                  Run first mission
+                </PremiumButton>
+                <PremiumButton
+                  fullWidth
+                  variant="text"
+                  onClick={() => setStep(6)}
+                  sx={{ color: 'text.secondary' }}
+                >
+                  Skip to finish
+                </PremiumButton>
+              </Stack>
+            )}
+
+            {step === 6 && (
+              <Stack gap={2.5}>
+                <Box
+                  sx={{
+                    p: 3,
+                    borderRadius: `${meridianTokens.radius.lg}px`,
+                    border: '1px solid rgba(34,197,94,0.35)',
+                    bgcolor: 'rgba(34,197,94,0.08)',
+                    textAlign: 'center',
+                  }}
+                >
+                  <Box mb={1}>
+                    <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={40} />
+                  </Box>
+                  <Typography variant="h6" color="success.light" fontWeight={700}>
+                    Everything ready
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" mt={1}>
+                    {profile.installedSkills.includes('meridian')
+                      ? 'MCP, skill, and briefing are configured. Assign tasks from the command bar anytime.'
+                      : 'Finish skill installation from Setup when you are ready.'}
+                  </Typography>
+                </Box>
+                <PremiumButton fullWidth component={Link} href="/agent" icon="mdi:view-dashboard-outline">
+                  Open briefing
+                </PremiumButton>
+              </Stack>
+            )}
+          </Box>
+        </GlassCard>
+      </Box>
     </Box>
   )
 }

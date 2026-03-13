@@ -2,7 +2,6 @@
 
 import {
   Box,
-  Button,
   Divider,
   Paper,
   Stack,
@@ -16,6 +15,7 @@ import EChartsReactCore from 'echarts-for-react/lib/core'
 import { ReactElement, useEffect, useMemo, useRef } from 'react'
 import LevelChart from './LevelChart'
 import { useDecisions } from '@lib/hooks/useMeridianData'
+import { meridianTokens } from '@/design/tokens'
 
 const AGENT_BUCKETS = [
   { key: 'yield', label: 'Yield' },
@@ -23,22 +23,27 @@ const AGENT_BUCKETS = [
   { key: 'compliance', label: 'Compliance' },
 ] as const
 
+function countByAgent(decisions: { agent_name: string }[], key: string): number {
+  return decisions.filter((d) => d.agent_name.toLowerCase().includes(key)).length
+}
+
 const Level = (): ReactElement => {
   const theme = useTheme()
   const chartRef = useRef<EChartsReactCore | null>(null)
   const { data: decisions, isLoading, error } = useDecisions(100)
+  const rows = decisions ?? []
 
   const levelData = useMemo(() => {
     const approved = AGENT_BUCKETS.map(
       ({ key }) =>
-        (decisions ?? []).filter(
+        rows.filter(
           (decision) =>
             decision.agent_name.toLowerCase().includes(key) && decision.approved !== false,
         ).length,
     )
     const rejected = AGENT_BUCKETS.map(
       ({ key }) =>
-        (decisions ?? []).filter(
+        rows.filter(
           (decision) =>
             decision.agent_name.toLowerCase().includes(key) && decision.approved === false,
         ).length,
@@ -48,7 +53,7 @@ const Level = (): ReactElement => {
       Volume: approved,
       Service: rejected,
     }
-  }, [decisions])
+  }, [rows])
 
   useEffect(() => {
     const handleResize = () => chartRef.current?.getEchartsInstance().resize()
@@ -56,12 +61,17 @@ const Level = (): ReactElement => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const stats = AGENT_BUCKETS.map(({ key, label }) => ({
+    label,
+    count: countByAgent(rows, key),
+  }))
+
   return (
-    <Paper sx={{ p: { xs: 4, sm: 8 }, height: 1 }}>
-      <Typography variant="h4" color="common.white">
+    <Paper sx={{ p: meridianTokens.spacing.panelPadding, height: 1, display: 'flex', flexDirection: 'column' }}>
+      <Typography variant="h5" color="common.white" fontWeight={600}>
         Agent Activity
       </Typography>
-      <Typography variant="body2" color="text.secondary" mt={0.5} mb={2}>
+      <Typography variant="body2" color="text.secondary" mt={0.5} mb={2.5}>
         Approved vs rejected decisions by agent type
       </Typography>
       {error ? (
@@ -70,19 +80,21 @@ const Level = (): ReactElement => {
         </Alert>
       ) : null}
       {isLoading ? (
-        <Box display="flex" justifyContent="center" py={8}>
+        <Box display="flex" justifyContent="center" py={8} flex={1}>
           <CircularProgress color="primary" />
         </Box>
-      ) : (decisions ?? []).length === 0 ? (
-        <Typography color="text.secondary" py={6}>
+      ) : rows.length === 0 ? (
+        <Typography color="text.secondary" py={6} flex={1}>
           No indexed agent decisions yet.
         </Typography>
       ) : (
-        <LevelChart
-          chartRef={chartRef}
-          data={levelData}
-          sx={{ height: '181px !important', flexGrow: 1 }}
-        />
+        <Box flex={1} minHeight={200}>
+          <LevelChart
+            chartRef={chartRef}
+            data={levelData}
+            sx={{ height: '100% !important', minHeight: 200 }}
+          />
+        </Box>
       )}
       <Stack
         direction="row"
@@ -91,18 +103,17 @@ const Level = (): ReactElement => {
           <Divider
             orientation="vertical"
             flexItem
-            sx={{ borderColor: alpha(theme.palette.common.white, 0.06), height: 1 }}
+            sx={{ borderColor: alpha(theme.palette.common.white, 0.08) }}
           />
         }
-        px={2}
-        pt={3}
+        pt={2.5}
+        mt={1}
       >
-        <Button variant="text" disableRipple sx={{ color: 'text.disabled' }}>
-          {(decisions ?? []).filter((d) => d.agent_name.includes('yield')).length} yield decisions
-        </Button>
-        <Button variant="text" disableRipple sx={{ color: 'text.disabled' }}>
-          {(decisions ?? []).filter((d) => d.agent_name.includes('audit')).length} audit decisions
-        </Button>
+        {stats.map((stat) => (
+          <Typography key={stat.label} variant="caption" color="text.disabled" textAlign="center">
+            {String(stat.count)} {stat.label.toLowerCase()} decisions
+          </Typography>
+        ))}
       </Stack>
     </Paper>
   )

@@ -2,7 +2,10 @@
 
 import { useState, ReactElement } from 'react'
 import { Box, Button, Collapse, Stack, Typography } from '@mui/material'
+import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
 import type { HumanSummary } from '@lib/human-results'
+import { meridianTokens } from '@/design/tokens'
+import { panelSurfaceSx } from '@/design/surface'
 
 interface ChatBubbleProps {
   role: 'user' | 'agent'
@@ -16,7 +19,7 @@ export function ChatBubble({ role, children }: ChatBubbleProps): ReactElement {
       sx={{
         display: 'flex',
         justifyContent: isUser ? 'flex-end' : 'flex-start',
-        mb: 2,
+        mb: 2.5,
         animation: 'fadeUp 0.35s ease-out',
         '@keyframes fadeUp': {
           from: { opacity: 0, transform: 'translateY(8px)' },
@@ -26,13 +29,19 @@ export function ChatBubble({ role, children }: ChatBubbleProps): ReactElement {
     >
       <Box
         sx={{
-          maxWidth: '85%',
-          px: 2.5,
-          py: 2,
-          borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-          bgcolor: isUser ? 'primary.main' : 'rgba(255,255,255,0.06)',
-          border: isUser ? 'none' : '1px solid',
-          borderColor: 'divider',
+          maxWidth: '88%',
+          px: 3,
+          py: 2.5,
+          borderRadius: isUser ? '20px 20px 6px 20px' : '20px 20px 20px 6px',
+          ...(isUser
+            ? {
+                bgcolor: 'primary.main',
+                boxShadow: '0 4px 20px rgba(153,27,27,0.25)',
+              }
+            : {
+                borderRadius: '20px 20px 20px 6px',
+                ...panelSurfaceSx({ nested: true }),
+              }),
         }}
       >
         {children}
@@ -51,17 +60,17 @@ export function ResultBubble({
   const [showDetail, setShowDetail] = useState(false)
   return (
     <ChatBubble role="agent">
-      <Typography variant="subtitle1" color="common.white" fontWeight={600} mb={1}>
+      <Typography variant="subtitle1" color="common.white" fontWeight={700} mb={1}>
         {summary.headline}
       </Typography>
       {reasoning ? (
-        <Typography variant="body2" color="text.secondary" mb={1.5}>
+        <Typography variant="body2" color="text.secondary" mb={1.5} lineHeight={1.55}>
           {reasoning}
         </Typography>
       ) : null}
-      <Stack gap={0.5}>
+      <Stack gap={0.75}>
         {summary.lines.map((line) => (
-          <Typography key={line} variant="body2" color="text.secondary">
+          <Typography key={line} variant="body2" color="text.secondary" lineHeight={1.55}>
             {line}
           </Typography>
         ))}
@@ -69,23 +78,43 @@ export function ResultBubble({
       {summary.detail ? (
         <>
           <Button
+            variant="outlined"
+            color="inherit"
             size="small"
-            sx={{ mt: 1.5, textTransform: 'none', color: 'text.disabled' }}
             onClick={() => setShowDetail((v) => !v)}
+            startIcon={
+              <IconifyIcon icon={showDetail ? 'mdi:chevron-up' : 'mdi:code-json'} width={16} />
+            }
+            sx={{
+              mt: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              color: 'common.white',
+              borderColor: 'rgba(255,255,255,0.22)',
+              bgcolor: 'rgba(255,255,255,0.04)',
+              '&:hover': {
+                borderColor: 'primary.main',
+                bgcolor: 'rgba(153,27,27,0.12)',
+              },
+            }}
           >
-            {showDetail ? 'Hide details' : 'View technical details'}
+            {showDetail ? 'Hide technical details' : 'View technical details'}
           </Button>
           <Collapse in={showDetail}>
             <Box
               component="pre"
               sx={{
-                mt: 1,
-                p: 1.5,
-                fontSize: 11,
+                mt: 1.5,
+                p: 2,
+                fontSize: 12,
+                lineHeight: 1.5,
                 borderRadius: 2,
-                bgcolor: '#0a0a0a',
+                bgcolor: '#0a0a0e',
+                border: '1px solid rgba(255,255,255,0.08)',
                 overflow: 'auto',
-                maxHeight: 200,
+                maxHeight: 220,
+                fontFamily: meridianTokens.typography.fontFamilyMono,
+                color: meridianTokens.color.textSecondary,
               }}
             >
               {JSON.stringify(summary.detail, null, 2)}

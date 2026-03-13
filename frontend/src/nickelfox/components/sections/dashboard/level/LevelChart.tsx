@@ -30,29 +30,35 @@ const LevelChart = ({ chartRef, data, ...rest }: LevelChartProps): ReactElement 
     () => ({
       tooltip: {
         trigger: 'axis',
-        axisPointer: {
-          type: 'shadow',
-        },
+        axisPointer: { type: 'shadow' },
       },
       legend: {
         show: true,
-        bottom: 0,
-        textStyle: { color: theme.palette.text.secondary },
+        top: 0,
+        right: 0,
+        orient: 'horizontal',
+        itemGap: 14,
+        itemWidth: 10,
+        itemHeight: 10,
+        icon: 'roundRect',
+        textStyle: {
+          color: theme.palette.text.secondary,
+          fontSize: 11,
+        },
         data: ['Approved', 'Rejected'],
       },
       xAxis: {
         type: 'category',
-        show: true,
         axisTick: { show: false },
         data: data.labels,
         axisLabel: {
-          show: true,
           color: theme.palette.text.secondary,
+          fontSize: 11,
+          margin: 12,
         },
         axisLine: {
-          show: true,
           lineStyle: {
-            color: alpha(theme.palette.common.white, 0.06),
+            color: alpha(theme.palette.common.white, 0.08),
             width: 1,
           },
         },
@@ -60,12 +66,14 @@ const LevelChart = ({ chartRef, data, ...rest }: LevelChartProps): ReactElement 
       yAxis: {
         type: 'value',
         show: false,
+        splitLine: { show: false },
       },
       grid: {
-        left: 0,
-        right: 0,
-        top: 8,
-        bottom: 28,
+        left: 4,
+        right: 4,
+        top: 36,
+        bottom: 8,
+        containLabel: true,
       },
       series: [
         {
@@ -73,29 +81,23 @@ const LevelChart = ({ chartRef, data, ...rest }: LevelChartProps): ReactElement 
           name: 'Approved',
           type: 'bar',
           stack: 'Decisions',
-          barWidth: 25,
-          emphasis: {
-            focus: 'series',
-          },
+          barMaxWidth: 32,
+          emphasis: { focus: 'series' },
           data: data.Volume,
           color: theme.palette.primary.main,
-          itemStyle: {
-            borderRadius: 4,
-          },
+          itemStyle: { borderRadius: [0, 0, 0, 0] },
         },
         {
           id: 2,
           name: 'Rejected',
           type: 'bar',
           stack: 'Decisions',
-          barWidth: 25,
-          emphasis: {
-            focus: 'series',
-          },
+          barMaxWidth: 32,
+          emphasis: { focus: 'series' },
           data: data.Service,
-          color: theme.palette.grey[800],
+          color: alpha(theme.palette.common.white, 0.14),
           itemStyle: {
-            borderRadius: 4,
+            borderRadius: [4, 4, 0, 0],
           },
         },
       ],

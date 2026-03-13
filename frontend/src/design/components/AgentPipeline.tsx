@@ -18,6 +18,7 @@ import type { AgentTraceRow } from '@lib/types'
 import type { RuntimePhase } from '@lib/hooks/useAgentRuntime'
 import type { UnsignedTransaction } from '@lib/types'
 import { PIPELINE_STAGES, meridianTokens } from '@/design/tokens'
+import { panelSurfaceSx } from '@/design/surface'
 import { explorerTxUrl } from '@lib/contracts'
 
 type StageStatus = 'pending' | 'active' | 'done' | 'error'
@@ -84,36 +85,38 @@ function StatusIcon({ status, index }: { status: StageStatus; index: number }) {
 
   return (
     <motion.div
-      animate={status === 'active' ? { scale: [1, 1.08, 1] } : {}}
+      animate={status === 'active' ? { scale: [1, 1.06, 1] } : {}}
       transition={{ repeat: status === 'active' ? Infinity : 0, duration: 1.2 }}
     >
       <Box
         sx={{
-          width: 28,
-          height: 28,
+          width: 36,
+          height: 36,
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          bgcolor: status === 'pending' ? 'rgba(255,255,255,0.06)' : `${colors[status]}22`,
-          border: '1px solid',
+          flexShrink: 0,
+          bgcolor: status === 'pending' ? 'rgba(255,255,255,0.05)' : `${colors[status]}22`,
+          border: '2px solid',
           borderColor: colors[status],
           color: colors[status],
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: 700,
+          zIndex: 1,
         }}
       >
         {status === 'done' ? (
-          <IconifyIcon icon="mdi:check" width={14} />
+          <IconifyIcon icon="mdi:check" width={16} />
         ) : status === 'error' ? (
-          <IconifyIcon icon="mdi:alert" width={14} />
+          <IconifyIcon icon="mdi:alert" width={16} />
         ) : status === 'active' ? (
           <Box
             component={motion.div}
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
           >
-            <IconifyIcon icon="mdi:loading" width={14} />
+            <IconifyIcon icon="mdi:loading" width={16} />
           </Box>
         ) : (
           index + 1
@@ -144,7 +147,7 @@ export default function AgentPipeline({
   unsignedTx,
   steps = [],
 }: AgentPipelineProps): ReactElement {
-  const [expanded, setExpanded] = useState<string | false>('planning')
+  const [expanded, setExpanded] = useState<string | false>(false)
 
   const sessionTraces = useMemo(
     () => (sessionId ? traces.filter((t) => t.session_id === sessionId) : traces.slice(-40)),
@@ -163,113 +166,216 @@ export default function AgentPipeline({
   if (phase === 'idle') return <></>
 
   return (
-    <GlassCard padding={2.5} sx={{ mb: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography sx={{ ...meridianTokens.typography.title, color: 'common.white' }}>
-          Agent pipeline
-        </Typography>
-        {sessionId ? (
-          <Typography variant="caption" color="text.disabled" sx={{ fontFamily: 'var(--font-geist-mono, monospace)' }}>
-            {sessionId.slice(0, 8)}
+    <GlassCard
+      padding={3}
+      sx={{
+        position: { lg: 'sticky' },
+        top: { lg: 88 },
+        maxHeight: { lg: 'calc(100vh - 140px)' },
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
+        <Box>
+          <Typography sx={{ ...meridianTokens.typography.label, color: 'primary.main', mb: 0.5 }}>
+            Live execution
           </Typography>
+          <Typography sx={{ ...meridianTokens.typography.title, color: 'common.white' }}>
+            Agent pipeline
+          </Typography>
+        </Box>
+        {sessionId ? (
+          <Box
+            sx={{
+              px: 1.5,
+              py: 0.75,
+              borderRadius: 2,
+              bgcolor: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            <Typography
+              variant="caption"
+              color="text.disabled"
+              sx={{ fontFamily: meridianTokens.typography.fontFamilyMono }}
+            >
+              {sessionId.slice(0, 8)}
+            </Typography>
+          </Box>
         ) : null}
       </Stack>
 
-      <LinearProgress
-        variant="determinate"
-        value={progress}
-        sx={{
-          mb: 2.5,
-          height: 4,
-          borderRadius: 2,
-          bgcolor: 'rgba(255,255,255,0.06)',
-          '& .MuiLinearProgress-bar': { borderRadius: 2, bgcolor: meridianTokens.color.accent },
-        }}
-      />
-
-      <Stack gap={0}>
-        <AnimatePresence>
-          {PIPELINE_STAGES.map((stage, index) => {
-            const status = resolveStageStatus(stage.id, phase, sessionTraces, txHash, Boolean(unsignedTx))
-            const stageTraces = sessionTraces.filter((t) => stage.traceTypes.includes(t.step_type))
-            const isExpanded = expanded === stage.id
-
-            return (
-              <motion.div
-                key={stage.id}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.04, ...meridianTokens.motion.spring }}
-              >
-                <Accordion
-                  expanded={isExpanded}
-                  onChange={() => setExpanded(isExpanded ? false : stage.id)}
-                  disableGutters
-                  elevation={0}
-                  sx={{
-                    bgcolor: 'transparent',
-                    '&:before': { display: 'none' },
-                    borderLeft: status === 'active' ? `2px solid ${meridianTokens.color.accent}` : '2px solid transparent',
-                    pl: 1,
-                  }}
-                >
-                  <AccordionSummary
-                    expandIcon={<IconifyIcon icon="mdi:chevron-down" width={18} />}
-                    sx={{ minHeight: 48, '& .MuiAccordionSummary-content': { my: 0.5 } }}
-                  >
-                    <Stack direction="row" gap={1.5} alignItems="center" width="100%">
-                      <StatusIcon status={status} index={index} />
-                      <Box flex={1}>
-                        <Typography
-                          variant="subtitle2"
-                          color={status === 'active' ? 'primary.main' : status === 'done' ? 'success.main' : 'text.secondary'}
-                        >
-                          {stage.label}
-                        </Typography>
-                        <Typography variant="caption" color="text.disabled" display="block">
-                          {stage.human}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  </AccordionSummary>
-                  <AccordionDetails sx={{ pt: 0, pl: 6 }}>
-                    {stage.id === 'planning' && reasoning ? (
-                      <Typography variant="body2" color="text.secondary" mb={1}>
-                        {reasoning}
-                      </Typography>
-                    ) : null}
-                    {stage.id === 'simulation' && unsignedTx ? (
-                      <Typography variant="body2" color="text.secondary" mb={1}>
-                        Transaction ready: {unsignedTx.note ?? 'unsigned deploy'}
-                      </Typography>
-                    ) : null}
-                    {stageTraces.map((t) => (
-                      <Typography key={t.id} variant="body2" color="text.disabled" fontSize={12}>
-                        {t.message}
-                      </Typography>
-                    ))}
-                    {stage.id === 'explorer' && txHash ? (
-                      <Link href={explorerTxUrl(txHash)} target="_blank" variant="body2">
-                        View on testnet.cspr.live
-                      </Link>
-                    ) : null}
-                    {steps.length > 0 && ['contracts', 'building'].includes(stage.id) ? (
-                      <Typography variant="caption" color="text.disabled" component="pre" sx={{ mt: 1, fontFamily: 'var(--font-geist-mono, monospace)' }}>
-                        {steps.map((s) => `${s.kind}: ${s.tool}`).join('\n')}
-                      </Typography>
-                    ) : null}
-                  </AccordionDetails>
-                </Accordion>
-              </motion.div>
-            )
-          })}
-        </AnimatePresence>
+      <Stack direction="row" alignItems="center" gap={2} mb={3}>
+        <LinearProgress
+          variant="determinate"
+          value={progress}
+          sx={{
+            flex: 1,
+            height: 6,
+            borderRadius: 3,
+            bgcolor: 'rgba(255,255,255,0.06)',
+            '& .MuiLinearProgress-bar': {
+              borderRadius: 3,
+              bgcolor: meridianTokens.color.accent,
+            },
+          }}
+        />
+        <Typography variant="caption" color="text.secondary" fontWeight={600} minWidth={36}>
+          {progress}%
+        </Typography>
       </Stack>
 
+      <Box sx={{ flex: 1, overflow: 'auto', pr: 0.5, mr: -0.5 }}>
+        <Stack gap={1.25} position="relative">
+          <Box
+            aria-hidden
+            sx={{
+              position: 'absolute',
+              left: 17,
+              top: 24,
+              bottom: 24,
+              width: 2,
+              bgcolor: 'rgba(255,255,255,0.08)',
+              borderRadius: 1,
+            }}
+          />
+          <AnimatePresence>
+            {PIPELINE_STAGES.map((stage, index) => {
+              const status = resolveStageStatus(stage.id, phase, sessionTraces, txHash, Boolean(unsignedTx))
+              const stageTraces = sessionTraces.filter((t) => stage.traceTypes.includes(t.step_type))
+              const isExpanded = expanded === stage.id
+              const hasDetails =
+                (stage.id === 'planning' && reasoning) ||
+                (stage.id === 'simulation' && unsignedTx) ||
+                stageTraces.length > 0 ||
+                (stage.id === 'explorer' && txHash) ||
+                (steps.length > 0 && ['contracts', 'building'].includes(stage.id))
+
+              return (
+                <motion.div
+                  key={stage.id}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.03, ...meridianTokens.motion.spring }}
+                >
+                  <Accordion
+                    expanded={isExpanded}
+                    onChange={() => setExpanded(isExpanded ? false : stage.id)}
+                    disabled={!hasDetails}
+                    disableGutters
+                    elevation={0}
+                    sx={{
+                      borderRadius: `${meridianTokens.radius.md}px !important`,
+                      overflow: 'hidden',
+                      ...panelSurfaceSx({
+                        nested: true,
+                        spark: status === 'active',
+                      }),
+                      ...(status === 'active'
+                        ? { borderColor: 'rgba(153,27,27,0.45)' }
+                        : status === 'done'
+                          ? { borderColor: 'rgba(34,197,94,0.28)' }
+                          : {}),
+                      '&:before': { display: 'none' },
+                    }}
+                  >
+                    <AccordionSummary
+                      expandIcon={
+                        hasDetails ? <IconifyIcon icon="mdi:chevron-down" width={18} /> : null
+                      }
+                      sx={{
+                        minHeight: 64,
+                        px: 1.5,
+                        '& .MuiAccordionSummary-content': { my: 1.25, alignItems: 'center' },
+                        '&.Mui-disabled': { opacity: 1 },
+                      }}
+                    >
+                      <Stack direction="row" gap={2} alignItems="center" width="100%">
+                        <StatusIcon status={status} index={index} />
+                        <Box flex={1} minWidth={0}>
+                          <Typography
+                            variant="subtitle2"
+                            fontWeight={600}
+                            color={
+                              status === 'active'
+                                ? 'primary.main'
+                                : status === 'done'
+                                  ? 'success.main'
+                                  : 'text.primary'
+                            }
+                          >
+                            {stage.label}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" mt={0.25} lineHeight={1.45}>
+                            {stage.human}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </AccordionSummary>
+                    {hasDetails ? (
+                      <AccordionDetails sx={{ pt: 0, pb: 2, pl: 7.5, pr: 2 }}>
+                        {stage.id === 'planning' && reasoning ? (
+                          <Typography variant="body2" color="text.secondary" mb={1.5} lineHeight={1.55}>
+                            {reasoning}
+                          </Typography>
+                        ) : null}
+                        {stage.id === 'simulation' && unsignedTx ? (
+                          <Typography variant="body2" color="text.secondary" mb={1.5}>
+                            Transaction ready: {unsignedTx.note ?? 'unsigned deploy'}
+                          </Typography>
+                        ) : null}
+                        {stageTraces.map((t) => (
+                          <Typography
+                            key={t.id}
+                            variant="body2"
+                            color="text.disabled"
+                            fontSize={13}
+                            lineHeight={1.5}
+                            mb={0.5}
+                          >
+                            {t.message}
+                          </Typography>
+                        ))}
+                        {stage.id === 'explorer' && txHash ? (
+                          <Link href={explorerTxUrl(txHash)} target="_blank" variant="body2" sx={{ mt: 0.5 }}>
+                            View on testnet.cspr.live
+                          </Link>
+                        ) : null}
+                        {steps.length > 0 && ['contracts', 'building'].includes(stage.id) ? (
+                          <Typography
+                            variant="caption"
+                            color="text.disabled"
+                            component="pre"
+                            sx={{ mt: 1, fontFamily: meridianTokens.typography.fontFamilyMono, lineHeight: 1.5 }}
+                          >
+                            {steps.map((s) => `${s.kind}: ${s.tool}`).join('\n')}
+                          </Typography>
+                        ) : null}
+                      </AccordionDetails>
+                    ) : null}
+                  </Accordion>
+                </motion.div>
+              )
+            })}
+          </AnimatePresence>
+        </Stack>
+      </Box>
+
       {error ? (
-        <Typography variant="body2" color="error.light" mt={2}>
-          {error}
-        </Typography>
+        <Box
+          sx={{
+            mt: 2,
+            p: 2,
+            borderRadius: 2,
+            bgcolor: 'rgba(239,68,68,0.1)',
+            border: '1px solid rgba(239,68,68,0.3)',
+          }}
+        >
+          <Typography variant="body2" color="error.light">
+            {error}
+          </Typography>
+        </Box>
       ) : null}
     </GlassCard>
   )

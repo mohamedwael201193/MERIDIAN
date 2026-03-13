@@ -1,13 +1,14 @@
 'use client'
 
-import { Stack, AppBar, Toolbar, IconButton, Chip } from '@mui/material'
+import { Stack, AppBar, Toolbar, IconButton, Box, Typography } from '@mui/material'
 import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
 import { ReactElement } from 'react'
 import { drawerCloseWidth, drawerOpenWidth } from '..'
 import WalletAccountStatus from '@/components/WalletAccountStatus'
 import { useBreakpoints } from '@/nickelfox/providers/BreakpointsProvider'
-import { useReady } from '@lib/hooks/useMeridianData'
 import { useCommandPalette } from '@/design/components/CommandPalette'
+import { meridianTokens } from '@/design/tokens'
+import { panelSurfaceSx } from '@/design/surface'
 
 const Topbar = ({
   open,
@@ -17,10 +18,8 @@ const Topbar = ({
   handleDrawerToggle: () => void
 }): ReactElement => {
   const { down } = useBreakpoints()
-  const { data } = useReady()
   const { setOpen } = useCommandPalette()
   const isMobileScreen = down('sm')
-  const backendStatus = typeof data?.status === 'string' ? data.status : 'checking'
 
   return (
     <AppBar
@@ -37,62 +36,86 @@ const Topbar = ({
       }}
     >
       <Toolbar
-        component={Stack}
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
+        disableGutters
         sx={{
           bgcolor: 'transparent',
-          height: 92,
+          minHeight: { xs: 72, sm: 80 },
+          px: { xs: 2, sm: 3 },
+          py: 1.5,
         }}
       >
-        <Stack direction="row" gap={1.5} alignItems="center" ml={2.5} flex="1 1 auto">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%" gap={2}>
           <IconButton
             color="inherit"
             aria-label={open ? 'Collapse navigation' : 'Expand navigation'}
             onClick={handleDrawerToggle}
-            edge="start"
+            sx={{
+              borderRadius: `${meridianTokens.radius.md}px`,
+              width: 40,
+              height: 40,
+              ...panelSurfaceSx({ nested: true, spark: false }),
+              '&:hover': { bgcolor: 'rgba(255,255,255,0.06)' },
+            }}
           >
             <IconifyIcon
               icon={open ? 'ri:menu-unfold-4-line' : 'ri:menu-unfold-3-line'}
               color="common.white"
             />
           </IconButton>
-          <Chip
-            size="small"
-            variant="outlined"
-            color={
-              backendStatus === 'ok'
-                ? 'success'
-                : backendStatus === 'degraded'
-                  ? 'warning'
-                  : 'default'
-            }
-            label={backendStatus === 'ok' ? 'Online' : backendStatus}
-            sx={{ display: 'none' }}
-          />
-        </Stack>
-        <Stack direction="row" gap={1.5} alignItems="center" justifyContent="flex-end" mr={3}>
-          <Chip
-            size="small"
-            variant="outlined"
-            icon={<IconifyIcon icon="mdi:magnify" width={14} />}
-            label="⌘K Search"
-            onClick={() => setOpen(true)}
-            sx={{
-              display: { xs: 'none', md: 'flex' },
-              cursor: 'pointer',
-              '& .MuiChip-icon': { ml: 0.5 },
-            }}
-          />
-          <IconButton
-            aria-label="Open command palette"
-            onClick={() => setOpen(true)}
-            sx={{ display: { xs: 'flex', md: 'none' } }}
-          >
-            <IconifyIcon icon="mdi:magnify" width={22} />
-          </IconButton>
-          <WalletAccountStatus />
+
+          <Stack direction="row" alignItems="center" gap={1.25} flexShrink={0}>
+            <Box
+              component="button"
+              type="button"
+              onClick={() => setOpen(true)}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                borderRadius: `${meridianTokens.radius.lg}px`,
+                color: meridianTokens.color.textSecondary,
+                cursor: 'pointer',
+                py: 0.875,
+                pl: 1.5,
+                pr: 1.25,
+                transition: 'border-color 0.2s, background-color 0.2s',
+                ...panelSurfaceSx({ nested: true }),
+                '&:hover': {
+                  borderColor: meridianTokens.surface.panelHoverBorder,
+                },
+              }}
+            >
+              <IconifyIcon icon="mdi:magnify" width={16} color={meridianTokens.color.textMuted} />
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ display: { xs: 'none', md: 'block' }, fontWeight: 500 }}
+              >
+                Search
+              </Typography>
+              <Box
+                component="kbd"
+                sx={{
+                  display: { xs: 'none', lg: 'inline-flex' },
+                  alignItems: 'center',
+                  px: 0.75,
+                  py: 0.25,
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: meridianTokens.color.glassBorder,
+                  bgcolor: 'rgba(255,255,255,0.04)',
+                  fontFamily: meridianTokens.typography.mono.fontFamily,
+                  fontSize: 10,
+                  color: meridianTokens.color.textMuted,
+                  lineHeight: 1.4,
+                }}
+              >
+                ⌘K
+              </Box>
+            </Box>
+
+            <WalletAccountStatus />
+          </Stack>
         </Stack>
       </Toolbar>
     </AppBar>
