@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@lib/*": ["./lib/*"]
+    },
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "src/nickelfox/main.tsx",
+    "src/nickelfox/App.tsx",
+    "src/nickelfox/routes",
+    "src/nickelfox/pages/authentication",
+    "src/dashboard/routes.tsx",
+    "src/dashboard/components/DashboardNavbar.tsx",
+    "src/dashboard/components/Sidebar.tsx",
+    "src/horizon/ui/SidebarCard.tsx"
+  ]
+}
