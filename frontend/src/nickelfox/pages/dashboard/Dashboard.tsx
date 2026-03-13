@@ -13,7 +13,9 @@ import Customers from '@/nickelfox/components/sections/dashboard/customers/Custo
 import Earnings from '@/nickelfox/components/sections/dashboard/earnings/Earnings'
 import Level from '@/nickelfox/components/sections/dashboard/level/Level'
 import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
+import PageHeader from '@/components/PageHeader'
 import { useReady } from '@lib/hooks/useMeridianData'
+import { meridianTokens } from '@/design/tokens'
 
 const QUICK_ACTIONS = [
   { href: '/issue', label: 'Issue Token', icon: 'mdi:token' },
@@ -27,7 +29,7 @@ const QUICK_ACTIONS = [
 
 function QuickActions(): ReactElement {
   return (
-    <Paper sx={{ p: { xs: 2.5, sm: 3 }, mb: 3.5, border: '1px solid', borderColor: 'divider' }}>
+    <Paper sx={{ p: meridianTokens.spacing.panelPadding, mb: meridianTokens.spacing.sectionGap }}>
       <Typography
         variant="caption"
         color="text.disabled"
@@ -62,60 +64,13 @@ function DashboardHero(): ReactElement {
   const indexerLag = checks?.indexer_lag?.detail
 
   return (
-    <Paper
-      sx={{
-        p: { xs: 3, sm: 4 },
-        mb: 3.5,
-        borderColor: 'rgba(220,38,38,0.28)',
-        background:
-          'linear-gradient(135deg, rgba(127,29,29,0.22), rgba(17,17,24,0.96) 44%, rgba(5,5,5,0.98))',
-        overflow: 'hidden',
-        position: 'relative',
-      }}
-    >
-      <Box
-        aria-hidden
-        sx={{
-          position: 'absolute',
-          right: -120,
-          top: -120,
-          width: 280,
-          height: 280,
-          borderRadius: '50%',
-          bgcolor: 'primary.main',
-          opacity: 0.12,
-          filter: 'blur(48px)',
-        }}
-      />
-      <Stack
-        direction={{ xs: 'column', lg: 'row' }}
-        justifyContent="space-between"
-        gap={3}
-        position="relative"
-      >
-        <Box maxWidth={720}>
-          <Typography
-            variant="caption"
-            color="primary.light"
-            sx={{ letterSpacing: '0.28em', textTransform: 'uppercase' }}
-          >
-            MERIDIAN Control Center
-          </Typography>
-          <Typography variant="h3" color="common.white" mt={1}>
-            Live RWA operations on Casper testnet
-          </Typography>
-          <Typography variant="body1" color="text.secondary" mt={1.25} sx={{ lineHeight: 1.7 }}>
-            Monitor indexed contract events, AI agent decisions, compliance state, yield metrics,
-            MCP transaction builders, and x402 payment readiness from one dashboard.
-          </Typography>
-        </Box>
-        <Stack
-          direction="row"
-          gap={1}
-          flexWrap="wrap"
-          alignContent="flex-start"
-          minWidth={{ lg: 280 }}
-        >
+    <PageHeader
+      icon="mdi:view-dashboard-outline"
+      eyebrow="Control Center"
+      title="Live RWA operations on Casper testnet"
+      description="Monitor indexed contract events, AI agent decisions, compliance state, yield metrics, MCP transaction builders, and x402 payment readiness from one dashboard."
+      actions={
+        <Stack direction="row" gap={1} flexWrap="wrap" justifyContent="flex-end">
           <Chip color={status === 'ok' ? 'success' : 'warning'} label={`Backend ${status}`} />
           <Chip variant="outlined" label="Casper testnet" />
           <Chip variant="outlined" label="CSPR.click wallet" />
@@ -124,8 +79,8 @@ function DashboardHero(): ReactElement {
             <Chip color="warning" variant="outlined" label={`Indexer lag ${indexerLag}`} />
           ) : null}
         </Stack>
-      </Stack>
-    </Paper>
+      }
+    />
   )
 }
 
@@ -134,7 +89,7 @@ const Dashboard = (): ReactElement => {
     <>
       <DashboardHero />
       <QuickActions />
-      <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={3.5}>
+      <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={meridianTokens.spacing.sectionGap}>
         <Box gridColumn={{ xs: 'span 12', '2xl': 'span 8' }} order={{ xs: 0 }}>
           <TodaysSales />
         </Box>

@@ -12,6 +12,7 @@ export default tseslint.config(
       '**/wasm/**',
       'scripts/**',
       'eslint.config.js',
+      '**/tailwind.config.js',
       '**/vitest.config.ts',
     ],
   },

@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation'
 import {
   Alert,
   Box,
-  Button,
   Chip,
   MenuItem,
   Stack,
   TextField,
   Typography,
 } from '@mui/material'
+import PremiumButton from '@/design/components/PremiumButton'
+import { meridianTokens } from '@/design/tokens'
 import {
   MISSION_CATEGORIES,
   MISSION_LIBRARY,
@@ -20,7 +21,6 @@ import {
   type MissionCategory,
 } from '@lib/mission-library'
 import PageHeader from '@/components/PageHeader'
-import StatusRibbon from '@/design/components/StatusRibbon'
 import GlassCard from '@/design/components/GlassCard'
 
 export default function MissionsPage(): ReactElement {
@@ -44,7 +44,6 @@ export default function MissionsPage(): ReactElement {
 
   return (
     <Box>
-      <StatusRibbon />
       <PageHeader
         icon="mdi:file-document-outline"
         eyebrow="Templates"
@@ -52,11 +51,11 @@ export default function MissionsPage(): ReactElement {
         description={`${String(MISSION_COUNT)} production templates — each runs through the agent pipeline.`}
       />
 
-      <Alert severity="info" sx={{ mb: 3 }}>
+      <Alert severity="info" sx={{ mb: meridianTokens.spacing.panelGap }}>
         Select a template to open the briefing with the objective pre-filled.
       </Alert>
 
-      <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} mb={3}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} gap={meridianTokens.spacing.panelGap} mb={meridianTokens.spacing.panelGap}>
         <TextField
           select
           label="Category"
@@ -79,10 +78,15 @@ export default function MissionsPage(): ReactElement {
         />
       </Stack>
 
-      <Stack gap={2}>
+      <Stack gap={meridianTokens.spacing.panelGap}>
         {filtered.map((mission) => (
           <GlassCard key={mission.id} padding={3}>
-            <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={2}>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              justifyContent="space-between"
+              alignItems={{ xs: 'stretch', sm: 'center' }}
+              gap={2}
+            >
               <Box flex={1}>
                 <Stack direction="row" gap={1} mb={1} flexWrap="wrap">
                   <Chip size="small" label={mission.category} />
@@ -104,9 +108,32 @@ export default function MissionsPage(): ReactElement {
                   Objective: {mission.objective}
                 </Typography>
               </Box>
-              <Button variant="contained" onClick={() => runMission(mission)} sx={{ flexShrink: 0 }}>
-                Run Mission
-              </Button>
+              <PremiumButton
+                size="small"
+                variant="outlined"
+                icon="mdi:play"
+                onClick={() => runMission(mission)}
+                sx={{
+                  flexShrink: 0,
+                  alignSelf: { xs: 'flex-start', sm: 'center' },
+                  minWidth: 'auto',
+                  px: 1.75,
+                  py: 0.625,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  borderRadius: `${meridianTokens.radius.sm}px`,
+                  borderColor: 'rgba(220,38,38,0.4)',
+                  color: 'primary.light',
+                  boxShadow: 'none',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    bgcolor: meridianTokens.color.accentMuted,
+                    boxShadow: 'none',
+                  },
+                }}
+              >
+                Run
+              </PremiumButton>
             </Stack>
           </GlassCard>
         ))}

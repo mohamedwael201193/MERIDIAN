@@ -1,18 +1,24 @@
 import { Theme } from '@mui/material'
 import { Components } from '@mui/material/styles/components'
+import { meridianTokens } from '@/design/tokens'
 
 const OutlinedInput: Components<Omit<Theme, 'components'>>['MuiOutlinedInput'] = {
   defaultProps: { autoComplete: 'off' },
   styleOverrides: {
     root: ({ theme }) => ({
       paddingLeft: 0,
-      borderRadius: theme.shape.borderRadius * 2.5,
-      transition: theme.transitions.create(['box-shadow', 'border-color'], { duration: 160 }),
+      borderRadius: `${meridianTokens.radius.md}px`,
+      backgroundColor: meridianTokens.color.panel,
+      transition: theme.transitions.create(['box-shadow', 'border-color', 'background-color'], { duration: 160 }),
+      '&:hover': {
+        backgroundColor: meridianTokens.color.bgElevated,
+      },
       '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: theme.palette.text.secondary,
+        borderColor: meridianTokens.color.panelBorder,
         borderWidth: 1,
       },
       '&.Mui-focused': {
+        backgroundColor: meridianTokens.color.bgElevated,
         boxShadow: `0 0 0 3px ${theme.palette.primary.main}26`,
       },
       '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
@@ -34,11 +40,8 @@ const OutlinedInput: Components<Omit<Theme, 'components'>>['MuiOutlinedInput'] =
         color: theme.palette.text.primary,
       },
     }),
-    notchedOutline: ({ theme }) => ({
-      borderColor: theme.palette.text.primary,
-      '&:hover': {
-        borderColor: theme.palette.text.secondary,
-      },
+    notchedOutline: () => ({
+      borderColor: meridianTokens.color.panelBorder,
     }),
   },
 }

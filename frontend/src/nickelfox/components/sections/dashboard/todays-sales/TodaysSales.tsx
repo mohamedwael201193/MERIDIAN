@@ -5,6 +5,7 @@ import { Alert, Box, Chip, Paper, Skeleton, Stack, Typography } from '@mui/mater
 import SaleCard from '@/nickelfox/components/sections/dashboard/todays-sales/SaleCard'
 import { useProtocolKpis } from '@lib/hooks/useMeridianData'
 import { formatApy, formatMotes } from '@lib/contracts'
+import { meridianTokens } from '@/design/tokens'
 
 const TodaysSales = (): ReactElement => {
   const { isLoading, error, kpis } = useProtocolKpis()
@@ -45,8 +46,8 @@ const TodaysSales = (): ReactElement => {
   ]
 
   return (
-    <Paper sx={{ p: { xs: 3, sm: 4 }, height: 1, border: '1px solid', borderColor: 'divider' }}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={2} mb={4}>
+    <Paper sx={{ p: meridianTokens.spacing.panelPadding, height: 1 }}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={meridianTokens.spacing.panelGap} mb={meridianTokens.spacing.sectionGap}>
         <Box>
           <Typography variant="h4" color="common.white" mb={1}>
             Protocol KPIs
@@ -64,7 +65,7 @@ const TodaysSales = (): ReactElement => {
           Could not load live KPIs. Showing last known values when available.
         </Alert>
       ) : null}
-      <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={{ xs: 4, sm: 6 }}>
+      <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={meridianTokens.spacing.sectionGap}>
         {isLoading
           ? Array.from({ length: 4 }).map((_, index) => (
               <Box key={index} gridColumn={{ xs: 'span 12', sm: 'span 6', lg: 'span 3' }}>

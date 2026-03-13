@@ -1,4 +1,4 @@
-import rtl from 'tailwindcss-rtl';
+import rtl from 'tailwindcss-rtl'
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -68,14 +68,16 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
         poppins: ['Poppins', 'sans-serif'],
         dm: ['DM Sans', 'sans-serif'],
       },
       boxShadow: {
         card: '0 4px 24px rgba(0,0,0,0.4)',
         'red-glow': '0 0 40px rgba(220,38,38,0.15)',
-        'panel': '0 4px 24px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.08)',
+        panel:
+          '0 8px 32px rgba(0,0,0,0.72), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.07)',
         'panel-hover': '0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(220,38,38,0.15)',
         '3xl': '14px 17px 40px 4px',
         inset: 'inset 0px 18px 22px',
@@ -96,4 +98,4 @@ export default {
     },
   },
   plugins: [rtl],
-};
+}

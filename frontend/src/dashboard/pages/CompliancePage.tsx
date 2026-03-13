@@ -7,10 +7,11 @@ import RegisterHolderForm from '@/dashboard/components/RegisterHolderForm'
 import CustomerFulfillment from '@/nickelfox/components/sections/dashboard/customer-fulfilment/CustomerFulfillment'
 import Customers from '@/nickelfox/components/sections/dashboard/customers/Customers'
 import PageHeader from '@/components/PageHeader'
+import { meridianTokens } from '@/design/tokens'
 
 export default function CompliancePage(): ReactElement {
   return (
-    <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={3.5}>
+    <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={meridianTokens.spacing.sectionGap}>
       <Box gridColumn={{ xs: 'span 12' }}>
         <PageHeader
           icon="mdi:shield-check-outline"

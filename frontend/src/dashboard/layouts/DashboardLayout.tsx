@@ -7,6 +7,7 @@ import '@/nickelfox/index.css'
 import MainLayout from '@/nickelfox/layouts/main-layout'
 import BreakpointsProvider from '@/nickelfox/providers/BreakpointsProvider'
 import { CommandPaletteProvider } from '@/design/components/CommandPalette'
+import PageShell from '@/design/components/PageShell'
 import theme from '@/nickelfox/theme/theme'
 
 export default function DashboardLayout({ children }: { children: ReactNode }): ReactElement {
@@ -18,7 +19,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }): 
           <CssBaseline />
           <MainLayout>
             <Fade in key={pathname} timeout={220}>
-              <div>{children}</div>
+              <div>
+                <PageShell>{children}</PageShell>
+              </div>
             </Fade>
           </MainLayout>
         </CommandPaletteProvider>

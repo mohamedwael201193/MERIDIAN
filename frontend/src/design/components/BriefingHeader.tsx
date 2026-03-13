@@ -24,7 +24,7 @@ export default function BriefingHeader(): ReactElement {
     : null
 
   return (
-    <Box mb={3}>
+    <Box>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         justifyContent="space-between"

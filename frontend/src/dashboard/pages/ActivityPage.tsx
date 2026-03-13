@@ -6,7 +6,7 @@ import { useAgentTraceStream } from '@lib/hooks/useAgentTraceStream'
 import { loadAgentProfile } from '@lib/agent-profile'
 import Link from 'next/link'
 import GlassCard from '@/design/components/GlassCard'
-import StatusRibbon from '@/design/components/StatusRibbon'
+import PageHeader from '@/components/PageHeader'
 import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
 import { meridianTokens } from '@/design/tokens'
 import { explorerTxUrl } from '@lib/contracts'
@@ -29,18 +29,19 @@ export default function ActivityPage(): ReactElement {
   )
 
   return (
-    <Box maxWidth={meridianTokens.spacing.pageMax} mx="auto">
-      <StatusRibbon />
-      <Typography sx={{ ...meridianTokens.typography.display, color: 'common.white', mb: 0.5 }}>
-        History
-      </Typography>
-      <Typography variant="body1" color="text.secondary" mb={4}>
-        {profile.missionsCompleted > 0
-          ? `${String(profile.missionsCompleted)} completed mission${profile.missionsCompleted === 1 ? '' : 's'}`
-          : 'Completed missions and on-chain activity'}
-      </Typography>
+    <Box>
+      <PageHeader
+        icon="mdi:history"
+        eyebrow="History"
+        title="History"
+        description={
+          profile.missionsCompleted > 0
+            ? `${String(profile.missionsCompleted)} completed mission${profile.missionsCompleted === 1 ? '' : 's'}`
+            : 'Completed missions and on-chain activity'
+        }
+      />
 
-      <Stack gap={2}>
+      <Stack gap={meridianTokens.spacing.panelGap}>
         {profile.history.length > 0
           ? profile.history.map((h) => {
               const sessionTraces = traces.filter((t) => t.session_id === h.sessionId)

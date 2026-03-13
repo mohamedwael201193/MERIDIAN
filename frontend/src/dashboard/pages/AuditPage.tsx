@@ -4,10 +4,11 @@ import AuditTrail from '@/dashboard/components/AuditTrail'
 import AgentDecisionFeed from '@/dashboard/components/AgentDecisionFeed'
 import YieldChart from '@/components/YieldChart'
 import PageHeader from '@/components/PageHeader'
+import { meridianTokens } from '@/design/tokens'
 
 export default function AuditPage(): ReactElement {
   return (
-    <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={3.5}>
+    <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={meridianTokens.spacing.sectionGap}>
       <Box gridColumn={{ xs: 'span 12' }}>
         <PageHeader
           icon="mdi:history"
