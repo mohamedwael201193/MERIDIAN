@@ -6,19 +6,19 @@ const footerLinks = [
   {
     title: 'Product',
     links: [
-      { label: 'Production Stack', href: '#features' },
+      { label: 'Inside the App', href: '#features' },
       { label: 'Workflows', href: '#workflows' },
       { label: 'Evidence', href: '#evidence' },
-      { label: 'Dashboard', href: '/dashboard' },
+      { label: 'Briefing', href: '/agent' },
     ],
   },
   {
     title: 'Resources',
     links: [
       { label: 'FAQ', href: '#faq' },
-      { label: 'MCP Tools', href: '/mcp' },
-      { label: 'x402 Flow', href: '/x402' },
-      { label: 'Audit Trail', href: '/audit' },
+      { label: 'MCP Explorer', href: '/mcp' },
+      { label: 'Marketplace', href: '/marketplace' },
+      { label: 'History', href: '/activity' },
     ],
   },
 ]
@@ -53,8 +53,8 @@ export default function Footer() {
           <div className="flex flex-col space-y-4">
             <Logo size="lg" showWordmark />
             <p className="text-sm leading-relaxed text-zinc-500">
-              Casper-native RWA infrastructure with live contracts, backend-indexed data,
-              wallet-signed transactions, MCP tools, x402 paid resources, and AI agent evidence.
+              Casper-native RWA infrastructure with a unified dashboard, live contracts,
+              wallet-signed transactions, MCP tool explorer, and AI agent evidence.
             </p>
           </div>
 

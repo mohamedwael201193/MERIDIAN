@@ -21,7 +21,7 @@ export interface LogoProps {
 export default function Logo({
   size = 'sm',
   showWordmark = true,
-  href = '#home',
+  href = '/',
   className,
   wordmarkClassName,
 }: LogoProps) {

@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactElement } from 'react'
-import { Box, Grid, Stack, Typography } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
 import { useRouter } from 'next/navigation'
 import { useDecisions } from '@lib/hooks/useMeridianData'
 import { useAgentTraceStream } from '@lib/hooks/useAgentTraceStream'
@@ -9,7 +9,7 @@ import { AGENT_TEMPLATES } from '@lib/agent-marketplace'
 import { SPECIALIST_AGENTS } from '@lib/starter-prompts'
 import { updateAgentProfile, loadAgentProfile } from '@lib/agent-profile'
 import AgentEmployeeCard from '@/design/components/AgentEmployeeCard'
-import StatusRibbon from '@/design/components/StatusRibbon'
+import PageHeader from '@/components/PageHeader'
 import { meridianTokens } from '@/design/tokens'
 
 function formatWhen(iso: string): string {
@@ -58,44 +58,86 @@ export default function AgentsPage(): ReactElement {
     })
   }
 
+  const liveCount = SPECIALIST_AGENTS.filter((a) => statusFor(a.id) === 'active').length
+
   return (
-    <Box maxWidth={meridianTokens.spacing.pageMax} mx="auto">
-      <StatusRibbon />
-      <Typography sx={{ ...meridianTokens.typography.display, color: 'common.white', mb: 0.5 }}>
-        Agents
-      </Typography>
-      <Typography variant="body1" color="text.secondary" mb={4}>
-        Installable AI employees for yield, compliance, treasury, and audit operations
-      </Typography>
+    <Box>
+      <PageHeader
+        icon="mdi:robot-outline"
+        eyebrow="Agents"
+        title="Agents"
+        description="Installable AI employees for yield, compliance, treasury, and audit operations"
+      />
 
-      <Typography variant="subtitle2" color="text.secondary" mb={2}>
-        Core specialists
-      </Typography>
-      <Grid container spacing={2} mb={5}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        justifyContent="space-between"
+        gap={1}
+        mb={2.5}
+      >
+        <Box>
+          <Typography variant="subtitle1" color="common.white" fontWeight={600}>
+            Core specialists
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Each agent has a dedicated identity, tool scope, and mission profile
+          </Typography>
+        </Box>
+        <Typography
+          variant="caption"
+          sx={{
+            fontFamily: meridianTokens.typography.fontFamilyMono,
+            color: meridianTokens.color.textMuted,
+            px: 1.5,
+            py: 0.5,
+            borderRadius: 2,
+            border: '1px solid rgba(255,255,255,0.1)',
+            bgcolor: 'rgba(255,255,255,0.03)',
+          }}
+        >
+          {liveCount} live · {SPECIALIST_AGENTS.length} total
+        </Typography>
+      </Stack>
+
+      <Box
+        display="grid"
+        gridTemplateColumns={{ xs: '1fr', md: '1fr 1fr', xl: 'repeat(3, 1fr)' }}
+        gap={meridianTokens.spacing.panelGap}
+        mb={meridianTokens.spacing.sectionGap}
+      >
         {SPECIALIST_AGENTS.map((agent) => (
-          <Grid item xs={12} md={6} key={agent.id}>
-            <AgentEmployeeCard
-              agent={{
-                ...agent,
-                capabilities: [...agent.capabilities],
-                status: statusFor(agent.id),
-                lastAction: lastTraceFor(agent.id) ?? lastTraceFor(agent.name.split(' ')[0].toLowerCase()),
-              }}
-              onAssign={assign}
-              installed={profile.activeTemplateId === agent.id}
-              onInstall={() => installTemplate(agent.id)}
-            />
-          </Grid>
+          <AgentEmployeeCard
+            key={agent.id}
+            variant="identity"
+            agent={{
+              ...agent,
+              capabilities: [...agent.capabilities],
+              status: statusFor(agent.id),
+              lastAction: lastTraceFor(agent.id) ?? lastTraceFor(agent.name.split(' ')[0].toLowerCase()),
+            }}
+            onAssign={assign}
+            installed={profile.activeTemplateId === agent.id}
+            onInstall={() => installTemplate(agent.id)}
+          />
         ))}
-      </Grid>
+      </Box>
 
-      <Typography variant="subtitle2" color="text.secondary" mb={2}>
+      <Typography variant="subtitle1" color="common.white" fontWeight={600} mb={0.5}>
         Marketplace templates
       </Typography>
-      <Stack gap={2}>
+      <Typography variant="caption" color="text.secondary" display="block" mb={2.5}>
+        Pre-configured agent profiles with policies and default missions
+      </Typography>
+      <Box
+        display="grid"
+        gridTemplateColumns={{ xs: '1fr', lg: '1fr 1fr' }}
+        gap={meridianTokens.spacing.panelGap}
+      >
         {AGENT_TEMPLATES.map((template) => (
           <AgentEmployeeCard
             key={template.id}
+            variant="identity"
             agent={{
               id: template.id,
               name: template.name,
@@ -111,7 +153,7 @@ export default function AgentsPage(): ReactElement {
             installed={profile.activeTemplateId === template.id}
           />
         ))}
-      </Stack>
+      </Box>
     </Box>
   )
 }
