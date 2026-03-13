@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-meridian-dark font-sans text-white antialiased;
+  }
+
+  body.dashboard-active {
+    background-color: #08080c;
+  }
+}
+
+@layer components {
+  .dashboard-root .horizon-panel {
+    @apply rounded-[20px] border border-white/[0.12] bg-[#161622] text-white;
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(255, 255, 255, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .dashboard-root .horizon-panel-nested {
+    @apply rounded-2xl border border-white/[0.08] bg-[#1e1e2a];
+  }
+
+  .dashboard-root .dashboard-toolbar {
+    @apply rounded-full border border-white/[0.12] bg-[#161622];
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  .dashboard-root .dashboard-search {
+    background-color: #08080c !important;
+    color: #ffffff !important;
+  }
+
+  .dashboard-root .dashboard-search::placeholder {
+    color: #a3aed0 !important;
+  }
+
+  .dashboard-root .dashboard-search:-webkit-autofill,
+  .dashboard-root .dashboard-search:-webkit-autofill:hover,
+  .dashboard-root .dashboard-search:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #08080c inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff;
+  }
+
+  .dashboard-root .apexcharts-canvas svg {
+    background: transparent !important;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+input.defaultCheckbox::before {
+  content: url('/checked.svg');
+  color: white;
+  opacity: 0;
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0px);
+}
+
+input.defaultCheckbox:checked::before {
+  opacity: 1;
+}
