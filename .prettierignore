@@ -1,0 +1,18 @@
+# Project documentation (large; not formatted in Phase 1)
+FINAL_PROMPT.md
+CASPER_*.md
+MERIDIAN_ENGINEERING_BIBLE.md
+LESSONS_LEARNED.md
+ENVIRONMENT_REQUIREMENTS.md
+USER_ACTIONS.md
+
+# Generated / lockfiles handled separately
+pnpm-lock.yaml
+target/
+node_modules/
+dist/
+justfile
+
+# Secrets
+.env
+.env.*
