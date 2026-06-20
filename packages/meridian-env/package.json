@@ -1,0 +1,29 @@
+{
+  "name": "@meridian/env",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MERIDIAN environment validation (Zod) — no business logic",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:ci": "vitest run --reporter=verbose"
+  },
+  "dependencies": {
+    "zod": "=3.25.76"
+  },
+  "devDependencies": {
+    "vitest": "=3.2.4"
+  }
+}
