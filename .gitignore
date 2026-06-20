@@ -1,0 +1,51 @@
+# Secrets and keys — NEVER commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+keys/
+**/secret_key*
+**/*credentials*
+**/*service-account*.json
+
+# Rust
+/target/
+**/target/
+**/*.rs.bk
+
+# Node
+node_modules/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+coverage/
+.pnpm-store/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Odra / WASM (rebuilt in CI/local)
+**/wasm/
+**/*.wasm
+
+# Logs and caches
+*.log
+logs/
+.tmp/
+.cache/
+**/.vite/
+
+# Deploy artifacts — addresses.json committed intentionally after Phase 4
+
+# Cursor / agent artifacts
+.cursor/
+agent-transcripts/
