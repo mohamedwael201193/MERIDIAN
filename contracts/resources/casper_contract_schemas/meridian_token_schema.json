@@ -1,0 +1,788 @@
+{
+  "casper_contract_schema_version": 1,
+  "toolchain": "rustc 1.94.0-nightly (8d670b93d 2025-12-31)",
+  "authors": [],
+  "repository": null,
+  "homepage": null,
+  "contract_name": "MeridianToken",
+  "contract_version": "0.1.0",
+  "types": [
+    {
+      "struct": {
+        "name": "AssetMetadata",
+        "description": null,
+        "members": [
+          {
+            "name": "name",
+            "description": null,
+            "ty": "String"
+          },
+          {
+            "name": "symbol",
+            "description": null,
+            "ty": "String"
+          },
+          {
+            "name": "decimals",
+            "description": null,
+            "ty": "U8"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "Burn",
+        "description": null,
+        "members": [
+          {
+            "name": "owner",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U256"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "ContractUpgraded",
+        "description": null,
+        "members": [
+          {
+            "name": "upgraded_at",
+            "description": null,
+            "ty": "U64"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "DecreaseAllowance",
+        "description": null,
+        "members": [
+          {
+            "name": "owner",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "spender",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "allowance",
+            "description": null,
+            "ty": "U256"
+          },
+          {
+            "name": "decr_by",
+            "description": null,
+            "ty": "U256"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "HolderReinstatedEvent",
+        "description": null,
+        "members": [
+          {
+            "name": "holder",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "HolderRevokedEvent",
+        "description": null,
+        "members": [
+          {
+            "name": "holder",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "IncreaseAllowance",
+        "description": null,
+        "members": [
+          {
+            "name": "owner",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "spender",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "allowance",
+            "description": null,
+            "ty": "U256"
+          },
+          {
+            "name": "inc_by",
+            "description": null,
+            "ty": "U256"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "Mint",
+        "description": null,
+        "members": [
+          {
+            "name": "recipient",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U256"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "OwnershipTransferred",
+        "description": null,
+        "members": [
+          {
+            "name": "previous_owner",
+            "description": null,
+            "ty": {
+              "Option": "Key"
+            }
+          },
+          {
+            "name": "new_owner",
+            "description": null,
+            "ty": {
+              "Option": "Key"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "SetAllowance",
+        "description": null,
+        "members": [
+          {
+            "name": "owner",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "spender",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "allowance",
+            "description": null,
+            "ty": "U256"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "TokenIssued",
+        "description": null,
+        "members": [
+          {
+            "name": "issuer",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "total_supply",
+            "description": null,
+            "ty": "U256"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "Transfer",
+        "description": null,
+        "members": [
+          {
+            "name": "sender",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "recipient",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U256"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "TransferFrom",
+        "description": null,
+        "members": [
+          {
+            "name": "spender",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "owner",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "recipient",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U256"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "YieldAccrued",
+        "description": null,
+        "members": [
+          {
+            "name": "holder",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U256"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "name": "CallerNotTheNewOwner",
+      "description": "The caller is not the new owner.",
+      "discriminant": 20002
+    },
+    {
+      "name": "CallerNotTheOwner",
+      "description": "The caller is not the owner.",
+      "discriminant": 20001
+    },
+    {
+      "name": "CannotTargetSelfUser",
+      "description": "The user cannot target themselves.",
+      "discriminant": 60003
+    },
+    {
+      "name": "ComplianceRegistryNotSet",
+      "description": "",
+      "discriminant": 31005
+    },
+    {
+      "name": "HolderRevoked",
+      "description": "",
+      "discriminant": 31002
+    },
+    {
+      "name": "InsufficientAllowance",
+      "description": "Spender does not have enough allowance approved.",
+      "discriminant": 60002
+    },
+    {
+      "name": "InsufficientBalance",
+      "description": "Spender does not have enough balance.",
+      "discriminant": 60001
+    },
+    {
+      "name": "MissingRole",
+      "description": "The role is missing.",
+      "discriminant": 20003
+    },
+    {
+      "name": "NotComplianceRegistry",
+      "description": "",
+      "discriminant": 31001
+    },
+    {
+      "name": "NotCompliant",
+      "description": "",
+      "discriminant": 31003
+    },
+    {
+      "name": "NotStakingVault",
+      "description": "",
+      "discriminant": 31000
+    },
+    {
+      "name": "Overflow",
+      "description": "",
+      "discriminant": 31006
+    },
+    {
+      "name": "OwnerNotSet",
+      "description": "The owner is not set.",
+      "discriminant": 20000
+    },
+    {
+      "name": "RoleRenounceForAnotherAddress",
+      "description": "The role cannot be renounced for another address.",
+      "discriminant": 20004
+    },
+    {
+      "name": "StakingVaultNotSet",
+      "description": "",
+      "discriminant": 31004
+    }
+  ],
+  "entry_points": [
+    {
+      "name": "set_staking_vault",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "vault",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "set_compliance_registry",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "registry",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "accrue_yield",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "holder",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        },
+        {
+          "name": "amount",
+          "description": null,
+          "ty": "U256",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "revoke_holder",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "addr",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "reinstate_holder",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "addr",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "is_revoked",
+      "description": "",
+      "is_mutable": false,
+      "arguments": [
+        {
+          "name": "addr",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Bool",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "transfer",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "recipient",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        },
+        {
+          "name": "amount",
+          "description": null,
+          "ty": "U256",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "transfer_from",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "owner",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        },
+        {
+          "name": "recipient",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        },
+        {
+          "name": "amount",
+          "description": null,
+          "ty": "U256",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "schedule_upgrade",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "execute_upgrade",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "name",
+      "description": "Delegated. See `self.token.name()` for details.",
+      "is_mutable": false,
+      "arguments": [],
+      "return_ty": "String",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "symbol",
+      "description": "Delegated. See `self.token.symbol()` for details.",
+      "is_mutable": false,
+      "arguments": [],
+      "return_ty": "String",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "decimals",
+      "description": "Delegated. See `self.token.decimals()` for details.",
+      "is_mutable": false,
+      "arguments": [],
+      "return_ty": "U8",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "total_supply",
+      "description": "Delegated. See `self.token.total_supply()` for details.",
+      "is_mutable": false,
+      "arguments": [],
+      "return_ty": "U256",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "balance_of",
+      "description": "Delegated. See `self.token.balance_of()` for details.",
+      "is_mutable": false,
+      "arguments": [
+        {
+          "name": "address",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "U256",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "allowance",
+      "description": "Delegated. See `self.token.allowance()` for details.",
+      "is_mutable": false,
+      "arguments": [
+        {
+          "name": "owner",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        },
+        {
+          "name": "spender",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "U256",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "approve",
+      "description": "Delegated. See `self.token.approve()` for details.",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "spender",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        },
+        {
+          "name": "amount",
+          "description": null,
+          "ty": "U256",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "decrease_allowance",
+      "description": "Delegated. See `self.token.decrease_allowance()` for details.",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "spender",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        },
+        {
+          "name": "decr_by",
+          "description": null,
+          "ty": "U256",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "increase_allowance",
+      "description": "Delegated. See `self.token.increase_allowance()` for details.",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "spender",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        },
+        {
+          "name": "inc_by",
+          "description": null,
+          "ty": "U256",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    }
+  ],
+  "events": [
+    {
+      "name": "Burn",
+      "ty": "Burn"
+    },
+    {
+      "name": "ContractUpgraded",
+      "ty": "ContractUpgraded"
+    },
+    {
+      "name": "DecreaseAllowance",
+      "ty": "DecreaseAllowance"
+    },
+    {
+      "name": "HolderReinstatedEvent",
+      "ty": "HolderReinstatedEvent"
+    },
+    {
+      "name": "HolderRevokedEvent",
+      "ty": "HolderRevokedEvent"
+    },
+    {
+      "name": "IncreaseAllowance",
+      "ty": "IncreaseAllowance"
+    },
+    {
+      "name": "Mint",
+      "ty": "Mint"
+    },
+    {
+      "name": "OwnershipTransferred",
+      "ty": "OwnershipTransferred"
+    },
+    {
+      "name": "SetAllowance",
+      "ty": "SetAllowance"
+    },
+    {
+      "name": "TokenIssued",
+      "ty": "TokenIssued"
+    },
+    {
+      "name": "Transfer",
+      "ty": "Transfer"
+    },
+    {
+      "name": "TransferFrom",
+      "ty": "TransferFrom"
+    },
+    {
+      "name": "YieldAccrued",
+      "ty": "YieldAccrued"
+    }
+  ],
+  "call": {
+    "wasm_file_name": "MeridianToken.wasm",
+    "description": "",
+    "arguments": [
+      {
+        "name": "odra_cfg_package_hash_key_name",
+        "description": "The arg name for the package hash key name.",
+        "ty": "String",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_allow_key_override",
+        "description": "If true and the key specified in odra_cfg_package_hash_key_name already exists, it will be overwritten.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_is_upgradable",
+        "description": "The arg name for the contract upgradeability setting.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_is_upgrade",
+        "description": "The arg name for telling the installer that the contract is being upgraded.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "metadata",
+        "description": null,
+        "ty": "AssetMetadata",
+        "optional": false
+      },
+      {
+        "name": "initial_supply",
+        "description": null,
+        "ty": "U256",
+        "optional": false
+      },
+      {
+        "name": "compliance_registry",
+        "description": null,
+        "ty": "Key",
+        "optional": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,405 @@
+{
+  "casper_contract_schema_version": 1,
+  "toolchain": "rustc 1.94.0-nightly (8d670b93d 2025-12-31)",
+  "authors": [],
+  "repository": null,
+  "homepage": null,
+  "contract_name": "YieldDistributor",
+  "contract_version": "0.1.0",
+  "types": [
+    {
+      "struct": {
+        "name": "ContractUpgraded",
+        "description": null,
+        "members": [
+          {
+            "name": "upgraded_at",
+            "description": null,
+            "ty": "U64"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "DistributorInitialized",
+        "description": null,
+        "members": [
+          {
+            "name": "token",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "vault",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "treasury",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "HolderRegisteredForYield",
+        "description": null,
+        "members": [
+          {
+            "name": "holder",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "OwnershipTransferred",
+        "description": null,
+        "members": [
+          {
+            "name": "previous_owner",
+            "description": null,
+            "ty": {
+              "Option": "Key"
+            }
+          },
+          {
+            "name": "new_owner",
+            "description": null,
+            "ty": {
+              "Option": "Key"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "ProtocolFeeChanged",
+        "description": null,
+        "members": [
+          {
+            "name": "bps",
+            "description": null,
+            "ty": "U32"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "ProtocolFeeScheduled",
+        "description": null,
+        "members": [
+          {
+            "name": "bps",
+            "description": null,
+            "ty": "U32"
+          },
+          {
+            "name": "executable_at",
+            "description": null,
+            "ty": "U64"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "YieldDistributed",
+        "description": null,
+        "members": [
+          {
+            "name": "holder",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U512"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "name": "AlreadyRegistered",
+      "description": "",
+      "discriminant": 33006
+    },
+    {
+      "name": "CallerNotTheNewOwner",
+      "description": "The caller is not the new owner.",
+      "discriminant": 20002
+    },
+    {
+      "name": "CallerNotTheOwner",
+      "description": "The caller is not the owner.",
+      "discriminant": 20001
+    },
+    {
+      "name": "InvalidFeeBps",
+      "description": "",
+      "discriminant": 33004
+    },
+    {
+      "name": "MissingRole",
+      "description": "The role is missing.",
+      "discriminant": 20003
+    },
+    {
+      "name": "NotStakingVault",
+      "description": "",
+      "discriminant": 33000
+    },
+    {
+      "name": "NothingScheduled",
+      "description": "",
+      "discriminant": 33005
+    },
+    {
+      "name": "Overflow",
+      "description": "",
+      "discriminant": 33003
+    },
+    {
+      "name": "OwnerNotSet",
+      "description": "The owner is not set.",
+      "discriminant": 20000
+    },
+    {
+      "name": "RegistryNotSet",
+      "description": "",
+      "discriminant": 33010
+    },
+    {
+      "name": "RoleRenounceForAnotherAddress",
+      "description": "The role cannot be renounced for another address.",
+      "discriminant": 20004
+    },
+    {
+      "name": "TokenNotSet",
+      "description": "",
+      "discriminant": 33008
+    },
+    {
+      "name": "TreasuryNotSet",
+      "description": "",
+      "discriminant": 33009
+    },
+    {
+      "name": "VaultNotSet",
+      "description": "",
+      "discriminant": 33007
+    },
+    {
+      "name": "ZeroRewards",
+      "description": "",
+      "discriminant": 33001
+    },
+    {
+      "name": "ZeroSupply",
+      "description": "",
+      "discriminant": 33002
+    }
+  ],
+  "entry_points": [
+    {
+      "name": "register_holder",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "holder",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "distribute",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "rewards",
+          "description": null,
+          "ty": "U512",
+          "optional": false
+        },
+        {
+          "name": "__cargo_purse",
+          "description": null,
+          "ty": "URef",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "pending_yield",
+      "description": "",
+      "is_mutable": false,
+      "arguments": [
+        {
+          "name": "holder",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "U512",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "get_protocol_fee_bps",
+      "description": "",
+      "is_mutable": false,
+      "arguments": [],
+      "return_ty": "U32",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "set_protocol_fee_bps",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "bps",
+          "description": null,
+          "ty": "U32",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "execute_protocol_fee_bps",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "schedule_upgrade",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "execute_upgrade",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    }
+  ],
+  "events": [
+    {
+      "name": "ContractUpgraded",
+      "ty": "ContractUpgraded"
+    },
+    {
+      "name": "DistributorInitialized",
+      "ty": "DistributorInitialized"
+    },
+    {
+      "name": "HolderRegisteredForYield",
+      "ty": "HolderRegisteredForYield"
+    },
+    {
+      "name": "OwnershipTransferred",
+      "ty": "OwnershipTransferred"
+    },
+    {
+      "name": "ProtocolFeeChanged",
+      "ty": "ProtocolFeeChanged"
+    },
+    {
+      "name": "ProtocolFeeScheduled",
+      "ty": "ProtocolFeeScheduled"
+    },
+    {
+      "name": "YieldDistributed",
+      "ty": "YieldDistributed"
+    }
+  ],
+  "call": {
+    "wasm_file_name": "YieldDistributor.wasm",
+    "description": "",
+    "arguments": [
+      {
+        "name": "odra_cfg_package_hash_key_name",
+        "description": "The arg name for the package hash key name.",
+        "ty": "String",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_allow_key_override",
+        "description": "If true and the key specified in odra_cfg_package_hash_key_name already exists, it will be overwritten.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_is_upgradable",
+        "description": "The arg name for the contract upgradeability setting.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_is_upgrade",
+        "description": "The arg name for telling the installer that the contract is being upgraded.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "token",
+        "description": null,
+        "ty": "Key",
+        "optional": false
+      },
+      {
+        "name": "vault",
+        "description": null,
+        "ty": "Key",
+        "optional": false
+      },
+      {
+        "name": "treasury",
+        "description": null,
+        "ty": "Key",
+        "optional": false
+      },
+      {
+        "name": "compliance_registry",
+        "description": null,
+        "ty": "Key",
+        "optional": false
+      }
+    ]
+  }
+}

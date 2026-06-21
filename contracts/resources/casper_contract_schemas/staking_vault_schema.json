@@ -1,0 +1,617 @@
+{
+  "casper_contract_schema_version": 1,
+  "toolchain": "rustc 1.94.0-nightly (8d670b93d 2025-12-31)",
+  "authors": [],
+  "repository": null,
+  "homepage": null,
+  "contract_name": "StakingVault",
+  "contract_version": "0.1.0",
+  "types": [
+    {
+      "struct": {
+        "name": "ContractUpgraded",
+        "description": null,
+        "members": [
+          {
+            "name": "upgraded_at",
+            "description": null,
+            "ty": "U64"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "DepositReceived",
+        "description": null,
+        "members": [
+          {
+            "name": "depositor",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U512"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "OwnershipTransferred",
+        "description": null,
+        "members": [
+          {
+            "name": "previous_owner",
+            "description": null,
+            "ty": {
+              "Option": "Key"
+            }
+          },
+          {
+            "name": "new_owner",
+            "description": null,
+            "ty": {
+              "Option": "Key"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "Restaked",
+        "description": null,
+        "members": [
+          {
+            "name": "from",
+            "description": null,
+            "ty": "PublicKey"
+          },
+          {
+            "name": "to",
+            "description": null,
+            "ty": "PublicKey"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U512"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "RewardsClaimed",
+        "description": null,
+        "members": [
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U512"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "RoleAdminChanged",
+        "description": null,
+        "members": [
+          {
+            "name": "role",
+            "description": null,
+            "ty": {
+              "ByteArray": 32
+            }
+          },
+          {
+            "name": "previous_admin_role",
+            "description": null,
+            "ty": {
+              "ByteArray": 32
+            }
+          },
+          {
+            "name": "new_admin_role",
+            "description": null,
+            "ty": {
+              "ByteArray": 32
+            }
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "RoleGranted",
+        "description": null,
+        "members": [
+          {
+            "name": "role",
+            "description": null,
+            "ty": {
+              "ByteArray": 32
+            }
+          },
+          {
+            "name": "address",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "sender",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "RoleRevoked",
+        "description": null,
+        "members": [
+          {
+            "name": "role",
+            "description": null,
+            "ty": {
+              "ByteArray": 32
+            }
+          },
+          {
+            "name": "address",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "sender",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "Staked",
+        "description": null,
+        "members": [
+          {
+            "name": "depositor",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "validator",
+            "description": null,
+            "ty": "PublicKey"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U512"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "Undelegated",
+        "description": null,
+        "members": [
+          {
+            "name": "validator",
+            "description": null,
+            "ty": "PublicKey"
+          },
+          {
+            "name": "amount",
+            "description": null,
+            "ty": "U512"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "ValidatorCuratorChanged",
+        "description": null,
+        "members": [
+          {
+            "name": "curator",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "ValidatorCuratorScheduled",
+        "description": null,
+        "members": [
+          {
+            "name": "curator",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "executable_at",
+            "description": null,
+            "ty": "U64"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "VaultInitialized",
+        "description": null,
+        "members": [
+          {
+            "name": "token",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "validator",
+            "description": null,
+            "ty": "PublicKey"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "name": "CallerNotTheNewOwner",
+      "description": "The caller is not the new owner.",
+      "discriminant": 20002
+    },
+    {
+      "name": "CallerNotTheOwner",
+      "description": "The caller is not the owner.",
+      "discriminant": 20001
+    },
+    {
+      "name": "InsufficientStake",
+      "description": "",
+      "discriminant": 32002
+    },
+    {
+      "name": "MissingRole",
+      "description": "The role is missing.",
+      "discriminant": 20003
+    },
+    {
+      "name": "NotYieldDistributor",
+      "description": "",
+      "discriminant": 32000
+    },
+    {
+      "name": "NothingScheduled",
+      "description": "",
+      "discriminant": 32005
+    },
+    {
+      "name": "Overflow",
+      "description": "",
+      "discriminant": 32004
+    },
+    {
+      "name": "OwnerNotSet",
+      "description": "The owner is not set.",
+      "discriminant": 20000
+    },
+    {
+      "name": "RoleRenounceForAnotherAddress",
+      "description": "The role cannot be renounced for another address.",
+      "discriminant": 20004
+    },
+    {
+      "name": "TokenNotSet",
+      "description": "",
+      "discriminant": 32007
+    },
+    {
+      "name": "ValidatorNotSet",
+      "description": "",
+      "discriminant": 32006
+    },
+    {
+      "name": "YieldDistributorNotSet",
+      "description": "",
+      "discriminant": 32003
+    },
+    {
+      "name": "ZeroDeposit",
+      "description": "",
+      "discriminant": 32001
+    }
+  ],
+  "entry_points": [
+    {
+      "name": "set_yield_distributor",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "distributor",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "deposit",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "__cargo_purse",
+          "description": null,
+          "ty": "URef",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "restake",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "from",
+          "description": null,
+          "ty": "PublicKey",
+          "optional": false
+        },
+        {
+          "name": "to",
+          "description": null,
+          "ty": "PublicKey",
+          "optional": false
+        },
+        {
+          "name": "amount",
+          "description": null,
+          "ty": "U512",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "undelegate",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "validator",
+          "description": null,
+          "ty": "PublicKey",
+          "optional": false
+        },
+        {
+          "name": "amount",
+          "description": null,
+          "ty": "U512",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "claim_rewards",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "U512",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "distribute_rewards",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "set_validator_curator",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "addr",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "execute_validator_curator",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "forward_distribute",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "rewards",
+          "description": null,
+          "ty": "U512",
+          "optional": false
+        },
+        {
+          "name": "__cargo_purse",
+          "description": null,
+          "ty": "URef",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "get_validator",
+      "description": "",
+      "is_mutable": false,
+      "arguments": [],
+      "return_ty": "PublicKey",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "get_total_staked",
+      "description": "",
+      "is_mutable": false,
+      "arguments": [],
+      "return_ty": "U512",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "schedule_upgrade",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "execute_upgrade",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    }
+  ],
+  "events": [
+    {
+      "name": "ContractUpgraded",
+      "ty": "ContractUpgraded"
+    },
+    {
+      "name": "DepositReceived",
+      "ty": "DepositReceived"
+    },
+    {
+      "name": "OwnershipTransferred",
+      "ty": "OwnershipTransferred"
+    },
+    {
+      "name": "Restaked",
+      "ty": "Restaked"
+    },
+    {
+      "name": "RewardsClaimed",
+      "ty": "RewardsClaimed"
+    },
+    {
+      "name": "RoleAdminChanged",
+      "ty": "RoleAdminChanged"
+    },
+    {
+      "name": "RoleGranted",
+      "ty": "RoleGranted"
+    },
+    {
+      "name": "RoleRevoked",
+      "ty": "RoleRevoked"
+    },
+    {
+      "name": "Staked",
+      "ty": "Staked"
+    },
+    {
+      "name": "Undelegated",
+      "ty": "Undelegated"
+    },
+    {
+      "name": "ValidatorCuratorChanged",
+      "ty": "ValidatorCuratorChanged"
+    },
+    {
+      "name": "ValidatorCuratorScheduled",
+      "ty": "ValidatorCuratorScheduled"
+    },
+    {
+      "name": "VaultInitialized",
+      "ty": "VaultInitialized"
+    }
+  ],
+  "call": {
+    "wasm_file_name": "StakingVault.wasm",
+    "description": "",
+    "arguments": [
+      {
+        "name": "odra_cfg_package_hash_key_name",
+        "description": "The arg name for the package hash key name.",
+        "ty": "String",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_allow_key_override",
+        "description": "If true and the key specified in odra_cfg_package_hash_key_name already exists, it will be overwritten.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_is_upgradable",
+        "description": "The arg name for the contract upgradeability setting.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_is_upgrade",
+        "description": "The arg name for telling the installer that the contract is being upgraded.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "token",
+        "description": null,
+        "ty": "Key",
+        "optional": false
+      },
+      {
+        "name": "validator",
+        "description": null,
+        "ty": "PublicKey",
+        "optional": false
+      }
+    ]
+  }
+}

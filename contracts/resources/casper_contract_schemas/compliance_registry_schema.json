@@ -1,0 +1,685 @@
+{
+  "casper_contract_schema_version": 1,
+  "toolchain": "rustc 1.94.0-nightly (8d670b93d 2025-12-31)",
+  "authors": [],
+  "repository": null,
+  "homepage": null,
+  "contract_name": "ComplianceRegistry",
+  "contract_version": "0.1.0",
+  "types": [
+    {
+      "struct": {
+        "name": "Attestation",
+        "description": null,
+        "members": [
+          {
+            "name": "country",
+            "description": null,
+            "ty": "U32"
+          },
+          {
+            "name": "accredited",
+            "description": null,
+            "ty": "Bool"
+          },
+          {
+            "name": "expires_at",
+            "description": null,
+            "ty": "U64"
+          },
+          {
+            "name": "sanctions_cleared",
+            "description": null,
+            "ty": "Bool"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "ComplianceOfficerChanged",
+        "description": null,
+        "members": [
+          {
+            "name": "officer",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "ComplianceOfficerScheduled",
+        "description": null,
+        "members": [
+          {
+            "name": "officer",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "executable_at",
+            "description": null,
+            "ty": "U64"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "ComplianceRules",
+        "description": null,
+        "members": [
+          {
+            "name": "max_holders",
+            "description": null,
+            "ty": "U32"
+          },
+          {
+            "name": "jurisdictions",
+            "description": null,
+            "ty": {
+              "List": "U32"
+            }
+          },
+          {
+            "name": "require_accreditation",
+            "description": null,
+            "ty": "Bool"
+          },
+          {
+            "name": "max_concentration_pct",
+            "description": null,
+            "ty": "U8"
+          },
+          {
+            "name": "sanctions_check",
+            "description": null,
+            "ty": "Bool"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "ContractUpgraded",
+        "description": null,
+        "members": [
+          {
+            "name": "upgraded_at",
+            "description": null,
+            "ty": "U64"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "HolderRegistered",
+        "description": null,
+        "members": [
+          {
+            "name": "holder",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "country",
+            "description": null,
+            "ty": "U32"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "HolderReinstated",
+        "description": null,
+        "members": [
+          {
+            "name": "holder",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "HolderRevoked",
+        "description": null,
+        "members": [
+          {
+            "name": "holder",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "reason",
+            "description": null,
+            "ty": "String"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "OwnershipTransferred",
+        "description": null,
+        "members": [
+          {
+            "name": "previous_owner",
+            "description": null,
+            "ty": {
+              "Option": "Key"
+            }
+          },
+          {
+            "name": "new_owner",
+            "description": null,
+            "ty": {
+              "Option": "Key"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "RegistryInitialized",
+        "description": null,
+        "members": [
+          {
+            "name": "max_holders",
+            "description": null,
+            "ty": "U32"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "RoleAdminChanged",
+        "description": null,
+        "members": [
+          {
+            "name": "role",
+            "description": null,
+            "ty": {
+              "ByteArray": 32
+            }
+          },
+          {
+            "name": "previous_admin_role",
+            "description": null,
+            "ty": {
+              "ByteArray": 32
+            }
+          },
+          {
+            "name": "new_admin_role",
+            "description": null,
+            "ty": {
+              "ByteArray": 32
+            }
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "RoleGranted",
+        "description": null,
+        "members": [
+          {
+            "name": "role",
+            "description": null,
+            "ty": {
+              "ByteArray": 32
+            }
+          },
+          {
+            "name": "address",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "sender",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "RoleRevoked",
+        "description": null,
+        "members": [
+          {
+            "name": "role",
+            "description": null,
+            "ty": {
+              "ByteArray": 32
+            }
+          },
+          {
+            "name": "address",
+            "description": null,
+            "ty": "Key"
+          },
+          {
+            "name": "sender",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "RulesUpdateScheduled",
+        "description": null,
+        "members": [
+          {
+            "name": "executable_at",
+            "description": null,
+            "ty": "U64"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "RulesUpdated",
+        "description": null,
+        "members": [
+          {
+            "name": "max_holders",
+            "description": null,
+            "ty": "U32"
+          }
+        ]
+      }
+    },
+    {
+      "struct": {
+        "name": "TokenAddressSet",
+        "description": null,
+        "members": [
+          {
+            "name": "token",
+            "description": null,
+            "ty": "Key"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "name": "AccreditationRequired",
+      "description": "",
+      "discriminant": 30007
+    },
+    {
+      "name": "AttestationExpired",
+      "description": "",
+      "discriminant": 30005
+    },
+    {
+      "name": "CallerNotTheNewOwner",
+      "description": "The caller is not the new owner.",
+      "discriminant": 20002
+    },
+    {
+      "name": "CallerNotTheOwner",
+      "description": "The caller is not the owner.",
+      "discriminant": 20001
+    },
+    {
+      "name": "HolderAlreadyRegistered",
+      "description": "",
+      "discriminant": 30001
+    },
+    {
+      "name": "HolderNotRegistered",
+      "description": "",
+      "discriminant": 30000
+    },
+    {
+      "name": "HolderNotRevoked",
+      "description": "",
+      "discriminant": 30003
+    },
+    {
+      "name": "HolderRevoked",
+      "description": "",
+      "discriminant": 30002
+    },
+    {
+      "name": "JurisdictionNotAllowed",
+      "description": "",
+      "discriminant": 30006
+    },
+    {
+      "name": "MaxHoldersReached",
+      "description": "",
+      "discriminant": 30004
+    },
+    {
+      "name": "MissingRole",
+      "description": "The role is missing.",
+      "discriminant": 20003
+    },
+    {
+      "name": "NothingScheduled",
+      "description": "",
+      "discriminant": 30010
+    },
+    {
+      "name": "OwnerNotSet",
+      "description": "The owner is not set.",
+      "discriminant": 20000
+    },
+    {
+      "name": "RoleRenounceForAnotherAddress",
+      "description": "The role cannot be renounced for another address.",
+      "discriminant": 20004
+    },
+    {
+      "name": "SanctionsNotCleared",
+      "description": "",
+      "discriminant": 30008
+    },
+    {
+      "name": "TokenNotSet",
+      "description": "",
+      "discriminant": 30009
+    }
+  ],
+  "entry_points": [
+    {
+      "name": "register_holder",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "addr",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        },
+        {
+          "name": "attestation",
+          "description": null,
+          "ty": "Attestation",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "revoke",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "addr",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        },
+        {
+          "name": "reason",
+          "description": null,
+          "ty": "String",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "reinstate",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "addr",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "is_compliant",
+      "description": "",
+      "is_mutable": false,
+      "arguments": [
+        {
+          "name": "addr",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Bool",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "get_attestation",
+      "description": "",
+      "is_mutable": false,
+      "arguments": [
+        {
+          "name": "addr",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": {
+        "Option": "Attestation"
+      },
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "get_rules",
+      "description": "",
+      "is_mutable": false,
+      "arguments": [],
+      "return_ty": "ComplianceRules",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "update_rules",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "new_rules",
+          "description": null,
+          "ty": "ComplianceRules",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "execute_rules_update",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "set_compliance_officer",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "addr",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "execute_compliance_officer",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "set_token_address",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [
+        {
+          "name": "token",
+          "description": null,
+          "ty": "Key",
+          "optional": false
+        }
+      ],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "schedule_upgrade",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    },
+    {
+      "name": "execute_upgrade",
+      "description": "",
+      "is_mutable": true,
+      "arguments": [],
+      "return_ty": "Unit",
+      "is_contract_context": true,
+      "access": "public"
+    }
+  ],
+  "events": [
+    {
+      "name": "ComplianceOfficerChanged",
+      "ty": "ComplianceOfficerChanged"
+    },
+    {
+      "name": "ComplianceOfficerScheduled",
+      "ty": "ComplianceOfficerScheduled"
+    },
+    {
+      "name": "ContractUpgraded",
+      "ty": "ContractUpgraded"
+    },
+    {
+      "name": "HolderRegistered",
+      "ty": "HolderRegistered"
+    },
+    {
+      "name": "HolderReinstated",
+      "ty": "HolderReinstated"
+    },
+    {
+      "name": "HolderRevoked",
+      "ty": "HolderRevoked"
+    },
+    {
+      "name": "OwnershipTransferred",
+      "ty": "OwnershipTransferred"
+    },
+    {
+      "name": "RegistryInitialized",
+      "ty": "RegistryInitialized"
+    },
+    {
+      "name": "RoleAdminChanged",
+      "ty": "RoleAdminChanged"
+    },
+    {
+      "name": "RoleGranted",
+      "ty": "RoleGranted"
+    },
+    {
+      "name": "RoleRevoked",
+      "ty": "RoleRevoked"
+    },
+    {
+      "name": "RulesUpdateScheduled",
+      "ty": "RulesUpdateScheduled"
+    },
+    {
+      "name": "RulesUpdated",
+      "ty": "RulesUpdated"
+    },
+    {
+      "name": "TokenAddressSet",
+      "ty": "TokenAddressSet"
+    }
+  ],
+  "call": {
+    "wasm_file_name": "ComplianceRegistry.wasm",
+    "description": "",
+    "arguments": [
+      {
+        "name": "odra_cfg_package_hash_key_name",
+        "description": "The arg name for the package hash key name.",
+        "ty": "String",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_allow_key_override",
+        "description": "If true and the key specified in odra_cfg_package_hash_key_name already exists, it will be overwritten.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_is_upgradable",
+        "description": "The arg name for the contract upgradeability setting.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "odra_cfg_is_upgrade",
+        "description": "The arg name for telling the installer that the contract is being upgraded.",
+        "ty": "Bool",
+        "optional": false
+      },
+      {
+        "name": "rules",
+        "description": null,
+        "ty": "ComplianceRules",
+        "optional": false
+      }
+    ]
+  }
+}
