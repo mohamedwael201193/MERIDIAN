@@ -1,0 +1,26 @@
+last_updated = "2026-06-28T22:18:55Z"
+
+[[contracts]]
+name = "ComplianceRegistry"
+package_name = "ComplianceRegistry"
+package_hash = "hash-e6ed2d2eb8a1ffc7aa55a4158643a3682493d6f15f1e7123113a9c8534ee84f8"
+
+[[contracts]]
+name = "MeridianToken"
+package_name = "MeridianToken"
+package_hash = "hash-9bcac97d0e6723049fc130daa22f69e88a5d077a1df6b4e38536f0703bcaa2ca"
+
+[[contracts]]
+name = "StakingVault"
+package_name = "StakingVault"
+package_hash = "hash-3062ba32a4ef4d3fd0fc5c9d0895980b7bbbcc5f407590d1b14c60ca631300c7"
+
+[[contracts]]
+name = "YieldDistributor"
+package_name = "YieldDistributor"
+package_hash = "hash-378bf2fddb1e574f39014bff6280f101c264da6fc4c629ad4e8c0d8ce55a6c34"
+
+[[contracts]]
+name = "MeridianAudit"
+package_name = "MeridianAudit"
+package_hash = "hash-1d8bc0bbbb6dda232afcff2afa257e7572d1ac33c518b1852b9a34c707493d84"
