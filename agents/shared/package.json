@@ -1,0 +1,31 @@
+{
+  "name": "@meridian/agents-shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MERIDIAN AI agents shared runtime",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:ci": "vitest run --reporter=verbose"
+  },
+  "dependencies": {
+    "@meridian/env": "workspace:*",
+    "@upstash/redis": "=1.35.6",
+    "openai": "=4.77.0",
+    "zod": "=3.25.76"
+  },
+  "devDependencies": {
+    "vitest": "=3.2.4"
+  }
+}
