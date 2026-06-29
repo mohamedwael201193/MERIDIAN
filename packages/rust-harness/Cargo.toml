@@ -1,0 +1,12 @@
+[package]
+name = "meridian-rust-harness"
+version = "0.1.0"
+edition = "2021"
+description = "Phase 1 Rust workspace harness — no business logic"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dev-dependencies]
+proptest = "=1.6.0"

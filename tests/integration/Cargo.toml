@@ -1,0 +1,18 @@
+[package]
+edition = "2021"
+name = "meridian-integration-tests"
+version = "0.1.0"
+publish = false
+
+[workspace]
+
+[dependencies]
+meridian-contracts = { path = "../../contracts/meridian-contracts" }
+meridian-types = { path = "../../contracts/meridian-types" }
+odra = { version = "2.8.2", default-features = false, features = [] }
+odra-casper-livenet-env = { version = "2.8.2" }
+odra-modules = { version = "2.8.2", default-features = false, features = [] }
+toml = "0.8"
+
+[dev-dependencies]
+odra-test = { version = "2.8.2", default-features = false, features = [] }
