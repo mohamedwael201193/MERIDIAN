@@ -5,6 +5,15 @@ function listenPort(defaultPort: number): number {
 }
 
 async function main(): Promise<void> {
+  if (mode === 'combined') {
+    const { buildCombinedFromEnv } = await import('./combined-app.js')
+    const port = listenPort(Number(process.env.X402_FACILITATOR_PORT ?? 3001))
+    buildCombinedFromEnv().listen(port, '0.0.0.0', () => {
+      console.log(JSON.stringify({ event: 'x402_combined_started', port }))
+    })
+    return
+  }
+
   if (mode === 'resource') {
     const { createResourceApp } = await import('./resource-app.js')
     const port = listenPort(Number(process.env.X402_RESOURCE_PORT ?? 3003))

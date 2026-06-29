@@ -8,6 +8,10 @@ services:
     buildCommand: >-
       pnpm install --frozen-lockfile &&
       pnpm --filter @meridian/env run build &&
+      pnpm --filter @meridian/agents-shared run build &&
+      pnpm --filter @meridian/yield-agent run build &&
+      pnpm --filter @meridian/compliance-agent run build &&
+      pnpm --filter @meridian/audit-agent run build &&
       pnpm --filter @meridian/backend run build
     startCommand: node backend/dist/main.js
     healthCheckPath: /health
@@ -16,6 +20,10 @@ services:
         value: production
       - key: HOST
         value: 0.0.0.0
+      - key: AGENTS_ENABLED
+        value: true
+      - key: AGENT_INTERVAL_MS
+        value: "300000"
       - key: DATABASE_URL
         sync: false
       - key: SUPABASE_URL
@@ -46,36 +54,14 @@ services:
         sync: false
       - key: MERIDIAN_CONTRACTS_PATH
         value: deployed/addresses.json
+      - key: MERIDIAN_VALIDATOR_PUBLIC_KEY
+        sync: false
       - key: INDEXER_ENABLED
         value: true
       - key: INDEXER_BACKFILL_ON_START
         value: true
       - key: LOG_LEVEL
         value: info
-
-  - type: worker
-    name: meridian-agents
-    runtime: node
-    plan: free
-    region: frankfurt
-    autoDeploy: true
-    buildCommand: >-
-      pnpm install --frozen-lockfile &&
-      pnpm --filter @meridian/env run build &&
-      pnpm --filter @meridian/agents-shared run build &&
-      pnpm --filter @meridian/yield-agent run build &&
-      pnpm --filter @meridian/compliance-agent run build &&
-      pnpm --filter @meridian/audit-agent run build
-    startCommand: node agents/run-all.mjs
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: DATABASE_URL
-        sync: false
-      - key: UPSTASH_REDIS_REST_URL
-        sync: false
-      - key: UPSTASH_REDIS_REST_TOKEN
-        sync: false
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_BASE_URL
@@ -94,17 +80,11 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
-      - key: CASPER_RPC_URL
-        value: https://node.testnet.casper.network/rpc
-      - key: CASPER_API_KEY
-        sync: false
-      - key: MERIDIAN_API_KEY
-        sync: false
-      - key: BACKEND_URL
+      - key: X402_FACILITATOR_URL
         sync: false
 
   - type: web
-    name: meridian-x402-facilitator
+    name: meridian-x402
     runtime: node
     plan: free
     region: frankfurt
@@ -113,13 +93,13 @@ services:
       pnpm install --frozen-lockfile &&
       pnpm --filter @meridian/casper-sdk run build &&
       pnpm --filter @meridian/x402-facilitator run build
-    startCommand: node x402-facilitator/dist/index.js
+    startCommand: X402_MODE=combined node x402-facilitator/dist/index.js
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
       - key: X402_MODE
-        value: facilitator
+        value: combined
       - key: CASPER_RPC_URL
         value: https://node.testnet.casper.network/rpc
       - key: CASPER_CHAIN_NAME
@@ -136,23 +116,6 @@ services:
         sync: false
       - key: MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM
         sync: false
-
-  - type: web
-    name: meridian-x402-resource
-    runtime: node
-    plan: free
-    region: frankfurt
-    autoDeploy: true
-    buildCommand: >-
-      pnpm install --frozen-lockfile &&
-      pnpm --filter @meridian/x402-facilitator run build
-    startCommand: X402_MODE=resource node x402-facilitator/dist/index.js
-    healthCheckPath: /health
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: X402_MODE
-        value: resource
       - key: X402_FACILITATOR_URL
         sync: false
       - key: BACKEND_URL
@@ -160,6 +123,10 @@ services:
       - key: MERIDIAN_API_KEY
         sync: false
       - key: MERIDIAN_TOKEN_PACKAGE
+        sync: false
+      - key: MERIDIAN_VALIDATOR_PUBLIC_KEY
+        sync: false
+      - key: OFAC_SDN_FEED_URL
         sync: false
 
   - type: web
@@ -186,9 +153,27 @@ services:
         sync: false
       - key: MERIDIAN_API_KEY
         sync: false
+      - key: CASPER_NETWORK
+        value: casper-test
       - key: CASPER_RPC_URL
         value: https://node.testnet.casper.network/rpc
+      - key: CASPER_CHAIN_NAME
+        value: casper-test
       - key: CASPER_API_KEY
+        sync: false
+      - key: CASPER_SIDE_CAR_URL
+        value: https://api.testnet.cspr.cloud
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
         sync: false
       - key: MERIDIAN_CONTRACTS_PATH
         value: deployed/addresses.json
@@ -196,3 +181,5 @@ services:
         sync: false
       - key: X402_RESOURCE_URL
         sync: false
+      - key: LOG_LEVEL
+        value: info
