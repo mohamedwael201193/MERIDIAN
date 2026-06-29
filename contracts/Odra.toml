@@ -1,0 +1,14 @@
+[[contracts]]
+fqn = "meridian_contracts::compliance_registry::ComplianceRegistry"
+
+[[contracts]]
+fqn = "meridian_contracts::meridian_token::MeridianToken"
+
+[[contracts]]
+fqn = "meridian_contracts::staking_vault::StakingVault"
+
+[[contracts]]
+fqn = "meridian_contracts::yield_distributor::YieldDistributor"
+
+[[contracts]]
+fqn = "meridian_contracts::meridian_audit::MeridianAudit"
