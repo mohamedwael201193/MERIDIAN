@@ -1,13 +1,12 @@
-import type { Metadata } from 'next';
-import '../index.css';
-import '@/nickelfox/index.css';
-import ClientProviders from '@/providers/ClientProviders';
+import type { Metadata } from 'next'
+import '../index.css'
+import '@/nickelfox/index.css'
+import ClientProviders from '@/providers/ClientProviders'
 
 export const metadata: Metadata = {
   title: 'MERIDIAN — Autonomous Compliant Yield for RWAs',
-  description:
-    'Casper-native RWA platform with native staking yield, compliance, and AI agents.',
-};
+  description: 'Casper-native RWA platform with native staking yield, compliance, and AI agents.',
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -25,5 +24,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
-  );
+  )
 }
