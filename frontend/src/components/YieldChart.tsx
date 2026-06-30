@@ -1,35 +1,37 @@
-'use client';
+'use client'
 
-import { ReactElement, useEffect, useMemo, useRef } from 'react';
-import { Box, Button, Paper, Stack, Typography, CircularProgress } from '@mui/material';
-import EChartsReactCore from 'echarts-for-react/lib/core';
-import VisitorInsightsChart from '@/nickelfox/components/sections/dashboard/visitor-insights/VisitorInsightsChart';
-import { useYieldHistory } from '@lib/hooks/useMeridianData';
+import { ReactElement, useEffect, useMemo, useRef } from 'react'
+import { Box, Button, Paper, Stack, Typography, CircularProgress } from '@mui/material'
+import EChartsReactCore from 'echarts-for-react/lib/core'
+import VisitorInsightsChart from '@/nickelfox/components/sections/dashboard/visitor-insights/VisitorInsightsChart'
+import { useYieldHistory } from '@lib/hooks/useMeridianData'
 
 interface YieldChartProps {
-  limit?: number;
-  title?: string;
+  limit?: number
+  title?: string
 }
 
 export default function YieldChart({
   limit = 12,
   title = 'Yield History',
 }: YieldChartProps): ReactElement {
-  const chartRef = useRef<EChartsReactCore | null>(null);
-  const { data: history, isLoading } = useYieldHistory(limit);
+  const chartRef = useRef<EChartsReactCore | null>(null)
+  const { data: history, isLoading } = useYieldHistory(limit)
 
-  const chartData = useMemo(
-    () => ({
-      'New Visitors': (history ?? []).map(item => Number(item.totalRewards) / 1_000_000_000),
-    }),
-    [history],
-  );
+  const chartData = useMemo(() => {
+    const items = history ?? []
+    return {
+      labels: items.map((item) => `Era ${item.eraId ?? '—'}`),
+      values: items.map((item) => Number(item.totalRewards) / 1_000_000_000),
+      seriesName: 'Era Rewards (CSPR)',
+    }
+  }, [history])
 
   useEffect(() => {
-    const handleResize = () => chartRef.current?.getEchartsInstance().resize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    const handleResize = () => chartRef.current?.getEchartsInstance().resize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   return (
     <Paper sx={{ p: { xs: 4, sm: 8 }, height: 1 }}>
@@ -55,5 +57,5 @@ export default function YieldChart({
         />
       )}
     </Paper>
-  );
+  )
 }
