@@ -39,6 +39,40 @@ function readDeployerPem(): string {
   return resolveInlinePemFromEnv(process.env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM, 'deployer')
 }
 
+const CASPER_MESSAGE_HEADER = 'Casper Message:\n'
+
+function casperWalletMessageBytes(message: string): Buffer {
+  return Buffer.from(`${CASPER_MESSAGE_HEADER}${message}`, 'utf8')
+}
+
+function signatureVariants(signatureHex: string): Buffer[] {
+  const hex = signatureHex.replace(/^0x/, '')
+  const variants = [hex]
+  if (hex.length === 128) variants.push(`01${hex}`, `02${hex}`)
+  if (hex.length === 130) variants.push(hex.slice(2))
+  return [...new Set(variants)].map((value) => Buffer.from(value, 'hex'))
+}
+
+function messageVariants(
+  auth: PaymentPayload['authorization'],
+  domain: string,
+  signedMessage?: string,
+): Buffer[] {
+  const digestHex = hashAuthorization(auth, domain)
+  const canonical = JSON.stringify({ domain, ...auth })
+  const messages = [signedMessage, digestHex, canonical].filter((value): value is string =>
+    Boolean(value),
+  )
+  const buffers: Buffer[] = [Buffer.from(digestHex, 'hex')]
+  for (const message of new Set(messages)) {
+    buffers.push(Buffer.from(message, 'utf8'))
+    if (/^[0-9a-f]{64}$/i.test(message)) {
+      buffers.push(casperWalletMessageBytes(message))
+    }
+  }
+  return buffers
+}
+
 function loadDeployerKey() {
   const pem = readDeployerPem()
   return loadPrivateKeyFromPem(pem, process.env.MERIDIAN_DEPLOYER_KEY_ALGORITHM)
@@ -85,12 +119,18 @@ export class FacilitatorService {
     }
 
     const domain = `${this.chainName}:x402`
-    const digestHex = hashAuthorization(auth, domain)
-    const digest = Buffer.from(digestHex, 'hex')
     try {
       const pubKey = PublicKey.fromHex(payload.publicKey)
-      const signature = Buffer.from(payload.signature, 'hex')
-      if (!pubKey.verifySignature(digest, signature)) {
+      const verified = messageVariants(auth, domain, payload.message).some((message) =>
+        signatureVariants(payload.signature).some((signature) => {
+          try {
+            return pubKey.verifySignature(message, signature)
+          } catch {
+            return false
+          }
+        }),
+      )
+      if (!verified) {
         return { valid: false, reason: 'invalid_signature' }
       }
     } catch {
