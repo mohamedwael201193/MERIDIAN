@@ -1,10 +1,10 @@
-import { ReactElement } from 'react';
-import { List, Toolbar, Box } from '@mui/material';
-import Link from 'next/link';
-import navItems from '@/nickelfox/data/nav-items';
-import SimpleBar from 'simplebar-react';
-import NavItem from './NavItem';
-import { drawerCloseWidth, drawerOpenWidth } from '..';
+import { ReactElement } from 'react'
+import { List, Toolbar, Box, Typography, Divider } from '@mui/material'
+import Link from 'next/link'
+import { navGroups } from '@/nickelfox/data/nav-items'
+import SimpleBar from 'simplebar-react'
+import NavItem from './NavItem'
+import { drawerCloseWidth, drawerOpenWidth } from '..'
 
 const Sidebar = ({ open }: { open: boolean }): ReactElement => {
   return (
@@ -25,11 +25,20 @@ const Sidebar = ({ open }: { open: boolean }): ReactElement => {
         <Box
           component={Link}
           href="/dashboard"
-          sx={{ display: 'flex', alignItems: 'center', gap: open ? 1.5 : 0, mt: 2, textDecoration: 'none' }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: open ? 1.5 : 0,
+            mt: 2,
+            textDecoration: 'none',
+          }}
         >
           <Box component="img" src="/logo.svg" alt="MERIDIAN" sx={{ width: 40, height: 40 }} />
           {open ? (
-            <Box component="span" sx={{ fontWeight: 700, fontSize: 18, color: 'common.white', letterSpacing: 1 }}>
+            <Box
+              component="span"
+              sx={{ fontWeight: 700, fontSize: 18, color: 'common.white', letterSpacing: 1 }}
+            >
               MERIDIAN
             </Box>
           ) : null}
@@ -38,20 +47,43 @@ const Sidebar = ({ open }: { open: boolean }): ReactElement => {
       <SimpleBar style={{ maxHeight: '100vh' }}>
         <List
           component="nav"
+          aria-label="MERIDIAN dashboard navigation"
           sx={{
             mt: 20,
             py: 2,
-            minHeight: 720,
-            justifyContent: 'space-between',
+            px: 0,
           }}
         >
-          {navItems.map(navItem => (
-            <NavItem key={navItem.id} navItem={navItem} open={open} />
+          {navGroups.map((group, groupIndex) => (
+            <Box key={group.id} component="li" sx={{ listStyle: 'none', mb: 1.5 }}>
+              {open ? (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    display: 'block',
+                    px: 3,
+                    pt: groupIndex === 0 ? 0 : 1.5,
+                    pb: 1,
+                    color: 'text.disabled',
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    fontWeight: 600,
+                  }}
+                >
+                  {group.label}
+                </Typography>
+              ) : groupIndex > 0 ? (
+                <Divider sx={{ mx: 2, my: 1, borderColor: 'divider' }} />
+              ) : null}
+              {group.items.map((navItem) => (
+                <NavItem key={navItem.id} navItem={navItem} open={open} groupLabel={group.label} />
+              ))}
+            </Box>
           ))}
         </List>
       </SimpleBar>
     </>
-  );
-};
+  )
+}
 
-export default Sidebar;
+export default Sidebar
