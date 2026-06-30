@@ -15,7 +15,8 @@ export type TransferAuthorization = z.infer<typeof transferAuthorizationSchema>
 export const paymentPayloadSchema = z.object({
   authorization: transferAuthorizationSchema,
   signature: z.string().min(32),
-  publicKey: z.string().regex(/^0[23][0-9a-fA-F]{66}$/),
+  message: z.string().optional(),
+  publicKey: z.string().regex(/^0[123][0-9a-fA-F]{64,66}$/),
   signedTransaction: z.unknown().optional(),
 })
 
