@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -Dwarnings
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+      - name: Rust fmt
+        run: cargo fmt --all -- --check
+      - name: Rust clippy
+        run: cargo clippy --workspace -- -D warnings
+      - name: Rust test
+        run: cargo test --workspace
+
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test:ci
+
+  cloud-connectivity:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Verify cloud connectivity
+        env:
+          CASPER_NETWORK: ${{ secrets.CASPER_NETWORK }}
+          CASPER_RPC_URL: ${{ secrets.CASPER_RPC_URL }}
+          CASPER_CHAIN_NAME: ${{ secrets.CASPER_CHAIN_NAME }}
+          CASPER_API_KEY: ${{ secrets.CASPER_API_KEY }}
+          CASPER_SIDE_CAR_URL: ${{ secrets.CASPER_SIDE_CAR_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "Skipping cloud connectivity — secrets not configured in CI"
+            exit 0
+          fi
+          bash scripts/verify-env.sh
+          node scripts/verify-phase1.mjs
