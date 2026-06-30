@@ -1,21 +1,18 @@
-import type { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import type { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 
 interface PanelProps {
-  title: string;
-  description?: string;
-  action?: ReactNode;
-  children: ReactNode;
-  className?: string;
+  title: string
+  description?: string
+  action?: ReactNode
+  children: ReactNode
+  className?: string
 }
 
 export default function Panel({ title, description, action, children, className }: PanelProps) {
   return (
     <div
-      className={cn(
-        'rounded-2xl border border-white/10 bg-dashboard-card shadow-card',
-        className,
-      )}
+      className={cn('rounded-2xl border border-white/10 bg-dashboard-card shadow-card', className)}
     >
       <div className="flex items-start justify-between border-b border-white/10 px-6 py-4">
         <div>
@@ -26,5 +23,5 @@ export default function Panel({ title, description, action, children, className 
       </div>
       <div className="p-6">{children}</div>
     </div>
-  );
+  )
 }

@@ -12,25 +12,25 @@ import {
   Typography,
   InputAdornment,
   FormControlLabel,
-} from '@mui/material';
-import IconifyIcon from '@/nickelfox/components/base/IconifyIcon';
-import { useState, ReactElement } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { rootPaths } from '@/nickelfox/routes/paths';
-import Image from '@/nickelfox/components/base/Image';
-import logoWithText from '/Logo-with-text.png';
+} from '@mui/material'
+import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
+import { useState, ReactElement } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { rootPaths } from '@/nickelfox/routes/paths'
+import Image from '@/nickelfox/components/base/Image'
+import logoWithText from '/Logo-with-text.png'
 
 const Login = (): ReactElement => {
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState<boolean>(false)
 
   const handleSubmit = () => {
-    navigate(rootPaths.homeRoot);
-  };
+    navigate(rootPaths.homeRoot)
+  }
 
   const handleClickShowPassword = () => {
-    setShowPassword((prevShowPassword) => !prevShowPassword);
-  };
+    setShowPassword((prevShowPassword) => !prevShowPassword)
+  }
 
   return (
     <>
@@ -164,7 +164,7 @@ const Login = (): ReactElement => {
         </Stack>
       </Paper>
     </>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

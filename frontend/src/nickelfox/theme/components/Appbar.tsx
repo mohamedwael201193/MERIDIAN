@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const AppBar: Components<Omit<Theme, 'components'>>['MuiAppBar'] = {
   defaultProps: {},
@@ -11,6 +11,6 @@ const AppBar: Components<Omit<Theme, 'components'>>['MuiAppBar'] = {
       backdropFilter: 'blur(18px)',
     }),
   },
-};
+}
 
-export default AppBar;
+export default AppBar

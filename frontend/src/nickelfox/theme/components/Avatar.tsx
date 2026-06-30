@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const Avatar: Components<Omit<Theme, 'components'>>['MuiAvatar'] = {
   defaultProps: {},
@@ -13,6 +13,6 @@ const Avatar: Components<Omit<Theme, 'components'>>['MuiAvatar'] = {
       fontWeight: theme.typography.body1.fontWeight,
     }),
   },
-};
+}
 
-export default Avatar;
+export default Avatar

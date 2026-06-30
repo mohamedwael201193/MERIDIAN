@@ -1,14 +1,14 @@
 interface InputFieldProps {
-  label: string;
-  id: string;
-  extra?: string;
-  type?: string;
-  placeholder?: string;
-  variant?: 'auth' | 'default';
-  state?: 'error' | 'success';
-  disabled?: boolean;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  label: string
+  id: string
+  extra?: string
+  type?: string
+  placeholder?: string
+  variant?: 'auth' | 'default'
+  state?: 'error' | 'success'
+  disabled?: boolean
+  value?: string
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export default function InputField({
@@ -49,5 +49,5 @@ export default function InputField({
         }`}
       />
     </div>
-  );
+  )
 }

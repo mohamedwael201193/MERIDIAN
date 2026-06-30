@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from 'react'
 import {
   MdBuild,
   MdDashboard,
@@ -7,13 +7,13 @@ import {
   MdSmartToy,
   MdToken,
   MdTrendingUp,
-} from 'react-icons/md';
+} from 'react-icons/md'
 
 export interface DashboardRoute {
-  name: string;
-  path: string;
-  icon: ReactNode;
-  description: string;
+  name: string
+  path: string
+  icon: ReactNode
+  description: string
 }
 
 export const dashboardRoutes: DashboardRoute[] = [
@@ -59,4 +59,4 @@ export const dashboardRoutes: DashboardRoute[] = [
     icon: <MdBuild className="h-5 w-5" />,
     description: 'Non-custodial agent access layer',
   },
-];
+]

@@ -1,12 +1,12 @@
-import { Link } from 'react-router-dom';
-import { BsArrowBarUp } from 'react-icons/bs';
-import { FiAlignJustify, FiSearch } from 'react-icons/fi';
-import { IoMdNotificationsOutline, IoMdInformationCircleOutline } from 'react-icons/io';
-import Dropdown from '@/horizon/ui/Dropdown';
+import { Link } from 'react-router-dom'
+import { BsArrowBarUp } from 'react-icons/bs'
+import { FiAlignJustify, FiSearch } from 'react-icons/fi'
+import { IoMdNotificationsOutline, IoMdInformationCircleOutline } from 'react-icons/io'
+import Dropdown from '@/horizon/ui/Dropdown'
 
 interface DashboardNavbarProps {
-  brandText: string;
-  onOpenSidenav: () => void;
+  brandText: string
+  onOpenSidenav: () => void
 }
 
 export default function DashboardNavbar({ brandText, onOpenSidenav }: DashboardNavbarProps) {
@@ -14,7 +14,10 @@ export default function DashboardNavbar({ brandText, onOpenSidenav }: DashboardN
     <nav className="horizon-panel sticky top-4 z-40 !flex-row flex-wrap items-center justify-between !rounded-xl !p-2 backdrop-blur-xl">
       <div className="ml-[6px]">
         <div className="h-6 w-[224px] pt-1">
-          <Link className="text-sm font-normal text-gray-600 hover:text-white hover:underline" to="/dashboard">
+          <Link
+            className="text-sm font-normal text-gray-600 hover:text-white hover:underline"
+            to="/dashboard"
+          >
             Pages
             <span className="mx-1 text-sm text-gray-600"> / </span>
           </Link>
@@ -36,7 +39,10 @@ export default function DashboardNavbar({ brandText, onOpenSidenav }: DashboardN
             className="dashboard-search block h-full w-full rounded-full border-0 bg-transparent text-sm font-medium outline-none ring-0 sm:w-fit"
           />
         </div>
-        <span className="flex cursor-pointer text-xl text-gray-600 hover:text-white xl:hidden" onClick={onOpenSidenav}>
+        <span
+          className="flex cursor-pointer text-xl text-gray-600 hover:text-white xl:hidden"
+          onClick={onOpenSidenav}
+        >
           <FiAlignJustify className="h-5 w-5" />
         </span>
 
@@ -59,8 +65,12 @@ export default function DashboardNavbar({ brandText, onOpenSidenav }: DashboardN
                 <BsArrowBarUp />
               </div>
               <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-                <p className="mb-1 text-left text-base font-bold text-white">Yield distributed — Era 1423</p>
-                <p className="text-left text-xs text-gray-600">12,740 CSPR rewards distributed to compliant holders</p>
+                <p className="mb-1 text-left text-base font-bold text-white">
+                  Yield distributed — Era 1423
+                </p>
+                <p className="text-left text-xs text-gray-600">
+                  12,740 CSPR rewards distributed to compliant holders
+                </p>
               </div>
             </button>
             <button type="button" className="flex w-full items-center">
@@ -68,8 +78,12 @@ export default function DashboardNavbar({ brandText, onOpenSidenav }: DashboardN
                 <BsArrowBarUp />
               </div>
               <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-                <p className="mb-1 text-left text-base font-bold text-white">ComplianceAgent — holder revoked</p>
-                <p className="text-left text-xs text-gray-600">Holder 03c9…2e17 removed from registry</p>
+                <p className="mb-1 text-left text-base font-bold text-white">
+                  ComplianceAgent — holder revoked
+                </p>
+                <p className="text-left text-xs text-gray-600">
+                  Holder 03c9…2e17 removed from registry
+                </p>
               </div>
             </button>
           </div>
@@ -125,5 +139,5 @@ export default function DashboardNavbar({ brandText, onOpenSidenav }: DashboardN
         </Dropdown>
       </div>
     </nav>
-  );
+  )
 }

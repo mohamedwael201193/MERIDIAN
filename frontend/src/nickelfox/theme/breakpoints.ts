@@ -1,8 +1,8 @@
-import { BreakpointsOptions } from '@mui/material';
+import { BreakpointsOptions } from '@mui/material'
 
 declare module '@mui/material/styles' {
   interface BreakpointOverrides {
-    '2xl': true;
+    '2xl': true
   }
 }
 
@@ -15,6 +15,6 @@ const breakpoints: BreakpointsOptions = {
     xl: 1280,
     '2xl': 1536,
   },
-};
+}
 
-export default breakpoints;
+export default breakpoints

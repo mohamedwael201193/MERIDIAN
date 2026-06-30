@@ -1,4 +1,4 @@
-import { Stack, Pagination, Typography, PaginationItem } from '@mui/material';
+import { Stack, Pagination, Typography, PaginationItem } from '@mui/material'
 import {
   useGridSelector,
   gridPageSelector,
@@ -6,15 +6,15 @@ import {
   gridPageCountSelector,
   gridExpandedRowCountSelector,
   gridPaginationRowRangeSelector,
-} from '@mui/x-data-grid';
-import { ReactElement } from 'react';
+} from '@mui/x-data-grid'
+import { ReactElement } from 'react'
 
 const CustomPagination = (): ReactElement => {
-  const apiRef = useGridApiContext();
-  const page = useGridSelector(apiRef, gridPageSelector);
-  const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-  const available = useGridSelector(apiRef, gridExpandedRowCountSelector);
-  const paginationRowRange = useGridSelector(apiRef, gridPaginationRowRangeSelector);
+  const apiRef = useGridApiContext()
+  const page = useGridSelector(apiRef, gridPageSelector)
+  const pageCount = useGridSelector(apiRef, gridPageCountSelector)
+  const available = useGridSelector(apiRef, gridExpandedRowCountSelector)
+  const paginationRowRange = useGridSelector(apiRef, gridPaginationRowRangeSelector)
 
   return (
     <Stack
@@ -70,7 +70,7 @@ const CustomPagination = (): ReactElement => {
         )}
       />{' '}
     </Stack>
-  );
-};
+  )
+}
 
-export default CustomPagination;
+export default CustomPagination

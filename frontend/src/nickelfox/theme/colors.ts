@@ -1,15 +1,15 @@
 interface Color {
-  50: string;
-  100: string;
-  200: string;
-  300: string;
-  400: string;
-  500: string;
-  600: string;
-  700: string;
-  800: string;
-  900: string;
-  A100?: string;
+  50: string
+  100: string
+  200: string
+  300: string
+  400: string
+  500: string
+  600: string
+  700: string
+  800: string
+  900: string
+  A100?: string
 }
 
 export const teal: Color = {
@@ -23,7 +23,7 @@ export const teal: Color = {
   700: '#007662',
   800: '#006654',
   900: '#004A38',
-};
+}
 
 export const fuchsia: Color = {
   50: '#FAE9F7',
@@ -36,7 +36,7 @@ export const fuchsia: Color = {
   700: '#AE36B5',
   800: '#9D31AE',
   900: '#7F28A0',
-};
+}
 
 export const green: Color = {
   50: '#E6F5E4',
@@ -49,7 +49,7 @@ export const green: Color = {
   700: '#008D00',
   800: '#007C00',
   900: '#005E00',
-};
+}
 
 export const bluishCyan: Color = {
   50: '#E2F5FE',
@@ -62,7 +62,7 @@ export const bluishCyan: Color = {
   700: '#188BD0',
   800: '#167ABC',
   900: '#105A9A',
-};
+}
 
 export const yellowOrange: Color = {
   50: '#FEF3E2',
@@ -75,7 +75,7 @@ export const yellowOrange: Color = {
   700: '#F07F1E',
   800: '#EA701B',
   900: '#E05716',
-};
+}
 
 export const pinkishRed: Color = {
   50: '#FFEBF0',
@@ -88,7 +88,7 @@ export const pinkishRed: Color = {
   700: '#EA0034',
   800: '#DD002C',
   900: '#CF001E',
-};
+}
 
 export const meridianRed: Color = {
   50: '#fef2f2',
@@ -101,7 +101,7 @@ export const meridianRed: Color = {
   700: '#991b1b',
   800: '#7f1d1d',
   900: '#450a0a',
-};
+}
 
 export const grey: Color = {
   50: '#fafafa',
@@ -115,7 +115,7 @@ export const grey: Color = {
   800: '#262626',
   900: '#161622',
   A100: '#0a0a0f',
-};
+}
 
 export const stone: Color = {
   50: '#fafafa',
@@ -128,4 +128,4 @@ export const stone: Color = {
   700: '#262626',
   800: '#161616',
   900: '#050505',
-};
+}

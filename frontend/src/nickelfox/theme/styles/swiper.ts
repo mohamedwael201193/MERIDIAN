@@ -1,4 +1,4 @@
-import { Theme } from '@mui/material';
+import { Theme } from '@mui/material'
 
 const swiper = (theme: Theme) => ({
   '& .swiper-button-prev, & .swiper-button-next': {
@@ -21,6 +21,6 @@ const swiper = (theme: Theme) => ({
     fontSize: `${theme.typography.h4.fontSize} !important`,
     fontWeight: theme.typography.h4.fontWeight,
   },
-});
+})
 
-export default swiper;
+export default swiper

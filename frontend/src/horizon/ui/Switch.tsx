@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes } from 'react'
 
 type SwitchColor =
   | 'red'
@@ -14,7 +14,7 @@ type SwitchColor =
   | 'purple'
   | 'amber'
   | 'indigo'
-  | 'gray';
+  | 'gray'
 
 const colorClasses: Record<SwitchColor | 'default', string> = {
   red: 'checked:bg-red-500 dark:checked:bg-red-400',
@@ -32,15 +32,15 @@ const colorClasses: Record<SwitchColor | 'default', string> = {
   indigo: 'checked:bg-indigo-500 dark:checked:bg-indigo-400',
   gray: 'checked:bg-gray-500 dark:checked:bg-gray-400',
   default: 'checked:bg-brand-500 dark:checked:bg-brand-400',
-};
+}
 
 interface SwitchProps extends InputHTMLAttributes<HTMLInputElement> {
-  color?: SwitchColor;
-  extra?: string;
+  color?: SwitchColor
+  extra?: string
 }
 
 export default function Switch({ color, extra = '', ...rest }: SwitchProps) {
-  const checkedColor = color ? colorClasses[color] : colorClasses.default;
+  const checkedColor = color ? colorClasses[color] : colorClasses.default
 
   return (
     <input
@@ -48,5 +48,5 @@ export default function Switch({ color, extra = '', ...rest }: SwitchProps) {
       className={`relative h-5 w-10 appearance-none rounded-[20px] bg-[#1e1e2a] outline-none transition duration-[0.5s] before:absolute before:top-[50%] before:h-4 before:w-4 before:translate-x-[2px] before:translate-y-[-50%] before:rounded-[20px] before:bg-[#a3aed0] before:shadow-[0_2px_5px_rgba(0,_0,_0,_.2)] before:transition before:content-[""] checked:before:translate-x-[22px] checked:before:bg-white hover:cursor-pointer ${checkedColor} ${extra}`}
       {...rest}
     />
-  );
+  )
 }

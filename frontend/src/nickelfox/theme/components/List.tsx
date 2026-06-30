@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const List: Components<Omit<Theme, 'components'>>['MuiList'] = {
   defaultProps: {},
@@ -10,6 +10,6 @@ const List: Components<Omit<Theme, 'components'>>['MuiList'] = {
       gap: 16,
     }),
   },
-};
+}
 
-export default List;
+export default List

@@ -9,6 +9,6 @@ const echart = () => ({
       },
     },
   },
-});
+})
 
-export default echart;
+export default echart

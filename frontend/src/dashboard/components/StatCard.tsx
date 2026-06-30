@@ -1,16 +1,23 @@
-import type { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import type { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 
 interface StatCardProps {
-  title: string;
-  value: string;
-  subtitle?: string;
-  icon: ReactNode;
-  trend?: string;
-  className?: string;
+  title: string
+  value: string
+  subtitle?: string
+  icon: ReactNode
+  trend?: string
+  className?: string
 }
 
-export default function StatCard({ title, value, subtitle, icon, trend, className }: StatCardProps) {
+export default function StatCard({
+  title,
+  value,
+  subtitle,
+  icon,
+  trend,
+  className,
+}: StatCardProps) {
   return (
     <div
       className={cn(
@@ -32,5 +39,5 @@ export default function StatCard({ title, value, subtitle, icon, trend, classNam
       <p className="mt-1 text-2xl font-bold tracking-tight text-white">{value}</p>
       {subtitle && <p className="mt-1 text-xs text-zinc-600">{subtitle}</p>}
     </div>
-  );
+  )
 }

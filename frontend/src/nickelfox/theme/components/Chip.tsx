@@ -1,5 +1,5 @@
-import { Theme, alpha } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme, alpha } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const Chip: Components<Omit<Theme, 'components'>>['MuiChip'] = {
   defaultProps: {
@@ -51,6 +51,6 @@ const Chip: Components<Omit<Theme, 'components'>>['MuiChip'] = {
       backgroundColor: alpha(theme.palette.error.main, 0.12),
     }),
   },
-};
+}
 
-export default Chip;
+export default Chip

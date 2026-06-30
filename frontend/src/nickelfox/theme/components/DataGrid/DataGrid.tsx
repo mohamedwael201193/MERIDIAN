@@ -1,5 +1,5 @@
-import { Theme, alpha } from '@mui/material';
-import type { DataGridComponents } from '@mui/x-data-grid/themeAugmentation';
+import { Theme, alpha } from '@mui/material'
+import type { DataGridComponents } from '@mui/x-data-grid/themeAugmentation'
 
 const DataGrid: DataGridComponents<Omit<Theme, 'components'>>['MuiDataGrid'] = {
   defaultProps: { disableColumnMenu: true, disableRowSelectionOnClick: true },
@@ -104,6 +104,6 @@ const DataGrid: DataGridComponents<Omit<Theme, 'components'>>['MuiDataGrid'] = {
       display: 'none',
     }),
   },
-};
+}
 
-export default DataGrid;
+export default DataGrid

@@ -1,4 +1,4 @@
-import { Theme } from '@mui/material';
+import { Theme } from '@mui/material'
 
 const simplebar = (theme: Theme) => ({
   '& .simplebar-track': {
@@ -15,6 +15,6 @@ const simplebar = (theme: Theme) => ({
       },
     },
   },
-});
+})
 
-export default simplebar;
+export default simplebar

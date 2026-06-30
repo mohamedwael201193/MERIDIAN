@@ -21,10 +21,7 @@ export type McpConfig = z.infer<typeof envSchema> & ReturnType<typeof parseMerid
 export interface DeployedAddresses {
   network: string
   chain_name: string
-  contracts: Record<
-    string,
-    { contract_hash: string; package_hash: string; explorer_url: string }
-  >
+  contracts: Record<string, { contract_hash: string; package_hash: string; explorer_url: string }>
 }
 
 export function loadConfig(source: Record<string, string | undefined> = process.env): McpConfig {

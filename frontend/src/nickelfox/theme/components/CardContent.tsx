@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const CardContent: Components<Omit<Theme, 'components'>>['MuiCardContent'] = {
   defaultProps: {},
@@ -16,6 +16,6 @@ const CardContent: Components<Omit<Theme, 'components'>>['MuiCardContent'] = {
       },
     }),
   },
-};
+}
 
-export default CardContent;
+export default CardContent

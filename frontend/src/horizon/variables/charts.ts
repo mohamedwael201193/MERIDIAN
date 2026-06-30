@@ -1,10 +1,10 @@
-import type { ApexOptions } from 'apexcharts';
+import type { ApexOptions } from 'apexcharts'
 
 const chartBase: ApexOptions['chart'] = {
   background: 'transparent',
   foreColor: '#a3aed0',
   toolbar: { show: false },
-};
+}
 
 const tooltipDark = {
   theme: 'dark' as const,
@@ -12,12 +12,12 @@ const tooltipDark = {
     fontSize: '12px',
     backgroundColor: '#161622',
   },
-};
+}
 
 export const lineChartDataStaked = [
   { name: 'Staked CSPR', data: [3.8, 4.0, 3.9, 4.1, 4.05, 4.25], color: '#dc2626' },
   { name: 'Rewards', data: [0.08, 0.09, 0.085, 0.095, 0.09, 0.092], color: '#f87171' },
-];
+]
 
 export const lineChartOptionsStaked: ApexOptions = {
   theme: { mode: 'dark' },
@@ -41,12 +41,12 @@ export const lineChartOptionsStaked: ApexOptions = {
     labels: { style: { colors: '#A3AED0', fontSize: '12px', fontWeight: '500' } },
   },
   yaxis: { show: false },
-};
+}
 
 export const barChartDataEraYield = [
   { name: 'Rewards', data: [12450, 12680, 12520, 12890, 12740], color: '#dc2626' },
   { name: 'Fees', data: [622, 634, 626, 644, 637], color: '#7f1d1d' },
-];
+]
 
 export const barChartOptionsEraYield: ApexOptions = {
   theme: { mode: 'dark' },
@@ -70,9 +70,9 @@ export const barChartOptionsEraYield: ApexOptions = {
   legend: { show: false },
   dataLabels: { enabled: false },
   plotOptions: { bar: { borderRadius: 10, columnWidth: '20px' } },
-};
+}
 
-export const barChartDataEvents = [{ name: 'Events', data: [12, 18, 14, 22, 16, 19, 15] }];
+export const barChartDataEvents = [{ name: 'Events', data: [12, 18, 14, 22, 16, 19, 15] }]
 
 export const barChartOptionsEvents: ApexOptions = {
   theme: { mode: 'dark' },
@@ -100,10 +100,13 @@ export const barChartOptionsEvents: ApexOptions = {
       opacityFrom: 0.95,
       opacityTo: 0.55,
       colorStops: [
-        [{ offset: 0, color: '#ef4444', opacity: 1 }, { offset: 100, color: '#991b1b', opacity: 0.8 }],
+        [
+          { offset: 0, color: '#ef4444', opacity: 1 },
+          { offset: 100, color: '#991b1b', opacity: 0.8 },
+        ],
       ],
     },
   },
   dataLabels: { enabled: false },
   plotOptions: { bar: { borderRadius: 10, columnWidth: '40px' } },
-};
+}

@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react';
-import Card from './Card';
+import type { ReactNode } from 'react'
+import Card from './Card'
 
 interface WidgetProps {
-  icon: ReactNode;
-  title: string;
-  subtitle: string;
+  icon: ReactNode
+  title: string
+  subtitle: string
 }
 
 export default function Widget({ icon, title, subtitle }: WidgetProps) {
@@ -20,5 +20,5 @@ export default function Widget({ icon, title, subtitle }: WidgetProps) {
         <h4 className="truncate text-xl font-bold text-white">{subtitle}</h4>
       </div>
     </Card>
-  );
+  )
 }

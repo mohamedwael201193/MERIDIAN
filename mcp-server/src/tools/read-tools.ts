@@ -19,10 +19,7 @@ export function registerReadTools(
     'Returns MERIDIAN token metadata from indexed backend + deployed addresses',
     { packageHash: z.string().optional() },
     async ({ packageHash }) => {
-      const hash =
-        packageHash ??
-        addresses.contracts.MeridianToken?.package_hash ??
-        ''
+      const hash = packageHash ?? addresses.contracts.MeridianToken?.package_hash ?? ''
       const token = await backend.getToken(hash)
       return textResult({ deployed: addresses.contracts, indexed: token.data })
     },
@@ -33,10 +30,7 @@ export function registerReadTools(
     'Returns current yield/APY for a MERIDIAN token from live indexed data',
     { packageHash: z.string().optional() },
     async ({ packageHash }) => {
-      const hash =
-        packageHash ??
-        addresses.contracts.MeridianToken?.package_hash ??
-        ''
+      const hash = packageHash ?? addresses.contracts.MeridianToken?.package_hash ?? ''
       const yieldData = await backend.getYield(hash)
       return textResult(yieldData.data)
     },

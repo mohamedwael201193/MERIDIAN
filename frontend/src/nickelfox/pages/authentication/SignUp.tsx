@@ -9,29 +9,29 @@ import {
   IconButton,
   Typography,
   InputAdornment,
-} from '@mui/material';
-import IconifyIcon from '@/nickelfox/components/base/IconifyIcon';
-import { useState, ReactElement } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { rootPaths } from '@/nickelfox/routes/paths';
-import Image from '@/nickelfox/components/base/Image';
-import logoWithText from '/Logo-with-text.png';
+} from '@mui/material'
+import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
+import { useState, ReactElement } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { rootPaths } from '@/nickelfox/routes/paths'
+import Image from '@/nickelfox/components/base/Image'
+import logoWithText from '/Logo-with-text.png'
 
 const SignUp = (): ReactElement => {
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
 
   const handleSubmit = () => {
-    navigate(rootPaths.homeRoot);
-  };
+    navigate(rootPaths.homeRoot)
+  }
 
   const handleShowPassword = () => {
-    setShowPassword((prevShowPassword) => !prevShowPassword);
-  };
+    setShowPassword((prevShowPassword) => !prevShowPassword)
+  }
   const handleShowConfirmPassword = () => {
-    setShowConfirmPassword((prevShowConfirmPassword) => !prevShowConfirmPassword);
-  };
+    setShowConfirmPassword((prevShowConfirmPassword) => !prevShowConfirmPassword)
+  }
 
   return (
     <>
@@ -224,7 +224,7 @@ const SignUp = (): ReactElement => {
         </Stack>
       </Paper>
     </>
-  );
-};
+  )
+}
 
-export default SignUp;
+export default SignUp

@@ -1,6 +1,6 @@
 interface PageHeaderProps {
-  title: string;
-  description: string;
+  title: string
+  description: string
 }
 
 export default function PageHeader({ title, description }: PageHeaderProps) {
@@ -10,5 +10,5 @@ export default function PageHeader({ title, description }: PageHeaderProps) {
       <h1 className="mt-1 text-3xl font-bold tracking-tight text-white">{title}</h1>
       <p className="mt-2 max-w-2xl text-sm text-zinc-500">{description}</p>
     </div>
-  );
+  )
 }

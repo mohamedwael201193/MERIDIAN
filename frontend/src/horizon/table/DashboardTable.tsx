@@ -1,20 +1,20 @@
-import type { ReactNode } from 'react';
-import Card from '@/horizon/ui/Card';
-import CardMenu from '@/horizon/ui/CardMenu';
+import type { ReactNode } from 'react'
+import Card from '@/horizon/ui/Card'
+import CardMenu from '@/horizon/ui/CardMenu'
 
 export interface TableColumn<T> {
-  key: string;
-  header: string;
-  className?: string;
-  render?: (row: T) => ReactNode;
+  key: string
+  header: string
+  className?: string
+  render?: (row: T) => ReactNode
 }
 
 interface DashboardTableProps<T extends Record<string, unknown>> {
-  title: string;
-  data: T[];
-  columns: TableColumn<T>[];
-  maxRows?: number;
-  action?: ReactNode;
+  title: string
+  data: T[]
+  columns: TableColumn<T>[]
+  maxRows?: number
+  action?: ReactNode
 }
 
 export default function DashboardTable<T extends Record<string, unknown>>({
@@ -24,7 +24,7 @@ export default function DashboardTable<T extends Record<string, unknown>>({
   maxRows = 10,
   action,
 }: DashboardTableProps<T>) {
-  const rows = data.slice(0, maxRows);
+  const rows = data.slice(0, maxRows)
 
   return (
     <Card extra="h-full w-full px-6 sm:overflow-auto">
@@ -37,7 +37,7 @@ export default function DashboardTable<T extends Record<string, unknown>>({
         <table className="w-full">
           <thead>
             <tr>
-              {columns.map(col => (
+              {columns.map((col) => (
                 <th
                   key={col.key}
                   className="cursor-pointer border-b border-white/10 pr-4 pb-2 pt-4 text-start"
@@ -50,7 +50,7 @@ export default function DashboardTable<T extends Record<string, unknown>>({
           <tbody>
             {rows.map((row, i) => (
               <tr key={i}>
-                {columns.map(col => (
+                {columns.map((col) => (
                   <td key={col.key} className={`min-w-[120px] py-3 pr-4 ${col.className ?? ''}`}>
                     {col.render ? (
                       col.render(row)
@@ -65,5 +65,5 @@ export default function DashboardTable<T extends Record<string, unknown>>({
         </table>
       </div>
     </Card>
-  );
+  )
 }

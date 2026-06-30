@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const IconButton: Components<Omit<Theme, 'components'>>['MuiIconButton'] = {
   defaultProps: {},
@@ -8,6 +8,6 @@ const IconButton: Components<Omit<Theme, 'components'>>['MuiIconButton'] = {
       color: theme.palette.common.white,
     }),
   },
-};
+}
 
-export default IconButton;
+export default IconButton

@@ -54,12 +54,7 @@ export function createFacilitatorApp(service: FacilitatorService): express.Appli
   })
 
   app.use(
-    (
-      error: unknown,
-      _req: express.Request,
-      res: express.Response,
-      _next: express.NextFunction,
-    ) => {
+    (error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
       if (error instanceof Error && error.name === 'ZodError') {
         res.status(400).json({ error: 'validation_failed', detail: error.message })
         return

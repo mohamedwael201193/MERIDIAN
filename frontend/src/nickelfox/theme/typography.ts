@@ -1,5 +1,5 @@
-import { TypographyOptions } from '@mui/material/styles/createTypography';
-import pxToRem from './functions/px-to-rem';
+import { TypographyOptions } from '@mui/material/styles/createTypography'
+import pxToRem from './functions/px-to-rem'
 
 const typography: TypographyOptions = {
   fontFamily: ['Inter', 'sans-serif'].join(', '),
@@ -47,6 +47,6 @@ const typography: TypographyOptions = {
   fontWeightRegular: 500,
   fontWeightMedium: 600,
   fontWeightBold: 700,
-};
+}
 
-export default typography;
+export default typography

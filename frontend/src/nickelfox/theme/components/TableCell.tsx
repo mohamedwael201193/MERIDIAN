@@ -1,6 +1,6 @@
-import { Theme, alpha } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
-import pxToRem from '@/nickelfox/theme/functions/px-to-rem';
+import { Theme, alpha } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
+import pxToRem from '@/nickelfox/theme/functions/px-to-rem'
 
 const TableCell: Components<Omit<Theme, 'components'>>['MuiTableCell'] = {
   defaultProps: {},
@@ -25,6 +25,6 @@ const TableCell: Components<Omit<Theme, 'components'>>['MuiTableCell'] = {
       lineHeight: '19.36px',
     }),
   },
-};
+}
 
-export default TableCell;
+export default TableCell

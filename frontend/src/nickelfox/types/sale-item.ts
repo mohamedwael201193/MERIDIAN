@@ -1,8 +1,8 @@
 export interface SaleItem {
-  id?: number;
-  icon: string;
-  title: string;
-  subtitle: string;
-  increment: number;
-  color: string;
+  id?: number
+  icon: string
+  title: string
+  subtitle: string
+  detail?: string
+  color: string
 }

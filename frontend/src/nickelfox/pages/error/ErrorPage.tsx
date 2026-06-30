@@ -1,8 +1,8 @@
-import { ReactElement } from 'react';
-import { Link, Stack, Button, Typography } from '@mui/material';
-import Image from '@/nickelfox/components/base/Image';
-import errorSvg from '@/nickelfox/assets/images/error/error.svg';
-import { rootPaths } from '@/nickelfox/routes/paths';
+import { ReactElement } from 'react'
+import { Link, Stack, Button, Typography } from '@mui/material'
+import Image from '@/nickelfox/components/base/Image'
+import errorSvg from '@/nickelfox/assets/images/error/error.svg'
+import { rootPaths } from '@/nickelfox/routes/paths'
 
 const ErrorPage = (): ReactElement => {
   return (
@@ -42,7 +42,7 @@ const ErrorPage = (): ReactElement => {
         Go to Home
       </Button>
     </Stack>
-  );
-};
+  )
+}
 
-export default ErrorPage;
+export default ErrorPage

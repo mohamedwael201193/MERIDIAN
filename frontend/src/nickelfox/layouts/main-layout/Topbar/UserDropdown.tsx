@@ -1,20 +1,20 @@
-import { Menu, Avatar, Button, Tooltip, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
-import IconifyIcon from '@/nickelfox/components/base/IconifyIcon';
-import profile from '@/nickelfox/assets/images/account/Profile.png';
-import { useState, MouseEvent, useCallback, ReactElement } from 'react';
-import userMenuItems from '@/nickelfox/data/usermenu-items';
+import { Menu, Avatar, Button, Tooltip, MenuItem, ListItemIcon, ListItemText } from '@mui/material'
+import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
+import profile from '@/nickelfox/assets/images/account/Profile.png'
+import { useState, MouseEvent, useCallback, ReactElement } from 'react'
+import userMenuItems from '@/nickelfox/data/usermenu-items'
 
 const UserDropdown = (): ReactElement => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const menuOpen = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const menuOpen = Boolean(anchorEl)
 
   const handleUserClick = useCallback((event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  }, []);
+    setAnchorEl(event.currentTarget)
+  }, [])
 
   const handleUserClose = useCallback(() => {
-    setAnchorEl(null);
-  }, []);
+    setAnchorEl(null)
+  }, [])
 
   return (
     <>
@@ -38,7 +38,10 @@ const UserDropdown = (): ReactElement => {
         }}
       >
         <Tooltip title="Protocol Admin" arrow placement="bottom">
-          <Avatar src={typeof profile === 'string' ? profile : profile.src} sx={{ width: 44, height: 44 }} />
+          <Avatar
+            src={typeof profile === 'string' ? profile : profile.src}
+            sx={{ width: 44, height: 44 }}
+          />
         </Tooltip>
         <IconifyIcon
           color="common.white"
@@ -94,7 +97,7 @@ const UserDropdown = (): ReactElement => {
         ))}
       </Menu>
     </>
-  );
-};
+  )
+}
 
-export default UserDropdown;
+export default UserDropdown

@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const MenuItem: Components<Omit<Theme, 'components'>>['MuiMenuItem'] = {
   defaultProps: {},
@@ -21,6 +21,6 @@ const MenuItem: Components<Omit<Theme, 'components'>>['MuiMenuItem'] = {
       marginBottom: 0,
     }),
   },
-};
+}
 
-export default MenuItem;
+export default MenuItem

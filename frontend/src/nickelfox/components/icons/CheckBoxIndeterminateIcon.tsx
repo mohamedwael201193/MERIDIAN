@@ -1,4 +1,4 @@
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIcon, SvgIconProps } from '@mui/material'
 
 const CheckBoxIndeterminateIcon = (props: SvgIconProps) => {
   return (
@@ -19,7 +19,7 @@ const CheckBoxIndeterminateIcon = (props: SvgIconProps) => {
         </clipPath>
       </defs>
     </SvgIcon>
-  );
-};
+  )
+}
 
-export default CheckBoxIndeterminateIcon;
+export default CheckBoxIndeterminateIcon

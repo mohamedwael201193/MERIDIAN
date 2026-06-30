@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const Grid2: Components<Omit<Theme, 'components'>>['MuiGrid2'] = {
   defaultProps: {},
@@ -11,6 +11,6 @@ const Grid2: Components<Omit<Theme, 'components'>>['MuiGrid2'] = {
       }),
     }),
   },
-};
+}
 
-export default Grid2;
+export default Grid2

@@ -10,5 +10,5 @@ export const currencyFormat = (
     useGrouping: true,
     notation: 'standard',
     ...options,
-  }).format(amount);
-};
+  }).format(amount)
+}

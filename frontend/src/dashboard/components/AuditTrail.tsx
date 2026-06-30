@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import { ReactElement } from 'react';
+import { ReactElement } from 'react'
 import {
   Box,
   Paper,
@@ -11,9 +11,9 @@ import {
   Chip,
   Divider,
   Link as MuiLink,
-} from '@mui/material';
-import { useAuditSummaries, useEvents } from '@lib/hooks/useMeridianData';
-import { explorerTxUrl, truncateHash } from '@lib/contracts';
+} from '@mui/material'
+import { useAuditSummaries, useEvents } from '@lib/hooks/useMeridianData'
+import { explorerTxUrl, truncateHash } from '@lib/contracts'
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat(undefined, {
@@ -21,26 +21,26 @@ function formatDate(value: string): string {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  }).format(new Date(value));
+  }).format(new Date(value))
 }
 
 function eventSource(eventData: Record<string, unknown>): string | null {
-  const source = eventData.source;
-  return typeof source === 'string' ? source : null;
+  const source = eventData.source
+  return typeof source === 'string' ? source : null
 }
 
 export default function AuditTrail(): ReactElement {
-  const summaries = useAuditSummaries(20);
-  const events = useEvents(20);
-  const summaryRows = summaries.data ?? [];
-  const eventRows = events.data ?? [];
+  const summaries = useAuditSummaries(20)
+  const events = useEvents(20)
+  const summaryRows = summaries.data ?? []
+  const eventRows = events.data ?? []
 
   if (summaries.isLoading || events.isLoading) {
     return (
       <Paper sx={{ p: 4, display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
       </Paper>
-    );
+    )
   }
 
   if (summaries.error || events.error) {
@@ -48,7 +48,7 @@ export default function AuditTrail(): ReactElement {
       <Paper sx={{ p: 4 }}>
         <Alert severity="error">Failed to load audit data from backend.</Alert>
       </Paper>
-    );
+    )
   }
 
   return (
@@ -79,7 +79,7 @@ export default function AuditTrail(): ReactElement {
             </Alert>
           ) : (
             <Stack gap={1.5} mt={1.5}>
-              {summaryRows.map(row => (
+              {summaryRows.map((row) => (
                 <Paper
                   key={row.id}
                   variant="outlined"
@@ -92,10 +92,15 @@ export default function AuditTrail(): ReactElement {
                     </Typography>
                   </Stack>
                   <Typography variant="body2" color="common.white" sx={{ lineHeight: 1.7 }}>
-                  {row.summary}
+                    {row.summary}
                   </Typography>
                   {row.transaction_hash ? (
-                    <MuiLink href={explorerTxUrl(row.transaction_hash)} target="_blank" rel="noreferrer" variant="caption">
+                    <MuiLink
+                      href={explorerTxUrl(row.transaction_hash)}
+                      target="_blank"
+                      rel="noreferrer"
+                      variant="caption"
+                    >
                       View tx {truncateHash(row.transaction_hash)}
                     </MuiLink>
                   ) : null}
@@ -112,7 +117,9 @@ export default function AuditTrail(): ReactElement {
             Recent On-chain Events
           </Typography>
           {eventRows.length === 0 ? (
-            <Alert severity="info" sx={{ mt: 1.5 }}>No indexed events yet.</Alert>
+            <Alert severity="info" sx={{ mt: 1.5 }}>
+              No indexed events yet.
+            </Alert>
           ) : (
             <Stack gap={0} mt={1.5}>
               {eventRows.slice(0, 10).map((row, index) => (
@@ -124,7 +131,12 @@ export default function AuditTrail(): ReactElement {
                     borderColor: 'divider',
                   }}
                 >
-                  <Stack direction="row" justifyContent="space-between" gap={2} alignItems="flex-start">
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    gap={2}
+                    alignItems="flex-start"
+                  >
                     <Box>
                       <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
                         <Typography variant="body2" color="common.white" fontWeight={700}>
@@ -132,14 +144,23 @@ export default function AuditTrail(): ReactElement {
                         </Typography>
                         <Chip size="small" variant="outlined" label={row.event_name} />
                         {eventSource(row.event_data) ? (
-                          <Chip size="small" color="secondary" label={eventSource(row.event_data)!} />
+                          <Chip
+                            size="small"
+                            color="secondary"
+                            label={eventSource(row.event_data)!}
+                          />
                         ) : null}
                       </Stack>
                       <Typography variant="caption" color="text.secondary">
                         Block {row.block_height} · Indexed {formatDate(row.indexed_at)}
                       </Typography>
                     </Box>
-                    <MuiLink href={explorerTxUrl(row.transaction_hash)} target="_blank" rel="noreferrer" variant="caption">
+                    <MuiLink
+                      href={explorerTxUrl(row.transaction_hash)}
+                      target="_blank"
+                      rel="noreferrer"
+                      variant="caption"
+                    >
                       {truncateHash(row.transaction_hash)}
                     </MuiLink>
                   </Stack>
@@ -150,5 +171,5 @@ export default function AuditTrail(): ReactElement {
         </Box>
       </Stack>
     </Paper>
-  );
+  )
 }

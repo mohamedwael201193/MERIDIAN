@@ -1,7 +1,7 @@
-import { ReactElement } from 'react';
-import { Stack, Typography } from '@mui/material';
-import Image from '@/nickelfox/components/base/Image';
-import noResultsSvg from '@/nickelfox/assets/images/error/no-results.svg';
+import { ReactElement } from 'react'
+import { Stack, Typography } from '@mui/material'
+import Image from '@/nickelfox/components/base/Image'
+import noResultsSvg from '@/nickelfox/assets/images/error/no-results.svg'
 
 const CustomNoResultsOverlay = (): ReactElement => {
   return (
@@ -18,7 +18,7 @@ const CustomNoResultsOverlay = (): ReactElement => {
         No results found
       </Typography>
     </Stack>
-  );
-};
+  )
+}
 
-export default CustomNoResultsOverlay;
+export default CustomNoResultsOverlay

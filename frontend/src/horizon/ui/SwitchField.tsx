@@ -1,15 +1,22 @@
-import Switch from './Switch';
+import Switch from './Switch'
 
 interface SwitchFieldProps {
-  id: string;
-  label: string;
-  desc?: string;
-  mt?: string;
-  mb?: string;
-  defaultChecked?: boolean;
+  id: string
+  label: string
+  desc?: string
+  mt?: string
+  mb?: string
+  defaultChecked?: boolean
 }
 
-export default function SwitchField({ id, label, desc, mt = '', mb = '', defaultChecked }: SwitchFieldProps) {
+export default function SwitchField({
+  id,
+  label,
+  desc,
+  mt = '',
+  mb = '',
+  defaultChecked,
+}: SwitchFieldProps) {
   return (
     <div className={`flex items-center justify-between ${mt} ${mb}`}>
       <label htmlFor={id} className="max-w-[80%] hover:cursor-pointer lg:max-w-[65%]">
@@ -20,5 +27,5 @@ export default function SwitchField({ id, label, desc, mt = '', mb = '', default
         <Switch id={id} defaultChecked={defaultChecked} />
       </div>
     </div>
-  );
+  )
 }

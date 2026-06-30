@@ -1,11 +1,11 @@
-import { Stack, Typography } from '@mui/material';
-import { useBreakpoints } from '@/nickelfox/providers/BreakpointsProvider';
-import { ReactElement } from 'react';
+import { Stack, Typography } from '@mui/material'
+import { useBreakpoints } from '@/nickelfox/providers/BreakpointsProvider'
+import { ReactElement } from 'react'
 
 const Footer = ({ open }: { open: boolean }): ReactElement => {
-  const { down } = useBreakpoints();
+  const { down } = useBreakpoints()
 
-  const isMobileScreen = down('sm');
+  const isMobileScreen = down('sm')
 
   return (
     <Stack
@@ -17,11 +17,14 @@ const Footer = ({ open }: { open: boolean }): ReactElement => {
       pb={6.25}
       pl={{ xs: 3, sm: 5.25 }}
     >
-      <Typography variant="subtitle1" sx={{ textAlign: { xs: 'center', sm: 'right' }, color: 'text.secondary' }}>
+      <Typography
+        variant="subtitle1"
+        sx={{ textAlign: { xs: 'center', sm: 'right' }, color: 'text.secondary' }}
+      >
         MERIDIAN · Casper-native RWA protocol
       </Typography>
     </Stack>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

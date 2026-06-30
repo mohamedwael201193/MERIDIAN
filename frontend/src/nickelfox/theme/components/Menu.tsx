@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const Menu: Components<Omit<Theme, 'components'>>['MuiMenu'] = {
   defaultProps: {
@@ -11,6 +11,6 @@ const Menu: Components<Omit<Theme, 'components'>>['MuiMenu'] = {
       padding: theme.spacing(1),
     }),
   },
-};
+}
 
-export default Menu;
+export default Menu

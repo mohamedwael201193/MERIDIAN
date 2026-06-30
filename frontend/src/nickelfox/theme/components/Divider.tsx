@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const Divider: Components<Omit<Theme, 'components'>>['MuiDivider'] = {
   defaultProps: {},
@@ -8,6 +8,6 @@ const Divider: Components<Omit<Theme, 'components'>>['MuiDivider'] = {
       margin: 0,
     }),
   },
-};
+}
 
-export default Divider;
+export default Divider

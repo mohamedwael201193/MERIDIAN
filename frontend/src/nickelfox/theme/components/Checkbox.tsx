@@ -1,8 +1,8 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
-import CheckBoxBlankIcon from '@/nickelfox/components/icons/CheckBoxBlankIcon';
-import CheckBoxCheckedIcon from '@/nickelfox/components/icons/CheckBoxCheckedIcon';
-import CheckBoxIndeterminateIcon from '@/nickelfox/components/icons/CheckBoxIndeterminateIcon';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
+import CheckBoxBlankIcon from '@/nickelfox/components/icons/CheckBoxBlankIcon'
+import CheckBoxCheckedIcon from '@/nickelfox/components/icons/CheckBoxCheckedIcon'
+import CheckBoxIndeterminateIcon from '@/nickelfox/components/icons/CheckBoxIndeterminateIcon'
 
 const Checkbox: Components<Omit<Theme, 'components'>>['MuiCheckbox'] = {
   defaultProps: {
@@ -25,6 +25,6 @@ const Checkbox: Components<Omit<Theme, 'components'>>['MuiCheckbox'] = {
       },
     }),
   },
-};
+}
 
-export default Checkbox;
+export default Checkbox

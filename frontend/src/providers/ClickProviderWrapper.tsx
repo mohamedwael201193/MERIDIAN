@@ -1,10 +1,10 @@
-'use client';
+'use client'
 
-import type { ReactNode } from 'react';
-import { ThemeProvider } from 'styled-components';
-import { ClickProvider, ClickUI, ThemeModeType } from '@make-software/csprclick-ui';
-import { getCsprClickConfig } from '@lib/csprclick';
-import { meridianClickDarkTheme } from '@lib/csprclickTheme';
+import type { ReactNode } from 'react'
+import { ThemeProvider } from 'styled-components'
+import { ClickProvider, ClickUI, ThemeModeType } from '@make-software/csprclick-ui'
+import { getCsprClickConfig } from '@lib/csprclick'
+import { meridianClickDarkTheme } from '@lib/csprclickTheme'
 
 /** ClickUI + ThemeProvider initialize the CSPR.click runtime (required by the SDK). */
 export default function ClickProviderWrapper({ children }: { children: ReactNode }) {
@@ -15,5 +15,5 @@ export default function ClickProviderWrapper({ children }: { children: ReactNode
         {children}
       </ClickProvider>
     </ThemeProvider>
-  );
+  )
 }

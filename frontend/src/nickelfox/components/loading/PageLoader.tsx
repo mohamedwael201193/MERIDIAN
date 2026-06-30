@@ -1,8 +1,8 @@
-import { ReactElement } from 'react';
-import { Box, Stack, useTheme, StackOwnProps, CircularProgress } from '@mui/material';
+import { ReactElement } from 'react'
+import { Box, Stack, useTheme, StackOwnProps, CircularProgress } from '@mui/material'
 
 const PageLoader = (props: StackOwnProps): ReactElement => {
-  const theme = useTheme();
+  const theme = useTheme()
   return (
     <Stack width={1} height={1} justifyContent="center" alignItems="center" {...props}>
       <Box height="10vh" width="25vw" textAlign="center">
@@ -23,7 +23,7 @@ const PageLoader = (props: StackOwnProps): ReactElement => {
         />
       </Box>
     </Stack>
-  );
-};
+  )
+}
 
-export default PageLoader;
+export default PageLoader

@@ -1,12 +1,12 @@
-import { Swiper, SwiperClass } from 'swiper/react';
-import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
+import { Swiper, SwiperClass } from 'swiper/react'
+import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules'
 
-import 'swiper/css';
-import 'swiper/css/navigation';
+import 'swiper/css'
+import 'swiper/css/navigation'
 
-import { Box, SxProps } from '@mui/material';
-import { ReactElement, RefObject } from 'react';
-import { useBreakpoints } from '@/nickelfox/providers/BreakpointsProvider';
+import { Box, SxProps } from '@mui/material'
+import { ReactElement, RefObject } from 'react'
+import { useBreakpoints } from '@/nickelfox/providers/BreakpointsProvider'
 
 const ReactSwiper = ({
   children,
@@ -15,13 +15,13 @@ const ReactSwiper = ({
   sx,
   ...rest
 }: {
-  children: ReactElement[] | ReactElement;
-  swiperRef?: RefObject<any>;
-  onSwiper: React.Dispatch<React.SetStateAction<SwiperClass | undefined>>;
-  sx?: SxProps;
-  rest?: any;
+  children: ReactElement[] | ReactElement
+  swiperRef?: RefObject<any>
+  onSwiper: React.Dispatch<React.SetStateAction<SwiperClass | undefined>>
+  sx?: SxProps
+  rest?: any
 }) => {
-  const { up } = useBreakpoints();
+  const { up } = useBreakpoints()
   return (
     <Box
       component={Swiper}
@@ -32,8 +32,8 @@ const ReactSwiper = ({
       slidesPerView={up('sm') ? 2 : 1}
       width={1}
       onInit={(swiper) => {
-        swiper.navigation.init();
-        swiper.navigation.update();
+        swiper.navigation.init()
+        swiper.navigation.update()
       }}
       navigation={{
         prevEl: '.prev-arrow',
@@ -44,7 +44,7 @@ const ReactSwiper = ({
     >
       {children}
     </Box>
-  );
-};
+  )
+}
 
-export default ReactSwiper;
+export default ReactSwiper

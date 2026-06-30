@@ -1,28 +1,31 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
-function useOutsideAlerter(ref: React.RefObject<HTMLDivElement | null>, setOpen: (v: boolean) => void) {
+function useOutsideAlerter(
+  ref: React.RefObject<HTMLDivElement | null>,
+  setOpen: (v: boolean) => void,
+) {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false);
+        setOpen(false)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [ref, setOpen]);
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [ref, setOpen])
 }
 
 interface DropdownProps {
-  button: ReactNode;
-  children: ReactNode;
-  classNames?: string;
-  animation?: string;
+  button: ReactNode
+  children: ReactNode
+  classNames?: string
+  animation?: string
 }
 
 export default function Dropdown({ button, children, classNames = '', animation }: DropdownProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(false);
-  useOutsideAlerter(wrapperRef, setOpen);
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  useOutsideAlerter(wrapperRef, setOpen)
 
   return (
     <div ref={wrapperRef} className="relative flex">
@@ -37,5 +40,5 @@ export default function Dropdown({ button, children, classNames = '', animation 
         {children}
       </div>
     </div>
-  );
+  )
 }

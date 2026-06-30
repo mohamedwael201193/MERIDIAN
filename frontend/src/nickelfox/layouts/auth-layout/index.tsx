@@ -1,5 +1,5 @@
-import { ReactElement, PropsWithChildren } from 'react';
-import { Box, Stack } from '@mui/material';
+import { ReactElement, PropsWithChildren } from 'react'
+import { Box, Stack } from '@mui/material'
 
 const AuthLayout = ({ children }: PropsWithChildren): ReactElement => {
   return (
@@ -10,7 +10,7 @@ const AuthLayout = ({ children }: PropsWithChildren): ReactElement => {
         </Box>
       </Stack>
     </>
-  );
-};
+  )
+}
 
-export default AuthLayout;
+export default AuthLayout

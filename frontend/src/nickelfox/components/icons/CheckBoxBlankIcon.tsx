@@ -1,7 +1,7 @@
-import { SvgIcon, SvgIconProps, useTheme } from '@mui/material';
+import { SvgIcon, SvgIconProps, useTheme } from '@mui/material'
 
 const CheckBoxBlankIcon = (props: SvgIconProps) => {
-  const theme = useTheme();
+  const theme = useTheme()
   return (
     <SvgIcon {...props} viewBox="0 0 13 13" fill="none">
       <rect
@@ -15,7 +15,7 @@ const CheckBoxBlankIcon = (props: SvgIconProps) => {
         strokeWidth="0.4"
       />
     </SvgIcon>
-  );
-};
+  )
+}
 
-export default CheckBoxBlankIcon;
+export default CheckBoxBlankIcon

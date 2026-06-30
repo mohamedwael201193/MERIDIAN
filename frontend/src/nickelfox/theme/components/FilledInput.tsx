@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const FilledInput: Components<Omit<Theme, 'components'>>['MuiFilledInput'] = {
   defaultProps: {
@@ -44,6 +44,6 @@ const FilledInput: Components<Omit<Theme, 'components'>>['MuiFilledInput'] = {
       border: `1px solid ${theme.palette.error.main}`,
     }),
   },
-};
+}
 
-export default FilledInput;
+export default FilledInput

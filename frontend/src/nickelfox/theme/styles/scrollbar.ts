@@ -1,4 +1,4 @@
-import { Theme } from '@mui/material';
+import { Theme } from '@mui/material'
 
 const scrollbar = (theme: Theme) => ({
   '@supports (-moz-appearance:none)': {
@@ -21,6 +21,6 @@ const scrollbar = (theme: Theme) => ({
       visibility: 'visible',
     },
   },
-});
+})
 
-export default scrollbar;
+export default scrollbar

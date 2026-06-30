@@ -1,9 +1,9 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
-import scrollbar from '@/nickelfox/theme/styles/scrollbar';
-import simplebar from '@/nickelfox/theme/styles/simplebar';
-import echart from '@/nickelfox/theme/styles/echart';
-import swiper from '@/nickelfox/theme/styles/swiper';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
+import scrollbar from '@/nickelfox/theme/styles/scrollbar'
+import simplebar from '@/nickelfox/theme/styles/simplebar'
+import echart from '@/nickelfox/theme/styles/echart'
+import swiper from '@/nickelfox/theme/styles/swiper'
 
 const CssBaseline: Components<Omit<Theme, 'components'>>['MuiCssBaseline'] = {
   defaultProps: {},
@@ -36,6 +36,6 @@ const CssBaseline: Components<Omit<Theme, 'components'>>['MuiCssBaseline'] = {
     ...swiper(theme),
     ...echart(),
   }),
-};
+}
 
-export default CssBaseline;
+export default CssBaseline

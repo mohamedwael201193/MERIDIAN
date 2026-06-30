@@ -1,8 +1,8 @@
-import { ReactElement } from 'react';
-import { Outlet } from 'react-router-dom';
+import { ReactElement } from 'react'
+import { Outlet } from 'react-router-dom'
 
 const App = (): ReactElement => {
-  return <Outlet />;
-};
+  return <Outlet />
+}
 
-export default App;
+export default App

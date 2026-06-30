@@ -1,4 +1,4 @@
-import { SvgIcon, SvgIconProps } from '@mui/material';
+import { SvgIcon, SvgIconProps } from '@mui/material'
 
 const CheckBoxCheckedIcon = (props: SvgIconProps) => {
   return (
@@ -27,7 +27,7 @@ const CheckBoxCheckedIcon = (props: SvgIconProps) => {
         </clipPath>
       </defs>
     </SvgIcon>
-  );
-};
+  )
+}
 
-export default CheckBoxCheckedIcon;
+export default CheckBoxCheckedIcon

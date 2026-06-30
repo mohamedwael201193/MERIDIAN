@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const InputAdornment: Components<Omit<Theme, 'components'>>['MuiInputAdornment'] = {
   defaultProps: {},
@@ -8,6 +8,6 @@ const InputAdornment: Components<Omit<Theme, 'components'>>['MuiInputAdornment']
       color: theme.palette.action.disabled,
     }),
   },
-};
+}
 
-export default InputAdornment;
+export default InputAdornment

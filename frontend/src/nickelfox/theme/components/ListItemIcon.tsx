@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const ListItemIcon: Components<Omit<Theme, 'components'>>['MuiListItemIcon'] = {
   defaultProps: {},
@@ -12,6 +12,6 @@ const ListItemIcon: Components<Omit<Theme, 'components'>>['MuiListItemIcon'] = {
       justifyContent: 'center',
     }),
   },
-};
+}
 
-export default ListItemIcon;
+export default ListItemIcon

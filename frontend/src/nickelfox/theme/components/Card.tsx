@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const Card: Components<Omit<Theme, 'components'>>['MuiCard'] = {
   defaultProps: {},
@@ -9,6 +9,6 @@ const Card: Components<Omit<Theme, 'components'>>['MuiCard'] = {
       flexDirection: 'column',
     }),
   },
-};
+}
 
-export default Card;
+export default Card

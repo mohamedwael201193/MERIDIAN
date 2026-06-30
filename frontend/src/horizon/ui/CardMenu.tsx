@@ -1,11 +1,11 @@
-import { AiOutlineUser } from 'react-icons/ai';
-import { BsThreeDots } from 'react-icons/bs';
-import { FiSettings } from 'react-icons/fi';
-import { TiLightbulb } from 'react-icons/ti';
-import Dropdown from './Dropdown';
+import { AiOutlineUser } from 'react-icons/ai'
+import { BsThreeDots } from 'react-icons/bs'
+import { FiSettings } from 'react-icons/fi'
+import { TiLightbulb } from 'react-icons/ti'
+import Dropdown from './Dropdown'
 
 interface CardMenuProps {
-  transparent?: boolean;
+  transparent?: boolean
 }
 
 export default function CardMenu({ transparent }: CardMenuProps) {
@@ -41,5 +41,5 @@ export default function CardMenu({ transparent }: CardMenuProps) {
         </p>
       </div>
     </Dropdown>
-  );
+  )
 }

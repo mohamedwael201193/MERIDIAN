@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 
 export default function SidebarCard() {
   return (
@@ -19,5 +19,5 @@ export default function SidebarCard() {
         </Link>
       </div>
     </div>
-  );
+  )
 }

@@ -63,7 +63,9 @@ export function createResourceApp(): express.Application {
 
   app.get('/api/yield-rate', async (req, res) => {
     await paidHandler(req, res, '/api/yield-rate', async () => {
-      const tokenPkg = process.env.MERIDIAN_TOKEN_PACKAGE ?? 'contract-package-9bcac97d0e6723049fc130daa22f69e88a5d077a1df6b4e38536f0703bcaa2ca'
+      const tokenPkg =
+        process.env.MERIDIAN_TOKEN_PACKAGE ??
+        'contract-package-9bcac97d0e6723049fc130daa22f69e88a5d077a1df6b4e38536f0703bcaa2ca'
       const response = await fetch(
         `${backendUrl}/api/v1/tokens/${encodeURIComponent(tokenPkg)}/yield`,
         { headers: { 'x-api-key': apiKey } },

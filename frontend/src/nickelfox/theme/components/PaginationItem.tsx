@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
-import { Components } from '@mui/material/styles/components';
+import { Theme } from '@mui/material'
+import { Components } from '@mui/material/styles/components'
 
 const PaginationItem: Components<Omit<Theme, 'components'>>['MuiPaginationItem'] = {
   defaultProps: {},
@@ -17,6 +17,6 @@ const PaginationItem: Components<Omit<Theme, 'components'>>['MuiPaginationItem']
       fontWeight: theme.typography.body1.fontWeight,
     }),
   },
-};
+}
 
-export default PaginationItem;
+export default PaginationItem

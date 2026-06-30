@@ -1,8 +1,8 @@
 interface UserMenuItem {
-  id: number;
-  title: string;
-  icon: string;
-  color?: string;
+  id: number
+  title: string
+  icon: string
+  color?: string
 }
 
 const userMenuItems: UserMenuItem[] = [
@@ -42,6 +42,6 @@ const userMenuItems: UserMenuItem[] = [
     icon: 'material-symbols:logout',
     color: 'error.main',
   },
-];
+]
 
-export default userMenuItems;
+export default userMenuItems
