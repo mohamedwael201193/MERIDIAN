@@ -1,10 +1,11 @@
-import SectionShell from './SectionShell';
+import SectionShell from './SectionShell'
 
 const evidence = [
   {
     label: 'Contract deployment',
     value: '5 packages',
-    detail: 'ComplianceRegistry, MeridianToken, StakingVault, YieldDistributor, and MeridianAudit are live on casper-test.',
+    detail:
+      'ComplianceRegistry, MeridianToken, StakingVault, YieldDistributor, and MeridianAudit are live on casper-test.',
   },
   {
     label: 'x402 validation',
@@ -14,12 +15,14 @@ const evidence = [
   {
     label: 'MCP tools',
     value: '12 tools',
-    detail: 'Read tools return live data and write tools return unsigned TransactionV1 payloads for local signing.',
+    detail:
+      'Read tools return live data and write tools return unsigned TransactionV1 payloads for local signing.',
   },
   {
     label: 'Frontend routes',
     value: '9/9',
-    detail: 'Landing, dashboard, issue, audit, agents, compliance, staking, MCP, and x402 routes return 200.',
+    detail:
+      'Landing, dashboard, issue, audit, agents, compliance, staking, MCP, and x402 routes return 200.',
   },
   {
     label: 'Automated checks',
@@ -29,12 +32,13 @@ const evidence = [
   {
     label: 'Open blocker',
     value: 'Manual wallet',
-    detail: 'Final sign-off requires funded-wallet MCP writes and x402 settlement from the browser.',
+    detail:
+      'Final sign-off requires funded-wallet MCP writes and x402 settlement from the browser.',
   },
-];
+]
 
 export default function Testimonials() {
-  const marqueeItems = [...evidence, ...evidence];
+  const marqueeItems = [...evidence, ...evidence]
 
   return (
     <SectionShell>
@@ -68,5 +72,5 @@ export default function Testimonials() {
         </div>
       </div>
     </SectionShell>
-  );
+  )
 }

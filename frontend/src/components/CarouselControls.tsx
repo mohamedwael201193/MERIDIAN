@@ -1,6 +1,6 @@
 interface CarouselControlsProps {
-  onPrev: () => void;
-  onNext: () => void;
+  onPrev: () => void
+  onNext: () => void
 }
 
 export default function CarouselControls({ onPrev, onNext }: CarouselControlsProps) {
@@ -39,5 +39,5 @@ export default function CarouselControls({ onPrev, onNext }: CarouselControlsPro
         </svg>
       </button>
     </div>
-  );
+  )
 }

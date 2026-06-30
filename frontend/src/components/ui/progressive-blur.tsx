@@ -1,21 +1,21 @@
-import { cn } from '@/lib/utils';
-import { motion, type HTMLMotionProps } from 'motion/react';
+import { cn } from '@/lib/utils'
+import { motion, type HTMLMotionProps } from 'motion/react'
 
 export const GRADIENT_ANGLES = {
   top: 0,
   right: 90,
   bottom: 180,
   left: 270,
-} as const;
+} as const
 
 export type ProgressiveBlurProps = {
-  direction?: keyof typeof GRADIENT_ANGLES;
-  blurLayers?: number;
-  className?: string;
-  blurIntensity?: number;
+  direction?: keyof typeof GRADIENT_ANGLES
+  blurLayers?: number
+  className?: string
+  blurIntensity?: number
   /** Use black masks for dark backgrounds (landing page). */
-  variant?: 'light' | 'dark';
-} & HTMLMotionProps<'div'>;
+  variant?: 'light' | 'dark'
+} & HTMLMotionProps<'div'>
 
 export function ProgressiveBlur({
   direction = 'bottom',
@@ -25,14 +25,14 @@ export function ProgressiveBlur({
   variant = 'dark',
   ...props
 }: ProgressiveBlurProps) {
-  const layers = Math.max(blurLayers, 2);
-  const segmentSize = 1 / (blurLayers + 1);
-  const rgb = variant === 'dark' ? '0, 0, 0' : '255, 255, 255';
+  const layers = Math.max(blurLayers, 2)
+  const segmentSize = 1 / (blurLayers + 1)
+  const rgb = variant === 'dark' ? '0, 0, 0' : '255, 255, 255'
 
   return (
     <div className={cn('relative', className)}>
       {Array.from({ length: layers }).map((_, index) => {
-        const angle = GRADIENT_ANGLES[direction];
+        const angle = GRADIENT_ANGLES[direction]
         const gradientStops = [
           index * segmentSize,
           (index + 1) * segmentSize,
@@ -41,9 +41,9 @@ export function ProgressiveBlur({
         ].map(
           (pos, posIndex) =>
             `rgba(${rgb}, ${posIndex === 1 || posIndex === 2 ? 1 : 0}) ${pos * 100}%`,
-        );
+        )
 
-        const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`;
+        const gradient = `linear-gradient(${angle}deg, ${gradientStops.join(', ')})`
 
         return (
           <motion.div
@@ -56,8 +56,8 @@ export function ProgressiveBlur({
             }}
             {...props}
           />
-        );
+        )
       })}
     </div>
-  );
+  )
 }

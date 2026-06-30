@@ -1,37 +1,43 @@
-import SectionShell from './SectionShell';
+import SectionShell from './SectionShell'
 
 const useCases = [
   {
     step: '01',
     title: 'Read live protocol state',
-    description: 'Landing, dashboard, audit, and agents pages read tokens, holders, events, yields, and decisions through backend proxies.',
+    description:
+      'Landing, dashboard, audit, and agents pages read tokens, holders, events, yields, and decisions through backend proxies.',
   },
   {
     step: '02',
     title: 'Connect a wallet',
-    description: 'CSPR.click initializes Casper Wallet on testnet and keeps account state available across landing and dashboard routes.',
+    description:
+      'CSPR.click initializes Casper Wallet on testnet and keeps account state available across landing and dashboard routes.',
   },
   {
     step: '03',
     title: 'Build unsigned transactions',
-    description: 'MCP write tools create TransactionV1 payloads for issue, transfer, holder registration, revoke, restake, and rewards.',
+    description:
+      'MCP write tools create TransactionV1 payloads for issue, transfer, holder registration, revoke, restake, and rewards.',
   },
   {
     step: '04',
     title: 'Sign and submit',
-    description: 'Users review a transaction card, sign in Casper Wallet, submit through casper-js-sdk, and track finality.',
+    description:
+      'Users review a transaction card, sign in Casper Wallet, submit through casper-js-sdk, and track finality.',
   },
   {
     step: '05',
     title: 'Unlock paid resources',
-    description: 'x402 requests return payment terms, verify wallet-signed proof, and unlock resource data after settlement.',
+    description:
+      'x402 requests return payment terms, verify wallet-signed proof, and unlock resource data after settlement.',
   },
   {
     step: '06',
     title: 'Audit every action',
-    description: 'Agent decisions, indexed contract events, and explorer links give operators a readable trail of real activity.',
+    description:
+      'Agent decisions, indexed contract events, and explorer links give operators a readable trail of real activity.',
   },
-];
+]
 
 export default function UseCases() {
   return (
@@ -41,13 +47,13 @@ export default function UseCases() {
           How MERIDIAN Works
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base">
-          A practical path from live data to wallet-signed transactions, with no custodial
-          keys and no fabricated blockchain state.
+          A practical path from live data to wallet-signed transactions, with no custodial keys and
+          no fabricated blockchain state.
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {useCases.map(item => (
+        {useCases.map((item) => (
           <article
             key={item.title}
             className="group relative min-h-[230px] overflow-hidden border-b border-r border-red-950/40 bg-[radial-gradient(circle_at_20%_100%,rgba(220,38,38,0.22),transparent_44%),linear-gradient(145deg,rgba(127,29,29,0.18),rgba(0,0,0,0.96)_48%)] p-7 transition-all duration-500 hover:-translate-y-1 hover:border-red-500/60 hover:bg-black hover:shadow-2xl hover:shadow-red-950/30 sm:min-h-[250px] lg:min-h-[270px] lg:p-8"
@@ -83,5 +89,5 @@ export default function UseCases() {
         ))}
       </div>
     </SectionShell>
-  );
+  )
 }

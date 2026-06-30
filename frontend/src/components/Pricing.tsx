@@ -1,10 +1,11 @@
-import SectionShell from './SectionShell';
+import SectionShell from './SectionShell'
 
 const phases = [
   {
     name: 'Live Testnet Stack',
     status: 'Operational',
-    description: 'The current frontend points at live Render services and Casper testnet contracts.',
+    description:
+      'The current frontend points at live Render services and Casper testnet contracts.',
     features: [
       '5 deployed contract packages',
       'Backend proxy returns tokens/events/decisions',
@@ -18,7 +19,8 @@ const phases = [
   {
     name: 'Manual Wallet Gate',
     status: 'Required',
-    description: 'Full production sign-off requires funded Casper Wallet transactions from the browser.',
+    description:
+      'Full production sign-off requires funded Casper Wallet transactions from the browser.',
     features: [
       'Connect/disconnect/reconnect',
       'MCP write transaction signing',
@@ -32,7 +34,8 @@ const phases = [
   {
     name: 'Production Readiness',
     status: 'Next',
-    description: 'After manual wallet proof, the app is ready for deployment hardening and final sign-off.',
+    description:
+      'After manual wallet proof, the app is ready for deployment hardening and final sign-off.',
     features: [
       'Register production CSPR.click appId',
       'Resolve or document indexer lag',
@@ -43,7 +46,7 @@ const phases = [
     href: '/audit',
     highlighted: false,
   },
-];
+]
 
 export default function Pricing() {
   return (
@@ -53,13 +56,13 @@ export default function Pricing() {
           Testnet Evidence &amp; Readiness
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base">
-          MERIDIAN is not a static landing page. It is wired to real contract addresses,
-          backend indexes, MCP tools, and x402 services. These are the current production gates.
+          MERIDIAN is not a static landing page. It is wired to real contract addresses, backend
+          indexes, MCP tools, and x402 services. These are the current production gates.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3">
-        {phases.map(plan => (
+        {phases.map((plan) => (
           <article
             key={plan.name}
             className={`group relative flex min-h-[520px] flex-col overflow-hidden border-b border-r border-white/10 bg-black p-8 transition-colors duration-300 lg:min-h-[560px] lg:p-10 ${
@@ -68,10 +71,7 @@ export default function Pricing() {
           >
             {plan.highlighted && (
               <>
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 opacity-100"
-                >
+                <div aria-hidden className="pointer-events-none absolute inset-0 opacity-100">
                   <div className="absolute -bottom-28 -right-28 h-80 w-80 rounded-full bg-red-600/30 blur-[90px]" />
                   <div className="absolute bottom-0 right-0 h-full w-full bg-[radial-gradient(circle_at_88%_92%,rgba(248,113,113,0.28)_0%,rgba(220,38,38,0.12)_38%,transparent_72%)]" />
                 </div>
@@ -92,7 +92,7 @@ export default function Pricing() {
             </div>
 
             <ul className="relative z-10 mt-8 flex-1 space-y-3">
-              {plan.features.map(feature => (
+              {plan.features.map((feature) => (
                 <li key={feature} className="flex items-start gap-2 text-sm text-zinc-400">
                   <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-zinc-600" />
                   {feature}
@@ -114,5 +114,5 @@ export default function Pricing() {
         ))}
       </div>
     </SectionShell>
-  );
+  )
 }

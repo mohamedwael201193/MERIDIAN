@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import SectionShell from './SectionShell';
+import { useState } from 'react'
+import SectionShell from './SectionShell'
 
 const faqs = [
   {
@@ -27,10 +27,10 @@ const faqs = [
     answer:
       'No backend secrets are exposed in the client bundle. MERIDIAN_API_KEY, CSPR.cloud keys, database credentials, and PEM material stay server-side. Wallet private keys remain inside Casper Wallet.',
   },
-];
+]
 
 export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
     <SectionShell id="faq">
@@ -46,7 +46,7 @@ export default function FAQ() {
 
       <div className="divide-y divide-white/10">
         {faqs.map((faq, index) => {
-          const isOpen = openIndex === index;
+          const isOpen = openIndex === index
           return (
             <div key={faq.question}>
               <button
@@ -64,9 +64,9 @@ export default function FAQ() {
                 </div>
               )}
             </div>
-          );
+          )
         })}
       </div>
     </SectionShell>
-  );
+  )
 }

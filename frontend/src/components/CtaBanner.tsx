@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import SectionShell from './SectionShell';
+import Link from 'next/link'
+import SectionShell from './SectionShell'
 
 export default function CtaBanner() {
   return (
@@ -34,5 +34,5 @@ export default function CtaBanner() {
         </div>
       </div>
     </SectionShell>
-  );
+  )
 }

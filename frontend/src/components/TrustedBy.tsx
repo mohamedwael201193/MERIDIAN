@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
-import { LogoCloud } from '@/components/ui/logo-cloud-4';
+import { cn } from '@/lib/utils'
+import { LogoCloud } from '@/components/ui/logo-cloud-4'
 import {
   CasperLogo,
   CsprCloudLogo,
@@ -7,7 +7,7 @@ import {
   OdraLogo,
   OpenAiLogo,
   X402Logo,
-} from './PartnerLogos';
+} from './PartnerLogos'
 
 const ecosystemLogos = [
   { alt: 'Casper', node: <CasperLogo /> },
@@ -16,7 +16,7 @@ const ecosystemLogos = [
   { alt: 'ERC-3643', node: <Erc3643Logo /> },
   { alt: 'OpenAI', node: <OpenAiLogo /> },
   { alt: 'x402', node: <X402Logo /> },
-];
+]
 
 export default function TrustedBy() {
   return (
@@ -41,5 +41,5 @@ export default function TrustedBy() {
         <LogoCloud logos={ecosystemLogos} variant="dark" duration={50} durationOnHover={18} />
       </div>
     </section>
-  );
+  )
 }

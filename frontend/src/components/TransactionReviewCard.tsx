@@ -1,32 +1,24 @@
-'use client';
+'use client'
 
-import { ReactElement } from 'react';
-import {
-  Alert,
-  Box,
-  Button,
-  Chip,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
-import type { UnsignedTransaction } from '@lib/types';
+import { ReactElement } from 'react'
+import { Alert, Box, Button, Chip, Paper, Stack, Typography } from '@mui/material'
+import type { UnsignedTransaction } from '@lib/types'
 
 interface TransactionReviewCardProps {
-  transaction: UnsignedTransaction;
-  title?: string;
-  description?: string;
-  loading?: boolean;
-  onSignAndSubmit: () => void | Promise<void>;
+  transaction: UnsignedTransaction
+  title?: string
+  description?: string
+  loading?: boolean
+  onSignAndSubmit: () => void | Promise<void>
 }
 
 function transactionSize(transaction: unknown): string {
   try {
-    const bytes = new Blob([JSON.stringify(transaction)]).size;
-    if (bytes < 1024) return `${bytes} B`;
-    return `${(bytes / 1024).toFixed(1)} KB`;
+    const bytes = new Blob([JSON.stringify(transaction)]).size
+    if (bytes < 1024) return `${bytes} B`
+    return `${(bytes / 1024).toFixed(1)} KB`
   } catch {
-    return 'Unknown';
+    return 'Unknown'
   }
 }
 
@@ -64,7 +56,11 @@ export default function TransactionReviewCard({
           <Chip size="small" label={transaction.transactionType || 'TransactionV1'} />
           <Chip size="small" variant="outlined" label={`Network ${transaction.network}`} />
           <Chip size="small" variant="outlined" label={`Chain ${transaction.chainName}`} />
-          <Chip size="small" variant="outlined" label={`Payload ${transactionSize(transaction.transaction)}`} />
+          <Chip
+            size="small"
+            variant="outlined"
+            label={`Payload ${transactionSize(transaction.transaction)}`}
+          />
         </Stack>
 
         {transaction.note ? (
@@ -88,5 +84,5 @@ export default function TransactionReviewCard({
         </Stack>
       </Stack>
     </Paper>
-  );
+  )
 }

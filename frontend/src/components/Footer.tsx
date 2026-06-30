@@ -1,6 +1,6 @@
-import { Code2, Globe, Mail, MapPin } from 'lucide-react';
-import Logo from '@/components/Logo';
-import { FooterBackgroundGradient, TextHoverEffect } from '@/components/ui/hover-footer';
+import { Code2, Globe, Mail, MapPin } from 'lucide-react'
+import Logo from '@/components/Logo'
+import { FooterBackgroundGradient, TextHoverEffect } from '@/components/ui/hover-footer'
 
 const footerLinks = [
   {
@@ -21,7 +21,7 @@ const footerLinks = [
       { label: 'Audit Trail', href: '/audit' },
     ],
   },
-];
+]
 
 const contactInfo = [
   {
@@ -38,12 +38,12 @@ const contactInfo = [
     text: 'Testnet deployment live',
     href: '#cta',
   },
-];
+]
 
 const socialLinks = [
   { icon: <Code2 size={20} />, label: 'GitHub', href: 'https://github.com' },
   { icon: <Globe size={20} />, label: 'Casper', href: 'https://casper.network' },
-];
+]
 
 export default function Footer() {
   return (
@@ -58,13 +58,13 @@ export default function Footer() {
             </p>
           </div>
 
-          {footerLinks.map(section => (
+          {footerLinks.map((section) => (
             <div key={section.title}>
               <h4 className="mb-6 text-sm font-semibold uppercase tracking-wider text-white">
                 {section.title}
               </h4>
               <ul className="space-y-3">
-                {section.links.map(link => (
+                {section.links.map((link) => (
                   <li key={link.label}>
                     <a
                       href={link.href}
@@ -141,5 +141,5 @@ export default function Footer() {
 
       <FooterBackgroundGradient />
     </footer>
-  );
+  )
 }

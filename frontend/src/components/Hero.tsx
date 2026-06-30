@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import { Component } from '@/components/ui/gradient-bars-background';
-import ProtocolStats from '@/components/ProtocolStats';
+import Link from 'next/link'
+import { Component } from '@/components/ui/gradient-bars-background'
+import ProtocolStats from '@/components/ProtocolStats'
 
 export default function Hero() {
   return (
@@ -27,8 +27,8 @@ export default function Hero() {
         </h1>
 
         <p className="mt-7 max-w-xl text-balance text-base leading-relaxed text-zinc-400 sm:text-lg">
-          Live Casper contracts, indexed backend data, wallet-signed transactions, MCP tooling,
-          and x402 paid resources in one production-oriented frontend.
+          Live Casper contracts, indexed backend data, wallet-signed transactions, MCP tooling, and
+          x402 paid resources in one production-oriented frontend.
         </p>
 
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -55,5 +55,5 @@ export default function Hero() {
         <ProtocolStats />
       </div>
     </Component>
-  );
+  )
 }

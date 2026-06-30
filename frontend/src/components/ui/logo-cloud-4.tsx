@@ -1,23 +1,23 @@
-import type { ComponentProps, ReactNode } from 'react';
-import { cn } from '@/lib/utils';
-import { InfiniteSlider } from '@/components/ui/infinite-slider';
-import { ProgressiveBlur } from '@/components/ui/progressive-blur';
+import type { ComponentProps, ReactNode } from 'react'
+import { cn } from '@/lib/utils'
+import { InfiniteSlider } from '@/components/ui/infinite-slider'
+import { ProgressiveBlur } from '@/components/ui/progressive-blur'
 
 export type LogoItem = {
-  alt: string;
-  src?: string;
-  width?: number;
-  height?: number;
-  node?: ReactNode;
-};
+  alt: string
+  src?: string
+  width?: number
+  height?: number
+  node?: ReactNode
+}
 
 type LogoCloudProps = ComponentProps<'div'> & {
-  logos: LogoItem[];
+  logos: LogoItem[]
   /** Animation duration in seconds — higher is slower. */
-  duration?: number;
-  durationOnHover?: number;
-  variant?: 'light' | 'dark';
-};
+  duration?: number
+  durationOnHover?: number
+  variant?: 'light' | 'dark'
+}
 
 export function LogoCloud({
   logos,
@@ -27,7 +27,7 @@ export function LogoCloud({
   variant = 'dark',
   ...props
 }: LogoCloudProps) {
-  const isDark = variant === 'dark';
+  const isDark = variant === 'dark'
 
   return (
     <div
@@ -49,7 +49,7 @@ export function LogoCloud({
       />
 
       <InfiniteSlider gap={42} reverse duration={duration} durationOnHover={durationOnHover}>
-        {logos.map(logo =>
+        {logos.map((logo) =>
           logo.node ? (
             <div key={`logo-${logo.alt}`} className="flex shrink-0 items-center opacity-90">
               {logo.node}
@@ -92,5 +92,5 @@ export function LogoCloud({
         )}
       />
     </div>
-  );
+  )
 }

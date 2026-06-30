@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 
 interface GradientBarsProps {
-  numBars?: number;
-  gradientFrom?: string;
-  gradientTo?: string;
-  animationDuration?: number;
-  className?: string;
+  numBars?: number
+  gradientFrom?: string
+  gradientTo?: string
+  animationDuration?: number
+  className?: string
 }
 
 const GradientBars: React.FC<GradientBarsProps> = ({
@@ -16,16 +16,16 @@ const GradientBars: React.FC<GradientBarsProps> = ({
   className = '',
 }) => {
   const calculateHeight = (index: number, total: number) => {
-    const position = index / (total - 1);
-    const maxHeight = 100;
-    const minHeight = 30;
+    const position = index / (total - 1)
+    const maxHeight = 100
+    const minHeight = 30
 
-    const center = 0.5;
-    const distanceFromCenter = Math.abs(position - center);
-    const heightPercentage = Math.pow(distanceFromCenter * 2, 1.2);
+    const center = 0.5
+    const distanceFromCenter = Math.abs(position - center)
+    const heightPercentage = Math.pow(distanceFromCenter * 2, 1.2)
 
-    return minHeight + (maxHeight - minHeight) * heightPercentage;
-  };
+    return minHeight + (maxHeight - minHeight) * heightPercentage
+  }
 
   return (
     <>
@@ -47,7 +47,7 @@ const GradientBars: React.FC<GradientBarsProps> = ({
           }}
         >
           {Array.from({ length: numBars }).map((_, index) => {
-            const height = calculateHeight(index, numBars);
+            const height = calculateHeight(index, numBars)
             const barStyle: React.CSSProperties & { '--initial-scale'?: number } = {
               flex: `1 0 calc(100% / ${numBars})`,
               maxWidth: `calc(100% / ${numBars})`,
@@ -61,25 +61,25 @@ const GradientBars: React.FC<GradientBarsProps> = ({
               outline: '1px solid rgba(0, 0, 0, 0)',
               boxSizing: 'border-box',
               '--initial-scale': height / 100,
-            };
+            }
 
-            return <div key={index} style={barStyle} />;
+            return <div key={index} style={barStyle} />
           })}
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
 interface ComponentProps {
-  id?: string;
-  numBars?: number;
-  gradientFrom?: string;
-  gradientTo?: string;
-  animationDuration?: number;
-  backgroundColor?: string;
-  className?: string;
-  children?: React.ReactNode;
+  id?: string
+  numBars?: number
+  gradientFrom?: string
+  gradientTo?: string
+  animationDuration?: number
+  backgroundColor?: string
+  className?: string
+  children?: React.ReactNode
 }
 
 export default function Component({
@@ -111,7 +111,7 @@ export default function Component({
         </div>
       )}
     </section>
-  );
+  )
 }
 
-export { Component };
+export { Component }

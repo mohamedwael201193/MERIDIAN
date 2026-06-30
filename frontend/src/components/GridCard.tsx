@@ -1,12 +1,12 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from 'react'
 
 export interface GridCardProps {
-  title: string;
-  description: string;
-  icon?: ReactNode;
-  cta?: string;
-  ctaHref?: string;
-  className?: string;
+  title: string
+  description: string
+  icon?: ReactNode
+  cta?: string
+  ctaHref?: string
+  className?: string
 }
 
 export default function GridCard({
@@ -49,5 +49,5 @@ export default function GridCard({
         )}
       </div>
     </article>
-  );
+  )
 }

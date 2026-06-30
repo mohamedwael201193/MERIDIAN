@@ -1,11 +1,11 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from 'react'
 
 function LogoMark({ children }: { children: ReactNode }) {
   return (
     <span className="flex h-10 w-10 shrink-0 items-center justify-center text-white">
       {children}
     </span>
-  );
+  )
 }
 
 export function CasperLogo() {
@@ -14,15 +14,12 @@ export function CasperLogo() {
       <LogoMark>
         <svg viewBox="0 0 40 40" fill="none" className="h-10 w-10" aria-hidden>
           <rect x="4" y="4" width="32" height="32" rx="4" stroke="currentColor" strokeWidth="2" />
-          <path
-            d="M14 28V12l12 8-12 8z"
-            fill="currentColor"
-          />
+          <path d="M14 28V12l12 8-12 8z" fill="currentColor" />
         </svg>
       </LogoMark>
       <span className="whitespace-nowrap text-xl font-bold tracking-tight text-white">Casper</span>
     </div>
-  );
+  )
 }
 
 export function OdraLogo() {
@@ -32,12 +29,17 @@ export function OdraLogo() {
         <svg viewBox="0 0 40 40" fill="none" className="h-10 w-10" aria-hidden>
           <rect x="4" y="4" width="32" height="32" rx="6" stroke="currentColor" strokeWidth="2" />
           <circle cx="20" cy="20" r="8" stroke="currentColor" strokeWidth="2" />
-          <path d="M20 14v12M14 20h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path
+            d="M20 14v12M14 20h12"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       </LogoMark>
       <span className="whitespace-nowrap text-xl font-bold tracking-tight text-white">Odra</span>
     </div>
-  );
+  )
 }
 
 export function CsprCloudLogo() {
@@ -52,9 +54,11 @@ export function CsprCloudLogo() {
           />
         </svg>
       </LogoMark>
-      <span className="whitespace-nowrap text-xl font-bold tracking-tight text-white">CSPR.cloud</span>
+      <span className="whitespace-nowrap text-xl font-bold tracking-tight text-white">
+        CSPR.cloud
+      </span>
     </div>
-  );
+  )
 }
 
 export function Erc3643Logo() {
@@ -77,9 +81,11 @@ export function Erc3643Logo() {
           />
         </svg>
       </LogoMark>
-      <span className="whitespace-nowrap text-xl font-bold tracking-tight text-white">ERC-3643</span>
+      <span className="whitespace-nowrap text-xl font-bold tracking-tight text-white">
+        ERC-3643
+      </span>
     </div>
-  );
+  )
 }
 
 export function OpenAiLogo() {
@@ -98,7 +104,7 @@ export function OpenAiLogo() {
       </LogoMark>
       <span className="whitespace-nowrap text-xl font-bold tracking-tight text-white">OpenAI</span>
     </div>
-  );
+  )
 }
 
 export function X402Logo() {
@@ -122,14 +128,7 @@ export function X402Logo() {
       </LogoMark>
       <span className="whitespace-nowrap text-xl font-bold tracking-tight text-white">x402</span>
     </div>
-  );
+  )
 }
 
-export const partnerLogos = [
-  CasperLogo,
-  OdraLogo,
-  CsprCloudLogo,
-  Erc3643Logo,
-  OpenAiLogo,
-  X402Logo,
-];
+export const partnerLogos = [CasperLogo, OdraLogo, CsprCloudLogo, Erc3643Logo, OpenAiLogo, X402Logo]

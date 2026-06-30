@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import Logo from './Logo';
-import LandingWalletButton from './LandingWalletButton';
+import Link from 'next/link'
+import Logo from './Logo'
+import LandingWalletButton from './LandingWalletButton'
 
 const navLinks = [
   { label: 'Home', href: '#home' },
@@ -10,7 +10,7 @@ const navLinks = [
   { label: 'Workflows', href: '#workflows' },
   { label: 'Evidence', href: '#evidence' },
   { label: 'FAQ', href: '#faq' },
-];
+]
 
 export default function Navbar() {
   return (
@@ -19,7 +19,7 @@ export default function Navbar() {
         <Logo size="sm" showWordmark href="/#home" />
 
         <nav className="hidden items-center gap-8 md:flex">
-          {navLinks.map(link => (
+          {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -47,5 +47,5 @@ export default function Navbar() {
         </div>
       </div>
     </header>
-  );
+  )
 }

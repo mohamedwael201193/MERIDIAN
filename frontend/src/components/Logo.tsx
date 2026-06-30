@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils'
 
 const sizeConfig = {
   xs: { icon: 'h-5 w-5', gap: 'gap-2', wordmark: 'text-sm font-semibold' },
@@ -6,16 +6,16 @@ const sizeConfig = {
   md: { icon: 'h-9 w-9', gap: 'gap-3', wordmark: 'text-lg font-semibold' },
   lg: { icon: 'h-10 w-10', gap: 'gap-3', wordmark: 'text-2xl font-bold' },
   xl: { icon: 'h-12 w-12', gap: 'gap-3.5', wordmark: 'text-3xl font-bold' },
-} as const;
+} as const
 
-export type LogoSize = keyof typeof sizeConfig;
+export type LogoSize = keyof typeof sizeConfig
 
 export interface LogoProps {
-  size?: LogoSize;
-  showWordmark?: boolean;
-  href?: string;
-  className?: string;
-  wordmarkClassName?: string;
+  size?: LogoSize
+  showWordmark?: boolean
+  href?: string
+  className?: string
+  wordmarkClassName?: string
 }
 
 export default function Logo({
@@ -25,7 +25,7 @@ export default function Logo({
   className,
   wordmarkClassName,
 }: LogoProps) {
-  const config = sizeConfig[size];
+  const config = sizeConfig[size]
 
   return (
     <a
@@ -43,12 +43,10 @@ export default function Logo({
         decoding="async"
       />
       {showWordmark && (
-        <span
-          className={cn('tracking-tight text-white', config.wordmark, wordmarkClassName)}
-        >
+        <span className={cn('tracking-tight text-white', config.wordmark, wordmarkClassName)}>
           MERIDIAN
         </span>
       )}
     </a>
-  );
+  )
 }

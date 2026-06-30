@@ -1,8 +1,8 @@
-import { useRef } from 'react';
-import CarouselControls from './CarouselControls';
-import GridCard from './GridCard';
-import SectionShell from './SectionShell';
-import { AgentIcon, ComplianceIcon, McpIcon, StakingIcon } from './FeatureIcons';
+import { useRef } from 'react'
+import CarouselControls from './CarouselControls'
+import GridCard from './GridCard'
+import SectionShell from './SectionShell'
+import { AgentIcon, ComplianceIcon, McpIcon, StakingIcon } from './FeatureIcons'
 
 const features = [
   {
@@ -29,26 +29,28 @@ const features = [
       'MCP builds unsigned TransactionV1 payloads for wallet signing, while x402 gates paid resources with Casper payments.',
     icon: <McpIcon />,
   },
-];
+]
 
 export default function Features() {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   const scroll = (direction: 'prev' | 'next') => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const amount = direction === 'next' ? el.clientWidth * 0.85 : -el.clientWidth * 0.85;
-    el.scrollBy({ left: amount, behavior: 'smooth' });
-  };
+    const el = scrollRef.current
+    if (!el) return
+    const amount = direction === 'next' ? el.clientWidth * 0.85 : -el.clientWidth * 0.85
+    el.scrollBy({ left: amount, behavior: 'smooth' })
+  }
 
   return (
     <SectionShell id="features">
       <div className="flex flex-col gap-8 border-b border-white/10 px-6 py-12 sm:flex-row sm:items-end sm:justify-between sm:px-10 lg:px-14 lg:py-16">
         <div className="max-w-xl">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Production Stack</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Production Stack
+          </h2>
           <p className="mt-4 text-sm leading-relaxed text-zinc-500 sm:text-base">
-            The frontend connects a real Casper testnet deployment to indexed backend data,
-            wallet signing, MCP tool execution, and x402 resource access.
+            The frontend connects a real Casper testnet deployment to indexed backend data, wallet
+            signing, MCP tool execution, and x402 resource access.
           </p>
         </div>
         <CarouselControls onPrev={() => scroll('prev')} onNext={() => scroll('next')} />
@@ -58,7 +60,7 @@ export default function Features() {
         ref={scrollRef}
         className="grid grid-cols-1 overflow-x-auto sm:grid-cols-2 lg:grid-cols-4 lg:overflow-visible"
       >
-        {features.map(feature => (
+        {features.map((feature) => (
           <GridCard
             key={feature.title}
             title={feature.title}
@@ -70,5 +72,5 @@ export default function Features() {
         ))}
       </div>
     </SectionShell>
-  );
+  )
 }

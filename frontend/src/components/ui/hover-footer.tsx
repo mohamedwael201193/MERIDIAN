@@ -1,33 +1,33 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
-import { cn } from '@/lib/utils';
+import { useEffect, useRef, useState } from 'react'
+import { motion } from 'motion/react'
+import { cn } from '@/lib/utils'
 
 export const TextHoverEffect = ({
   text,
   duration,
   className,
 }: {
-  text: string;
-  duration?: number;
-  automatic?: boolean;
-  className?: string;
+  text: string
+  duration?: number
+  automatic?: boolean
+  className?: string
 }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [cursor, setCursor] = useState({ x: 0, y: 0 });
-  const [hovered, setHovered] = useState(false);
-  const [maskPosition, setMaskPosition] = useState({ cx: '50%', cy: '50%' });
+  const svgRef = useRef<SVGSVGElement>(null)
+  const [cursor, setCursor] = useState({ x: 0, y: 0 })
+  const [hovered, setHovered] = useState(false)
+  const [maskPosition, setMaskPosition] = useState({ cx: '50%', cy: '50%' })
 
   useEffect(() => {
     if (svgRef.current && cursor.x !== null && cursor.y !== null) {
-      const svgRect = svgRef.current.getBoundingClientRect();
-      const cxPercentage = ((cursor.x - svgRect.left) / svgRect.width) * 100;
-      const cyPercentage = ((cursor.y - svgRect.top) / svgRect.height) * 100;
+      const svgRect = svgRef.current.getBoundingClientRect()
+      const cxPercentage = ((cursor.x - svgRect.left) / svgRect.width) * 100
+      const cyPercentage = ((cursor.y - svgRect.top) / svgRect.height) * 100
       setMaskPosition({
         cx: `${cxPercentage}%`,
         cy: `${cyPercentage}%`,
-      });
+      })
     }
-  }, [cursor]);
+  }, [cursor])
 
   return (
     <svg
@@ -38,11 +38,18 @@ export const TextHoverEffect = ({
       xmlns="http://www.w3.org/2000/svg"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onMouseMove={e => setCursor({ x: e.clientX, y: e.clientY })}
+      onMouseMove={(e) => setCursor({ x: e.clientX, y: e.clientY })}
       className={cn('cursor-pointer select-none uppercase', className)}
     >
       <defs>
-        <linearGradient id="textGradient" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient
+          id="textGradient"
+          gradientUnits="userSpaceOnUse"
+          x1="0%"
+          y1="0%"
+          x2="100%"
+          y2="0%"
+        >
           {hovered && (
             <>
               <stop offset="0%" stopColor="#450a0a" />
@@ -112,16 +119,17 @@ export const TextHoverEffect = ({
         {text}
       </text>
     </svg>
-  );
-};
+  )
+}
 
 export const FooterBackgroundGradient = () => {
   return (
     <div
       className="pointer-events-none absolute inset-0 z-0"
       style={{
-        background: 'radial-gradient(125% 125% at 50% 10%, #000000 40%, rgba(220, 38, 38, 0.18) 100%)',
+        background:
+          'radial-gradient(125% 125% at 50% 10%, #000000 40%, rgba(220, 38, 38, 0.18) 100%)',
       }}
     />
-  );
-};
+  )
+}
