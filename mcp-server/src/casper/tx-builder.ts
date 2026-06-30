@@ -53,7 +53,7 @@ export class TransactionBuilder {
 
   private contractCall(
     callerPublicKeyHex: string,
-    contractHash: string,
+    packageHash: string,
     entryPoint: string,
     args: Record<string, CLValueType>,
     paymentAmount: number,
@@ -61,10 +61,10 @@ export class TransactionBuilder {
     note: string,
   ): UnsignedTransaction {
     const pk = PublicKey.fromHex(callerPublicKeyHex)
-    const hash = contractHash.replace(/^hash-/, '')
+    const hash = packageHash.replace(/^contract-package-/, '').replace(/^hash-/, '')
     const transaction = new ContractCallBuilder()
       .from(pk)
-      .byHash(hash)
+      .byPackageHash(hash)
       .entryPoint(entryPoint)
       .runtimeArgs(Args.fromMap(args))
       .chainName(this.chainName)
@@ -82,7 +82,7 @@ export class TransactionBuilder {
     if (!registry) throw new Error('ComplianceRegistry not deployed')
     return this.contractCall(
       callerPublicKeyHex,
-      registry.contract_hash,
+      registry.package_hash,
       'register_holder',
       {
         addr: CLValue.newCLKey(keyFromAccountHash(holderAccountHash)),
@@ -103,7 +103,7 @@ export class TransactionBuilder {
     if (!token) throw new Error('MeridianToken not deployed')
     return this.contractCall(
       callerPublicKeyHex,
-      token.contract_hash,
+      token.package_hash,
       'transfer',
       {
         recipient: CLValue.newCLKey(keyFromAccountHash(recipientAccountHash)),
@@ -125,7 +125,7 @@ export class TransactionBuilder {
     if (!vault) throw new Error('StakingVault not deployed')
     return this.contractCall(
       callerPublicKeyHex,
-      vault.contract_hash,
+      vault.package_hash,
       'restake',
       {
         from: CLValue.newCLPublicKey(PublicKey.fromHex(fromValidator)),
@@ -143,12 +143,12 @@ export class TransactionBuilder {
     if (!vault) throw new Error('StakingVault not deployed')
     const tx = this.contractCall(
       callerPublicKeyHex,
-      vault.contract_hash,
+      vault.package_hash,
       'distribute_rewards',
       {},
       50_000_000_000,
       'distribute_rewards',
-      `Vault distribute_rewards for era ${eraId} — unsigned tx for local signing`,
+      `Vault distribute_rewards for era ${String(eraId)} — unsigned tx for local signing`,
     )
     return tx
   }
@@ -162,7 +162,7 @@ export class TransactionBuilder {
     if (!registry) throw new Error('ComplianceRegistry not deployed')
     return this.contractCall(
       callerPublicKeyHex,
-      registry.contract_hash,
+      registry.package_hash,
       'revoke',
       {
         addr: CLValue.newCLKey(keyFromAccountHash(holder)),
@@ -184,7 +184,7 @@ export class TransactionBuilder {
     const pk = PublicKey.fromHex(callerPublicKeyHex)
     return this.contractCall(
       callerPublicKeyHex,
-      token.contract_hash,
+      token.package_hash,
       'transfer',
       {
         recipient: CLValue.newCLKey(keyFromAccountHash(pk.accountHash().toPrefixedString())),
@@ -202,18 +202,17 @@ export class TransactionBuilder {
     amountMotes: string,
   ): UnsignedTransaction {
     const pk = PublicKey.fromHex(senderPublicKeyHex)
+    const recipientKey = keyFromAccountHash(recipientAccountHash)
+    const recipientAccount = recipientKey.account
+    if (!recipientAccount) throw new Error('Invalid recipient account hash')
     const transaction = new NativeTransferBuilder()
       .from(pk)
-      .targetAccountHash(keyFromAccountHash(recipientAccountHash).account!)
+      .targetAccountHash(recipientAccount)
       .amount(amountMotes)
       .id(Date.now())
       .chainName(this.chainName)
       .payment(2_500_000_000)
       .build()
-    return this.wrap(
-      'native_transfer',
-      transaction,
-      'Native CSPR transfer — sign locally',
-    )
+    return this.wrap('native_transfer', transaction, 'Native CSPR transfer — sign locally')
   }
 }
