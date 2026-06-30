@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import { useMemo, ReactElement } from 'react';
+import { useMemo, ReactElement } from 'react'
 import {
   Paper,
   Table,
@@ -14,25 +14,25 @@ import {
   Box,
   Alert,
   Stack,
-} from '@mui/material';
-import ProductItemRow from './ProductItemRow';
-import SimpleBar from 'simplebar-react';
-import { useTokens } from '@lib/hooks/useMeridianData';
+} from '@mui/material'
+import ProductItemRow from './ProductItemRow'
+import SimpleBar from 'simplebar-react'
+import { useTokens } from '@lib/hooks/useMeridianData'
 
 const TopProducts = (): ReactElement => {
-  const { data: tokens, isLoading, error } = useTokens();
+  const { data: tokens, isLoading, error } = useTokens()
 
   const productTableRows = useMemo(() => {
-    if (!tokens?.length) return [];
-    const maxSupply = Math.max(...tokens.map(t => Number(t.total_supply || 0)), 1);
-    const colors = ['error', 'primary', 'warning', 'info'] as const;
+    if (!tokens?.length) return []
+    const maxSupply = Math.max(...tokens.map((t) => Number(t.total_supply || 0)), 1)
+    const colors = ['error', 'primary', 'warning', 'info'] as const
     return tokens.map((token, index) => ({
       id: String(index + 1).padStart(2, '0'),
       name: token.symbol ?? token.contract_name,
       color: colors[index % colors.length],
       sales: Math.round((Number(token.total_supply || 0) / maxSupply) * 100),
-    }));
-  }, [tokens]);
+    }))
+  }, [tokens])
 
   return (
     <Paper sx={{ p: { xs: 3, sm: 4 }, height: 1 }}>
@@ -68,7 +68,7 @@ const TopProducts = (): ReactElement => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {productTableRows.map(product => (
+              {productTableRows.map((product) => (
                 <ProductItemRow key={product.id} productItem={product} />
               ))}
             </TableBody>
@@ -76,7 +76,7 @@ const TopProducts = (): ReactElement => {
         </TableContainer>
       )}
     </Paper>
-  );
-};
+  )
+}
 
-export default TopProducts;
+export default TopProducts

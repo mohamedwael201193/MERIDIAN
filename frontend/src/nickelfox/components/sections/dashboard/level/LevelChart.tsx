@@ -1,27 +1,31 @@
-import { alpha, SxProps, useTheme } from '@mui/material';
-import ReactEChart from '@/nickelfox/components/base/ReactEChart';
-import { BarSeriesOption } from 'echarts';
-import echarts from '@/nickelfox/components/base/echartsSetup';
-import EChartsReactCore from 'echarts-for-react/lib/core';
+import { alpha, SxProps, useTheme } from '@mui/material'
+import ReactEChart from '@/nickelfox/components/base/ReactEChart'
+import { BarSeriesOption } from 'echarts'
+import echarts from '@/nickelfox/components/base/echartsSetup'
+import EChartsReactCore from 'echarts-for-react/lib/core'
 import {
   GridComponentOption,
   LegendComponentOption,
   TooltipComponentOption,
-} from 'echarts/components';
-import React, { ReactElement, useMemo } from 'react';
+} from 'echarts/components'
+import React, { ReactElement, useMemo } from 'react'
 
 type LevelChartProps = {
-  chartRef: React.MutableRefObject<EChartsReactCore | null>;
-  data: any;
-  sx?: SxProps;
-};
+  chartRef: React.MutableRefObject<EChartsReactCore | null>
+  data: {
+    labels: string[]
+    Volume: number[]
+    Service: number[]
+  }
+  sx?: SxProps
+}
 
 type LevelChartOptions = echarts.ComposeOption<
   BarSeriesOption | LegendComponentOption | TooltipComponentOption | GridComponentOption
->;
+>
 
 const LevelChart = ({ chartRef, data, ...rest }: LevelChartProps): ReactElement => {
-  const theme = useTheme();
+  const theme = useTheme()
   const option: LevelChartOptions = useMemo(
     () => ({
       tooltip: {
@@ -31,16 +35,19 @@ const LevelChart = ({ chartRef, data, ...rest }: LevelChartProps): ReactElement 
         },
       },
       legend: {
-        show: false,
-        data: ['Volume', 'Service'],
+        show: true,
+        bottom: 0,
+        textStyle: { color: theme.palette.text.secondary },
+        data: ['Approved', 'Rejected'],
       },
       xAxis: {
         type: 'category',
         show: true,
         axisTick: { show: false },
-        data: ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5', 'Level 6'],
+        data: data.labels,
         axisLabel: {
-          show: false,
+          show: true,
+          color: theme.palette.text.secondary,
         },
         axisLine: {
           show: true,
@@ -57,15 +64,15 @@ const LevelChart = ({ chartRef, data, ...rest }: LevelChartProps): ReactElement 
       grid: {
         left: 0,
         right: 0,
-        top: 0,
-        bottom: 1,
+        top: 8,
+        bottom: 28,
       },
       series: [
         {
           id: 1,
-          name: 'Volume',
+          name: 'Approved',
           type: 'bar',
-          stack: 'Service',
+          stack: 'Decisions',
           barWidth: 25,
           emphasis: {
             focus: 'series',
@@ -78,9 +85,9 @@ const LevelChart = ({ chartRef, data, ...rest }: LevelChartProps): ReactElement 
         },
         {
           id: 2,
-          name: 'Service',
+          name: 'Rejected',
           type: 'bar',
-          stack: 'Service',
+          stack: 'Decisions',
           barWidth: 25,
           emphasis: {
             focus: 'series',
@@ -93,10 +100,10 @@ const LevelChart = ({ chartRef, data, ...rest }: LevelChartProps): ReactElement 
         },
       ],
     }),
-    [theme],
-  );
+    [data, theme],
+  )
 
-  return <ReactEChart ref={chartRef} option={option} echarts={echarts} {...rest} />;
-};
+  return <ReactEChart ref={chartRef} option={option} echarts={echarts} {...rest} />
+}
 
-export default LevelChart;
+export default LevelChart

@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import { ReactElement } from 'react';
-import { Box, Chip, Paper, Stack, Typography } from '@mui/material';
-import SaleCard from '@/nickelfox/components/sections/dashboard/todays-sales/SaleCard';
-import { useProtocolKpis } from '@lib/hooks/useMeridianData';
-import { formatApy, formatMotes } from '@lib/contracts';
+import { ReactElement } from 'react'
+import { Alert, Box, Chip, Paper, Skeleton, Stack, Typography } from '@mui/material'
+import SaleCard from '@/nickelfox/components/sections/dashboard/todays-sales/SaleCard'
+import { useProtocolKpis } from '@lib/hooks/useMeridianData'
+import { formatApy, formatMotes } from '@lib/contracts'
 
 const TodaysSales = (): ReactElement => {
-  const { isLoading, error, kpis } = useProtocolKpis();
+  const { isLoading, error, kpis } = useProtocolKpis()
 
   const salesData = [
     {
@@ -15,7 +15,7 @@ const TodaysSales = (): ReactElement => {
       icon: 'mdi:currency-usd',
       title: isLoading ? '…' : formatMotes(kpis.totalStaked),
       subtitle: 'CSPR Staked',
-      increment: 0,
+      detail: 'Indexed from StakingVault',
       color: 'primary.main',
     },
     {
@@ -23,7 +23,7 @@ const TodaysSales = (): ReactElement => {
       icon: 'mdi:percent-outline',
       title: isLoading ? '…' : formatApy(kpis.estimatedApyBps),
       subtitle: 'Estimated APY',
-      increment: 0,
+      detail: 'From YieldDistributor',
       color: 'error.main',
     },
     {
@@ -31,7 +31,7 @@ const TodaysSales = (): ReactElement => {
       icon: 'mdi:shield-check',
       title: isLoading ? '…' : String(kpis.compliantHolders),
       subtitle: 'Compliant Holders',
-      increment: 0,
+      detail: 'ComplianceRegistry',
       color: 'success.main',
     },
     {
@@ -39,10 +39,10 @@ const TodaysSales = (): ReactElement => {
       icon: 'mdi:token',
       title: isLoading ? '…' : String(kpis.activeTokens),
       subtitle: 'Active Tokens',
-      increment: 0,
+      detail: 'Live contract registry',
       color: 'warning.main',
     },
-  ];
+  ]
 
   return (
     <Paper sx={{ p: { xs: 3, sm: 4 }, height: 1, border: '1px solid', borderColor: 'divider' }}>
@@ -59,15 +59,30 @@ const TodaysSales = (): ReactElement => {
         </Box>
         <Chip color={error ? 'warning' : 'success'} label={error ? 'Retrying' : 'Live'} />
       </Stack>
+      {error ? (
+        <Alert severity="warning" sx={{ mb: 3 }}>
+          Could not load live KPIs. Showing last known values when available.
+        </Alert>
+      ) : null}
       <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={{ xs: 4, sm: 6 }}>
-        {salesData.map(saleItem => (
-          <Box key={saleItem.id} gridColumn={{ xs: 'span 12', sm: 'span 6', lg: 'span 3' }}>
-            <SaleCard saleItem={saleItem} />
-          </Box>
-        ))}
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, index) => (
+              <Box key={index} gridColumn={{ xs: 'span 12', sm: 'span 6', lg: 'span 3' }}>
+                <Skeleton
+                  variant="rounded"
+                  height={180}
+                  sx={{ bgcolor: 'rgba(255,255,255,0.04)' }}
+                />
+              </Box>
+            ))
+          : salesData.map((saleItem) => (
+              <Box key={saleItem.id} gridColumn={{ xs: 'span 12', sm: 'span 6', lg: 'span 3' }}>
+                <SaleCard saleItem={saleItem} />
+              </Box>
+            ))}
       </Box>
     </Paper>
-  );
-};
+  )
+}
 
-export default TodaysSales;
+export default TodaysSales

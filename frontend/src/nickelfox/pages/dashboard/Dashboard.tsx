@@ -1,23 +1,65 @@
-'use client';
+'use client'
 
-import { ReactElement } from 'react';
-import { Box, Chip, Paper, Stack, Typography } from '@mui/material';
+import { ReactElement } from 'react'
+import { Box, Button, Chip, Paper, Stack, Typography } from '@mui/material'
+import Link from 'next/link'
 
-import CustomerFulfillment from '@/nickelfox/components/sections/dashboard/customer-fulfilment/CustomerFulfillment';
-import VisitorInsights from '@/nickelfox/components/sections/dashboard/visitor-insights/VisitorInsights';
-import TodaysSales from '@/nickelfox/components/sections/dashboard/todays-sales/TodaysSales';
-import TopProducts from '@/nickelfox/components/sections/dashboard/top-products/TopProducts';
-import TrendingNow from '@/nickelfox/components/sections/dashboard/trending-now/TrendingNow';
-import Customers from '@/nickelfox/components/sections/dashboard/customers/Customers';
-import Earnings from '@/nickelfox/components/sections/dashboard/earnings/Earnings';
-import Level from '@/nickelfox/components/sections/dashboard/level/Level';
-import { useReady } from '@lib/hooks/useMeridianData';
+import CustomerFulfillment from '@/nickelfox/components/sections/dashboard/customer-fulfilment/CustomerFulfillment'
+import VisitorInsights from '@/nickelfox/components/sections/dashboard/visitor-insights/VisitorInsights'
+import TodaysSales from '@/nickelfox/components/sections/dashboard/todays-sales/TodaysSales'
+import TopProducts from '@/nickelfox/components/sections/dashboard/top-products/TopProducts'
+import TrendingNow from '@/nickelfox/components/sections/dashboard/trending-now/TrendingNow'
+import Customers from '@/nickelfox/components/sections/dashboard/customers/Customers'
+import Earnings from '@/nickelfox/components/sections/dashboard/earnings/Earnings'
+import Level from '@/nickelfox/components/sections/dashboard/level/Level'
+import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
+import { useReady } from '@lib/hooks/useMeridianData'
+
+const QUICK_ACTIONS = [
+  { href: '/issue', label: 'Issue Token', icon: 'mdi:token' },
+  { href: '/compliance', label: 'Check Compliance', icon: 'mdi:shield-check-outline' },
+  { href: '/staking', label: 'Stake & Earn', icon: 'mdi:chart-line' },
+  { href: '/agents', label: 'View AI Agents', icon: 'mdi:robot-outline' },
+  { href: '/mcp', label: 'Explore MCP', icon: 'mdi:api' },
+  { href: '/x402', label: 'Try x402', icon: 'mdi:cash-lock' },
+  { href: '/audit', label: 'Audit Trail', icon: 'mdi:history' },
+]
+
+function QuickActions(): ReactElement {
+  return (
+    <Paper sx={{ p: { xs: 2.5, sm: 3 }, mb: 3.5, border: '1px solid', borderColor: 'divider' }}>
+      <Typography
+        variant="caption"
+        color="text.disabled"
+        sx={{ letterSpacing: '0.1em', textTransform: 'uppercase', mb: 1.5, display: 'block' }}
+      >
+        Quick actions
+      </Typography>
+      <Stack direction="row" gap={1.25} flexWrap="wrap">
+        {QUICK_ACTIONS.map((action) => (
+          <Button
+            key={action.href}
+            component={Link}
+            href={action.href}
+            variant="outlined"
+            color="inherit"
+            size="small"
+            startIcon={<IconifyIcon icon={action.icon} width={16} height={16} />}
+            sx={{ borderColor: 'divider', color: 'text.primary' }}
+          >
+            {action.label}
+          </Button>
+        ))}
+      </Stack>
+    </Paper>
+  )
+}
 
 function DashboardHero(): ReactElement {
-  const { data } = useReady();
-  const status = typeof data?.status === 'string' ? data.status : 'checking';
-  const checks = data?.checks as Record<string, { ok?: boolean; detail?: string }> | undefined;
-  const indexerLag = checks?.indexer_lag?.detail;
+  const { data, isLoading, error } = useReady()
+  const status = typeof data?.status === 'string' ? data.status : isLoading ? 'checking' : 'unknown'
+  const checks = data?.checks as Record<string, { ok?: boolean; detail?: string }> | undefined
+  const indexerLag = checks?.indexer_lag?.detail
 
   return (
     <Paper
@@ -45,9 +87,18 @@ function DashboardHero(): ReactElement {
           filter: 'blur(48px)',
         }}
       />
-      <Stack direction={{ xs: 'column', lg: 'row' }} justifyContent="space-between" gap={3} position="relative">
+      <Stack
+        direction={{ xs: 'column', lg: 'row' }}
+        justifyContent="space-between"
+        gap={3}
+        position="relative"
+      >
         <Box maxWidth={720}>
-          <Typography variant="caption" color="primary.light" sx={{ letterSpacing: '0.28em', textTransform: 'uppercase' }}>
+          <Typography
+            variant="caption"
+            color="primary.light"
+            sx={{ letterSpacing: '0.28em', textTransform: 'uppercase' }}
+          >
             MERIDIAN Control Center
           </Typography>
           <Typography variant="h3" color="common.white" mt={1}>
@@ -58,21 +109,31 @@ function DashboardHero(): ReactElement {
             MCP transaction builders, and x402 payment readiness from one dashboard.
           </Typography>
         </Box>
-        <Stack direction="row" gap={1} flexWrap="wrap" alignContent="flex-start" minWidth={{ lg: 280 }}>
+        <Stack
+          direction="row"
+          gap={1}
+          flexWrap="wrap"
+          alignContent="flex-start"
+          minWidth={{ lg: 280 }}
+        >
           <Chip color={status === 'ok' ? 'success' : 'warning'} label={`Backend ${status}`} />
           <Chip variant="outlined" label="Casper testnet" />
           <Chip variant="outlined" label="CSPR.click wallet" />
-          {indexerLag ? <Chip color="warning" variant="outlined" label={`Indexer lag ${indexerLag}`} /> : null}
+          {error ? <Chip color="error" variant="outlined" label="Backend retrying" /> : null}
+          {indexerLag ? (
+            <Chip color="warning" variant="outlined" label={`Indexer lag ${indexerLag}`} />
+          ) : null}
         </Stack>
       </Stack>
     </Paper>
-  );
+  )
 }
 
 const Dashboard = (): ReactElement => {
   return (
     <>
       <DashboardHero />
+      <QuickActions />
       <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={3.5}>
         <Box gridColumn={{ xs: 'span 12', '2xl': 'span 8' }} order={{ xs: 0 }}>
           <TodaysSales />
@@ -109,7 +170,7 @@ const Dashboard = (): ReactElement => {
         </Box>
       </Box>
     </>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard

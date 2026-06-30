@@ -1,27 +1,27 @@
-import { SxProps, useTheme } from '@mui/material';
-import ReactEChart from '@/nickelfox/components/base/ReactEChart';
-import echarts from '@/nickelfox/components/base/echartsSetup';
-import EChartsReactCore from 'echarts-for-react/lib/core';
-import { GaugeSeriesOption } from 'echarts/charts';
+import { SxProps, useTheme } from '@mui/material'
+import ReactEChart from '@/nickelfox/components/base/ReactEChart'
+import echarts from '@/nickelfox/components/base/echartsSetup'
+import EChartsReactCore from 'echarts-for-react/lib/core'
+import { GaugeSeriesOption } from 'echarts/charts'
 import {
   GridComponentOption,
   LegendComponentOption,
   TooltipComponentOption,
-} from 'echarts/components';
-import { ReactElement, useMemo } from 'react';
+} from 'echarts/components'
+import { ReactElement, useMemo } from 'react'
 
 type EarningsChartProps = {
-  chartRef: React.MutableRefObject<EChartsReactCore | null>;
-  value?: number;
-  sx?: SxProps;
-};
+  chartRef: React.MutableRefObject<EChartsReactCore | null>
+  value?: number
+  sx?: SxProps
+}
 
 type EarningsChartOptions = echarts.ComposeOption<
   GaugeSeriesOption | LegendComponentOption | TooltipComponentOption | GridComponentOption
->;
+>
 
 const EarningsChart = ({ chartRef, value = 0, ...rest }: EarningsChartProps): ReactElement => {
-  const theme = useTheme();
+  const theme = useTheme()
   const option: EarningsChartOptions = useMemo(
     () => ({
       series: [
@@ -69,9 +69,9 @@ const EarningsChart = ({ chartRef, value = 0, ...rest }: EarningsChartProps): Re
       ],
     }),
     [theme, value],
-  );
+  )
 
-  return <ReactEChart ref={chartRef} option={option} echarts={echarts} {...rest} mx="auto" />;
-};
+  return <ReactEChart ref={chartRef} option={option} echarts={echarts} {...rest} mx="auto" />
+}
 
-export default EarningsChart;
+export default EarningsChart

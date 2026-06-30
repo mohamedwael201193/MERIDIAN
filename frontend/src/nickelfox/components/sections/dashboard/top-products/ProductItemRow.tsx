@@ -1,6 +1,6 @@
-import { Chip, LinearProgress, TableCell, TableRow } from '@mui/material';
-import { ProductItem } from '@/nickelfox/types/product-item';
-import { ReactElement } from 'react';
+import { Chip, LinearProgress, TableCell, TableRow } from '@mui/material'
+import { ProductItem } from '@/nickelfox/types/product-item'
+import { ReactElement } from 'react'
 
 const ProductItemRow = ({ productItem }: { productItem: ProductItem }): ReactElement => {
   return (
@@ -44,7 +44,7 @@ const ProductItemRow = ({ productItem }: { productItem: ProductItem }): ReactEle
         />
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}
 
-export default ProductItemRow;
+export default ProductItemRow

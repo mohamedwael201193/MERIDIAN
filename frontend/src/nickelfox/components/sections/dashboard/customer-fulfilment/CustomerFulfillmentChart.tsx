@@ -1,31 +1,35 @@
-import { ReactElement, useMemo } from 'react';
-import * as echarts from 'echarts';
-import { LineSeriesOption } from 'echarts';
-import ReactEChart from '@/nickelfox/components/base/ReactEChart';
-import EChartsReactCore from 'echarts-for-react/lib/core';
-import { alpha, SxProps, useTheme } from '@mui/material';
+import { ReactElement, useMemo } from 'react'
+import * as echarts from 'echarts'
+import { LineSeriesOption } from 'echarts'
+import ReactEChart from '@/nickelfox/components/base/ReactEChart'
+import EChartsReactCore from 'echarts-for-react/lib/core'
+import { alpha, SxProps, useTheme } from '@mui/material'
 import {
   GridComponentOption,
   LegendComponentOption,
   TooltipComponentOption,
-} from 'echarts/components';
+} from 'echarts/components'
 
 type CustomerFulfillmentChartProps = {
-  chartRef: React.MutableRefObject<EChartsReactCore | null>;
-  data?: any;
-  sx?: SxProps;
-};
+  chartRef: React.MutableRefObject<EChartsReactCore | null>
+  data: {
+    labels: string[]
+    'This Month': number[]
+    'Last Month': number[]
+  }
+  sx?: SxProps
+}
 
 type CustomerFulfillmentChartOptions = echarts.ComposeOption<
   LineSeriesOption | LegendComponentOption | TooltipComponentOption | GridComponentOption
->;
+>
 
 const CustomerFulfillmentChart = ({
   chartRef,
   data,
   ...rest
 }: CustomerFulfillmentChartProps): ReactElement => {
-  const theme = useTheme();
+  const theme = useTheme()
   const option: CustomerFulfillmentChartOptions = useMemo(
     () => ({
       color: [theme.palette.secondary.main, theme.palette.primary.main],
@@ -49,7 +53,7 @@ const CustomerFulfillmentChart = ({
         type: 'category',
         boundaryGap: false,
         show: true,
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        data: data.labels,
         axisLabel: {
           show: false,
         },
@@ -129,10 +133,10 @@ const CustomerFulfillmentChart = ({
         },
       ],
     }),
-    [],
-  );
+    [data, theme],
+  )
 
-  return <ReactEChart ref={chartRef} option={option} echarts={echarts} {...rest} />;
-};
+  return <ReactEChart ref={chartRef} option={option} echarts={echarts} {...rest} />
+}
 
-export default CustomerFulfillmentChart;
+export default CustomerFulfillmentChart

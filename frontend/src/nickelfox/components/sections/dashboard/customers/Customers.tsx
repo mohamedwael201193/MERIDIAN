@@ -1,14 +1,14 @@
-import { useState, ChangeEvent, useCallback, ReactElement } from 'react';
-import { Box, Paper, Stack, TextField, Typography, InputAdornment } from '@mui/material';
-import IconifyIcon from '@/nickelfox/components/base/IconifyIcon';
-import CustomerTable from './CustomerTable';
+import { useState, ChangeEvent, useCallback, ReactElement } from 'react'
+import { Box, Paper, Stack, TextField, Typography, InputAdornment } from '@mui/material'
+import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
+import CustomerTable from './CustomerTable'
 
 const Customers = (): ReactElement => {
-  const [search, setSearch] = useState<string>('');
+  const [search, setSearch] = useState<string>('')
 
   const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.currentTarget.value);
-  }, []);
+    setSearch(event.currentTarget.value)
+  }, [])
 
   return (
     <Paper sx={{ p: { xs: 4, sm: 8 }, height: 1 }}>
@@ -57,7 +57,7 @@ const Customers = (): ReactElement => {
         <CustomerTable searchText={search} />
       </Box>
     </Paper>
-  );
-};
+  )
+}
 
-export default Customers;
+export default Customers

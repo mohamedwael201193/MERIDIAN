@@ -1,31 +1,37 @@
-import { SxProps, useTheme } from '@mui/material';
-import ReactEChart from '@/nickelfox/components/base/ReactEChart';
-import echarts from '@/nickelfox/components/base/echartsSetup';
-import EChartsReactCore from 'echarts-for-react/lib/core';
-import { LineSeriesOption } from 'echarts/charts';
+import { SxProps, useTheme } from '@mui/material'
+import ReactEChart from '@/nickelfox/components/base/ReactEChart'
+import echarts from '@/nickelfox/components/base/echartsSetup'
+import EChartsReactCore from 'echarts-for-react/lib/core'
+import { LineSeriesOption } from 'echarts/charts'
 import {
   GridComponentOption,
   LegendComponentOption,
   TooltipComponentOption,
-} from 'echarts/components';
-import { ReactElement, useMemo } from 'react';
+} from 'echarts/components'
+import { ReactElement, useMemo } from 'react'
 
 type VisitorInsightsChartProps = {
-  chartRef: React.MutableRefObject<EChartsReactCore | null>;
-  data?: any;
-  sx?: SxProps;
-};
+  chartRef: React.MutableRefObject<EChartsReactCore | null>
+  data: {
+    labels: string[]
+    values: number[]
+    seriesName: string
+  }
+  sx?: SxProps
+}
 
 type VisitorInsightsChartOptions = echarts.ComposeOption<
   LineSeriesOption | LegendComponentOption | TooltipComponentOption | GridComponentOption
->;
+>
 
 const VisitorInsightsChart = ({
   chartRef,
   data,
   ...rest
 }: VisitorInsightsChartProps): ReactElement => {
-  const theme = useTheme();
+  const theme = useTheme()
+  const maxValue = Math.max(...data.values, 1)
+
   const option: VisitorInsightsChartOptions = useMemo(
     () => ({
       tooltip: {
@@ -42,7 +48,7 @@ const VisitorInsightsChart = ({
       },
       legend: {
         show: false,
-        data: ['New Visitors'],
+        data: [data.seriesName],
       },
       grid: {
         top: '5%',
@@ -55,20 +61,7 @@ const VisitorInsightsChart = ({
         {
           type: 'category',
           boundaryGap: false,
-          data: [
-            'January',
-            'February',
-            'March',
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December',
-          ],
+          data: data.labels,
           axisLine: {
             show: false,
           },
@@ -76,7 +69,6 @@ const VisitorInsightsChart = ({
             show: false,
           },
           axisLabel: {
-            formatter: (value: string) => value.substring(0, 3),
             padding: [10, 25, 10, 15],
             fontSize: theme.typography.body2.fontSize,
             fontWeight: theme.typography.fontWeightMedium as number,
@@ -88,7 +80,7 @@ const VisitorInsightsChart = ({
         {
           type: 'value',
           min: 0,
-          max: 500,
+          max: Math.ceil(maxValue * 1.2),
           axisLine: {
             show: false,
           },
@@ -109,7 +101,7 @@ const VisitorInsightsChart = ({
       series: [
         {
           id: 1,
-          name: 'New Visitors',
+          name: data.seriesName,
           type: 'line',
           stack: 'Total',
           smooth: false,
@@ -135,13 +127,13 @@ const VisitorInsightsChart = ({
           emphasis: {
             focus: 'series',
           },
-          data: data?.['New Visitors'],
+          data: data.values,
         },
       ],
     }),
-    [],
-  );
-  return <ReactEChart ref={chartRef} echarts={echarts} option={option} {...rest} />;
-};
+    [data, maxValue, theme],
+  )
+  return <ReactEChart ref={chartRef} echarts={echarts} option={option} {...rest} />
+}
 
-export default VisitorInsightsChart;
+export default VisitorInsightsChart
