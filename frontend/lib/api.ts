@@ -8,30 +8,30 @@ import type {
   TokenRow,
   YieldHistoryItem,
   YieldInfo,
-} from './types';
+} from './types'
 
 function extractErrorMessage(body: unknown, fallback: string): string {
   if (!body || typeof body !== 'object') {
-    return fallback;
+    return fallback
   }
 
-  const record = body as Record<string, unknown>;
-  const error = record.error;
+  const record = body as Record<string, unknown>
+  const error = record.error
 
   if (typeof error === 'string') {
-    const detail = typeof record.detail === 'string' ? `: ${record.detail}` : '';
-    return `${error}${detail}`;
+    const detail = typeof record.detail === 'string' ? `: ${record.detail}` : ''
+    return `${error}${detail}`
   }
 
   if (error && typeof error === 'object') {
-    const message = (error as { message?: unknown }).message;
-    if (typeof message === 'string') return message;
+    const message = (error as { message?: unknown }).message
+    if (typeof message === 'string') return message
   }
 
-  if (typeof record.reason === 'string') return record.reason;
-  if (typeof record.detail === 'string') return record.detail;
+  if (typeof record.reason === 'string') return record.reason
+  if (typeof record.detail === 'string') return record.detail
 
-  return fallback;
+  return fallback
 }
 
 async function clientFetch<T>(path: string, init?: RequestInit): Promise<T> {
@@ -41,15 +41,15 @@ async function clientFetch<T>(path: string, init?: RequestInit): Promise<T> {
       'Content-Type': 'application/json',
       ...init?.headers,
     },
-  });
+  })
 
-  const body = await res.json().catch(() => null);
+  const body = await res.json().catch(() => null)
 
   if (!res.ok) {
-    throw new Error(extractErrorMessage(body, res.statusText || `Request failed (${res.status})`));
+    throw new Error(extractErrorMessage(body, res.statusText || `Request failed (${res.status})`))
   }
 
-  return body as T;
+  return body as T
 }
 
 export const meridianApi = {
@@ -68,8 +68,7 @@ export const meridianApi = {
   yieldHistory: (limit = 50) =>
     clientFetch<ApiEnvelope<YieldHistoryItem[]>>(`/api/yields/history?limit=${limit}`),
 
-  holders: (limit = 100) =>
-    clientFetch<ApiEnvelope<HolderRow[]>>(`/api/holders?limit=${limit}`),
+  holders: (limit = 100) => clientFetch<ApiEnvelope<HolderRow[]>>(`/api/holders?limit=${limit}`),
 
   holderCompliance: (accountHash: string) =>
     clientFetch<ApiEnvelope<ComplianceStatus>>(
@@ -113,4 +112,4 @@ export const meridianApi = {
         body: JSON.stringify({ payment, network }),
       },
     ),
-};
+}
