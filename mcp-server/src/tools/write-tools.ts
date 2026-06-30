@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import type { TransactionBuilder } from '../casper/tx-builder.js'
 
-const publicKeySchema = z.string().regex(/^0[23][0-9a-fA-F]{64,66}$/)
+const publicKeySchema = z.string().regex(/^0[123][0-9a-fA-F]{64,66}$/)
 
 function textResult(data: unknown) {
   return { content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] }
