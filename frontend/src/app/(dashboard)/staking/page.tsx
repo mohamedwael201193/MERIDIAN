@@ -1,9 +1,9 @@
-'use client';
+'use client'
 
-import dynamic from 'next/dynamic';
+import dynamic from 'next/dynamic'
 
-const StakingPage = dynamic(() => import('@/dashboard/pages/StakingPage'), { ssr: false });
+const StakingPage = dynamic(() => import('@/dashboard/pages/StakingPage'), { ssr: false })
 
 export default function StakingRoute() {
-  return <StakingPage />;
+  return <StakingPage />
 }

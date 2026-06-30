@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
-import dynamic from 'next/dynamic';
-import type { ReactNode } from 'react';
-import { Box, CircularProgress } from '@mui/material';
+import dynamic from 'next/dynamic'
+import type { ReactNode } from 'react'
+import { Box, CircularProgress } from '@mui/material'
 
 const DashboardLayout = dynamic(() => import('@/dashboard/layouts/DashboardLayout'), {
   ssr: false,
@@ -19,8 +19,8 @@ const DashboardLayout = dynamic(() => import('@/dashboard/layouts/DashboardLayou
       <CircularProgress color="primary" />
     </Box>
   ),
-});
+})
 
 export default function DashboardShellLayout({ children }: { children: ReactNode }) {
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return <DashboardLayout>{children}</DashboardLayout>
 }

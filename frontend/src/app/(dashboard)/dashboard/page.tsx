@@ -1,5 +1,5 @@
-'use client';
+'use client'
 
-import Dashboard from '@/nickelfox/pages/dashboard/Dashboard';
+import Dashboard from '@/nickelfox/pages/dashboard/Dashboard'
 
-export default Dashboard;
+export default Dashboard

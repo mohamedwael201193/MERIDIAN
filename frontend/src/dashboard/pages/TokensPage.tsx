@@ -1,6 +1,6 @@
-import { ReactElement } from 'react';
-import { Box } from '@mui/material';
-import TopProducts from '@/nickelfox/components/sections/dashboard/top-products/TopProducts';
+import { ReactElement } from 'react'
+import { Box } from '@mui/material'
+import TopProducts from '@/nickelfox/components/sections/dashboard/top-products/TopProducts'
 
 export default function TokensPage(): ReactElement {
   return (
@@ -9,5 +9,5 @@ export default function TokensPage(): ReactElement {
         <TopProducts />
       </Box>
     </Box>
-  );
+  )
 }

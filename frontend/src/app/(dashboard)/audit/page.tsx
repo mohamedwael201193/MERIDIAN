@@ -1,5 +1,5 @@
-'use client';
+'use client'
 
-import AuditPage from '@/dashboard/pages/AuditPage';
+import AuditPage from '@/dashboard/pages/AuditPage'
 
-export default AuditPage;
+export default AuditPage

@@ -1,5 +1,7 @@
-'use client';
+'use client'
 
-import CompliancePage from '@/dashboard/pages/CompliancePage';
+import dynamic from 'next/dynamic'
 
-export default CompliancePage;
+const CompliancePage = dynamic(() => import('@/dashboard/pages/CompliancePage'), { ssr: false })
+
+export default CompliancePage

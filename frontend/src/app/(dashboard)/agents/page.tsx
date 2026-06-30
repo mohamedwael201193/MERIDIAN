@@ -1,5 +1,5 @@
-'use client';
+'use client'
 
-import AgentsPage from '@/dashboard/pages/AgentsPage';
+import AgentsPage from '@/dashboard/pages/AgentsPage'
 
-export default AgentsPage;
+export default AgentsPage
