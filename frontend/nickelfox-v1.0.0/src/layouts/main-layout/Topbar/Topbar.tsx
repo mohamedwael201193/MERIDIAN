@@ -33,8 +33,8 @@ const Topbar = ({
         width: isMobileScreen
           ? 1
           : open
-          ? `calc(100% - ${drawerOpenWidth}px)`
-          : `calc(100% - ${drawerCloseWidth}px)`,
+            ? `calc(100% - ${drawerOpenWidth}px)`
+            : `calc(100% - ${drawerCloseWidth}px)`,
         paddingRight: '0 !important',
       }}
     >

@@ -1,30 +1,24 @@
-'use client';
+'use client'
 
-import {
-  Badge,
-  Stack,
-  AppBar,
-  Toolbar,
-  TextField,
-  IconButton,
-  InputAdornment,
-} from '@mui/material';
-import IconifyIcon from '@/nickelfox/components/base/IconifyIcon';
-import { ReactElement } from 'react';
-import { drawerCloseWidth, drawerOpenWidth } from '..';
-import WalletAccountStatus from '@/components/WalletAccountStatus';
-import { useBreakpoints } from '@/nickelfox/providers/BreakpointsProvider';
+import { Stack, AppBar, Toolbar, IconButton, Chip } from '@mui/material'
+import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
+import { ReactElement } from 'react'
+import { drawerCloseWidth, drawerOpenWidth } from '..'
+import WalletAccountStatus from '@/components/WalletAccountStatus'
+import { useBreakpoints } from '@/nickelfox/providers/BreakpointsProvider'
+import { useReady } from '@lib/hooks/useMeridianData'
 
 const Topbar = ({
   open,
   handleDrawerToggle,
 }: {
-  open: boolean;
-  handleDrawerToggle: () => void;
+  open: boolean
+  handleDrawerToggle: () => void
 }): ReactElement => {
-  const { down } = useBreakpoints();
-
-  const isMobileScreen = down('sm');
+  const { down } = useBreakpoints()
+  const { data } = useReady()
+  const isMobileScreen = down('sm')
+  const backendStatus = typeof data?.status === 'string' ? data.status : 'checking'
 
   return (
     <AppBar
@@ -35,8 +29,8 @@ const Topbar = ({
         width: isMobileScreen
           ? 1
           : open
-          ? `calc(100% - ${drawerOpenWidth}px)`
-          : `calc(100% - ${drawerCloseWidth}px)`,
+            ? `calc(100% - ${drawerOpenWidth}px)`
+            : `calc(100% - ${drawerCloseWidth}px)`,
         paddingRight: '0 !important',
       }}
     >
@@ -50,10 +44,10 @@ const Topbar = ({
           height: 92,
         }}
       >
-        <Stack direction="row" gap={2} alignItems="center" ml={2.5} flex="1 1 52.5%">
+        <Stack direction="row" gap={1.5} alignItems="center" ml={2.5} flex="1 1 auto">
           <IconButton
             color="inherit"
-            aria-label="open drawer"
+            aria-label={open ? 'Collapse navigation' : 'Expand navigation'}
             onClick={handleDrawerToggle}
             edge="start"
           >
@@ -62,63 +56,26 @@ const Topbar = ({
               color="common.white"
             />
           </IconButton>
-          <IconButton
-            color="inherit"
-            sx={{
-              display: { xs: 'flex', sm: 'none' },
-            }}
-          >
-            <IconifyIcon icon="mdi:search" />
-          </IconButton>
-          <TextField
-            variant="filled"
-            fullWidth
-            placeholder="Search here..."
-            sx={{
-              display: { xs: 'none', sm: 'flex' },
-              maxWidth: 680,
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="end">
-                  <IconifyIcon icon="akar-icons:search" width={13} height={13} />
-                </InputAdornment>
-              ),
-            }}
+          <Chip
+            size="small"
+            variant="outlined"
+            color={
+              backendStatus === 'ok'
+                ? 'success'
+                : backendStatus === 'degraded'
+                  ? 'warning'
+                  : 'default'
+            }
+            label={`Backend ${backendStatus}`}
+            sx={{ display: { xs: 'none', md: 'inline-flex' } }}
           />
         </Stack>
-        <Stack
-          direction="row"
-          gap={2.25}
-          alignItems="center"
-          justifyContent="flex-end"
-          mr={3}
-          flex="1 1 20%"
-        >
-          <Badge
-            color="error"
-            badgeContent=" "
-            variant="dot"
-            sx={{
-              '& .MuiBadge-badge': {
-                top: 11,
-                right: 11,
-              },
-            }}
-          >
-            <IconButton
-              sx={{
-                padding: 1,
-              }}
-            >
-              <IconifyIcon icon="ph:bell-bold" width={29} height={32} />
-            </IconButton>
-          </Badge>
+        <Stack direction="row" gap={1.5} alignItems="center" justifyContent="flex-end" mr={3}>
           <WalletAccountStatus />
         </Stack>
       </Toolbar>
     </AppBar>
-  );
-};
+  )
+}
 
-export default Topbar;
+export default Topbar
