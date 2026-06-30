@@ -1,5 +1,5 @@
-import { PaletteOptions } from '@mui/material';
-import { meridianRed, grey, green, pinkishRed, yellowOrange } from './colors';
+import { PaletteOptions } from '@mui/material'
+import { meridianRed, grey, green, pinkishRed, yellowOrange } from './colors'
 
 const palette: PaletteOptions = {
   primary: {
@@ -18,9 +18,9 @@ const palette: PaletteOptions = {
     dark: green[900],
   },
   info: {
-    light: meridianRed[100],
-    main: meridianRed[400],
-    dark: meridianRed[800],
+    light: '#93a5b8',
+    main: '#64748b',
+    dark: '#475569',
   },
   warning: {
     light: yellowOrange[50],
@@ -51,6 +51,6 @@ const palette: PaletteOptions = {
     white: '#ffffff',
     black: '#000000',
   },
-};
+}
 
-export default palette;
+export default palette
