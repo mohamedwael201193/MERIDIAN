@@ -1,24 +1,73 @@
-'use client';
+'use client'
 
-import { HttpHandler, RpcClient, Transaction } from 'casper-js-sdk';
+import { z } from 'zod'
+import type { UnsignedTransaction } from './types'
 
-const RPC_URL = 'https://node.testnet.casper.network/rpc';
+const unsignedTransactionSchema = z.object({
+  network: z.string().min(1),
+  chainName: z.string().min(1),
+  transactionType: z.string().min(1),
+  transaction: z.record(z.unknown()),
+  note: z.string().optional(),
+})
 
-export type TxPollStatus = 'pending' | 'processed' | 'finalized' | 'failed' | 'unknown';
+export type TxPollStatus = 'pending' | 'processed' | 'finalized' | 'failed' | 'unknown'
 
 export interface TxPollResult {
-  status: TxPollStatus;
-  detail?: string;
+  status: TxPollStatus
+  detail?: string
 }
 
-function getRpcClient() {
-  return new RpcClient(new HttpHandler(RPC_URL));
+function unwrapMcpTransaction(value: unknown): unknown {
+  if (!value || typeof value !== 'object') return value
+  const record = value as Record<string, unknown>
+
+  if ('transaction' in record) return value
+  if ('result' in record) return unwrapMcpTransaction(record.result)
+  if ('data' in record) return unwrapMcpTransaction(record.data)
+
+  return value
+}
+
+export function parseUnsignedTransaction(
+  value: unknown,
+  source = 'MCP response',
+): UnsignedTransaction {
+  const parsed = unsignedTransactionSchema.safeParse(unwrapMcpTransaction(value))
+  if (!parsed.success) {
+    throw new Error(
+      `${source} did not return a valid unsigned Casper transaction. ` +
+        'Expected network, chainName, transactionType, transaction, and note.',
+    )
+  }
+
+  const payload = JSON.stringify(parsed.data.transaction)
+  if (!payload || payload === '{}') {
+    throw new Error(`${source} returned an empty transaction payload.`)
+  }
+
+  return {
+    ...parsed.data,
+    note: parsed.data.note ?? '',
+  }
 }
 
 export async function submitSignedTransaction(signedTransaction: unknown): Promise<string> {
-  const rpc = getRpcClient();
-  const result = await rpc.putTransaction(signedTransaction as Transaction);
-  return String(result.transactionHash);
+  const res = await fetch('/api/transactions/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ transaction: signedTransaction }),
+  })
+  const body = (await res.json().catch(() => null)) as {
+    transactionHash?: string
+    error?: { message?: string }
+  } | null
+
+  if (!res.ok || !body?.transactionHash) {
+    throw new Error(body?.error?.message ?? 'Failed to submit transaction')
+  }
+
+  return body.transactionHash
 }
 
 export async function pollTransactionStatus(
@@ -26,35 +75,23 @@ export async function pollTransactionStatus(
   maxAttempts = 30,
   intervalMs = 4000,
 ): Promise<TxPollResult> {
-  const rpc = getRpcClient();
-
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     try {
-      const info = await rpc.getTransactionByTransactionHash(transactionHash);
-      const execution = (info as { executionInfo?: { executionResult?: { errorMessage?: string } } })
-        .executionInfo;
-      const result = execution?.executionResult;
-
-      if (result && 'errorMessage' in result && result.errorMessage) {
-        return { status: 'failed', detail: String(result.errorMessage) };
-      }
-
-      const raw = info as unknown as {
-        transaction?: { hash?: string };
-        executionInfo?: unknown;
-      };
-      if (raw.executionInfo) {
+      const res = await fetch(`/api/transactions/status/${encodeURIComponent(transactionHash)}`)
+      const body = (await res.json()) as TxPollResult
+      if (body.status === 'failed') return body
+      if (body.status === 'processed' || body.status === 'finalized') {
         if (attempt >= 2) {
-          return { status: 'finalized' };
+          return { status: 'finalized' }
         }
-        return { status: 'processed' };
+        return { status: 'processed' }
       }
     } catch {
       // Transaction may not be indexed yet
     }
 
-    await new Promise(resolve => setTimeout(resolve, intervalMs));
+    await new Promise((resolve) => setTimeout(resolve, intervalMs))
   }
 
-  return { status: 'pending', detail: 'Timed out waiting for finality' };
+  return { status: 'pending', detail: 'Timed out waiting for finality' }
 }
