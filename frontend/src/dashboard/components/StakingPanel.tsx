@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import { useEffect, useState, ReactElement } from 'react';
+import { useEffect, useState, ReactElement } from 'react'
 import {
   Paper,
   Stack,
@@ -10,84 +10,87 @@ import {
   Alert,
   CircularProgress,
   MenuItem,
-} from '@mui/material';
-import { useTokenYield, revalidateMeridianData } from '@lib/hooks/useMeridianData';
-import { useWalletActions } from '@lib/hooks/useWalletActions';
-import { formatApy, formatMotes, MERIDIAN_TOKEN_PACKAGE } from '@lib/contracts';
-import { meridianApi } from '@lib/api';
-import type { UnsignedTransaction } from '@lib/types';
-import TransactionStatus from '@/components/TransactionStatus';
-import TransactionReviewCard from '@/components/TransactionReviewCard';
+} from '@mui/material'
+import { useTokenYield, revalidateMeridianData } from '@lib/hooks/useMeridianData'
+import { useWalletActions } from '@lib/hooks/useWalletActions'
+import { formatApy, formatMotes, MERIDIAN_TOKEN_PACKAGE } from '@lib/contracts'
+import { meridianApi } from '@lib/api'
+import type { UnsignedTransaction } from '@lib/types'
+import { parseUnsignedTransaction } from '@lib/transactions'
+import TransactionStatus from '@/components/TransactionStatus'
+import TransactionReviewCard from '@/components/TransactionReviewCard'
 
 export default function StakingPanel(): ReactElement {
-  const wallet = useWalletActions();
-  const { data: yieldInfo, isLoading } = useTokenYield();
-  const [validators, setValidators] = useState<Array<{ public_key: string; name?: string }>>([]);
-  const [fromValidator, setFromValidator] = useState('');
-  const [toValidator, setToValidator] = useState('');
-  const [amount, setAmount] = useState('1000000000');
-  const [unsignedTx, setUnsignedTx] = useState<UnsignedTransaction | null>(null);
-  const [txHash, setTxHash] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const wallet = useWalletActions()
+  const { data: yieldInfo, isLoading } = useTokenYield()
+  const [validators, setValidators] = useState<Array<{ public_key: string; name?: string }>>([])
+  const [fromValidator, setFromValidator] = useState('')
+  const [toValidator, setToValidator] = useState('')
+  const [amount, setAmount] = useState('1000000000')
+  const [unsignedTx, setUnsignedTx] = useState<UnsignedTransaction | null>(null)
+  const [txHash, setTxHash] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     void (async () => {
       try {
-        const { result } = await meridianApi.mcpTool('list_validators', {});
-        const list = (result as { validators?: Array<{ public_key: string; name?: string }> })?.validators ?? result;
+        const { result } = await meridianApi.mcpTool('list_validators', {})
+        const list =
+          (result as { validators?: Array<{ public_key: string; name?: string }> })?.validators ??
+          result
         if (Array.isArray(list) && list.length) {
-          setValidators(list as Array<{ public_key: string; name?: string }>);
-          setFromValidator(list[0]?.public_key ?? '');
-          setToValidator(list[1]?.public_key ?? list[0]?.public_key ?? '');
+          setValidators(list as Array<{ public_key: string; name?: string }>)
+          setFromValidator(list[0]?.public_key ?? '')
+          setToValidator(list[1]?.public_key ?? list[0]?.public_key ?? '')
         }
       } catch {
         // Validators optional until MCP responds
       }
-    })();
-  }, []);
+    })()
+  }, [])
 
   const buildRestake = async () => {
-    setError(null);
-    setTxHash(null);
-    const publicKey = await wallet.getPublicKey();
+    setError(null)
+    setTxHash(null)
+    const publicKey = await wallet.getPublicKey()
     if (!publicKey) {
-      setError('Connect wallet to restake.');
-      return;
+      setError('Connect wallet to restake.')
+      return
     }
     if (!fromValidator || !toValidator) {
-      setError('Select source and destination validators.');
-      return;
+      setError('Select source and destination validators.')
+      return
     }
-    setLoading(true);
+    setLoading(true)
     try {
       const { result } = await meridianApi.mcpTool('restake', {
         callerPublicKey: publicKey,
         fromValidator,
         toValidator,
         amount,
-      });
-      setUnsignedTx(result as UnsignedTransaction);
+      })
+      setUnsignedTx(parseUnsignedTransaction(result, 'restake response'))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to build restake transaction');
+      setError(err instanceof Error ? err.message : 'Failed to build restake transaction')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const signAndSubmit = async () => {
-    if (!unsignedTx) return;
-    setLoading(true);
+    if (!unsignedTx) return
+    setLoading(true)
     try {
-      const hash = await wallet.signAndSubmit(unsignedTx);
-      setTxHash(hash);
-      setUnsignedTx(null);
+      const hash = await wallet.signAndSubmit(unsignedTx)
+      setTxHash(hash)
+      setUnsignedTx(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sign/submit failed');
+      setError(err instanceof Error ? err.message : 'Sign/submit failed')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <Paper sx={{ p: { xs: 4, sm: 6 }, height: 1 }}>
@@ -114,10 +117,10 @@ export default function StakingPanel(): ReactElement {
           select
           label="From validator"
           value={fromValidator}
-          onChange={e => setFromValidator(e.target.value)}
+          onChange={(e) => setFromValidator(e.target.value)}
           disabled={!validators.length}
         >
-          {validators.map(v => (
+          {validators.map((v) => (
             <MenuItem key={v.public_key} value={v.public_key}>
               {v.name ?? v.public_key.slice(0, 16)}…
             </MenuItem>
@@ -127,10 +130,10 @@ export default function StakingPanel(): ReactElement {
           select
           label="To validator"
           value={toValidator}
-          onChange={e => setToValidator(e.target.value)}
+          onChange={(e) => setToValidator(e.target.value)}
           disabled={!validators.length}
         >
-          {validators.map(v => (
+          {validators.map((v) => (
             <MenuItem key={`to-${v.public_key}`} value={v.public_key}>
               {v.name ?? v.public_key.slice(0, 16)}…
             </MenuItem>
@@ -139,7 +142,7 @@ export default function StakingPanel(): ReactElement {
         <TextField
           label="Amount (motes)"
           value={amount}
-          onChange={e => setAmount(e.target.value)}
+          onChange={(e) => setAmount(e.target.value)}
         />
         <Stack direction="row" gap={2}>
           <Button variant="contained" onClick={buildRestake} disabled={loading}>
@@ -148,7 +151,10 @@ export default function StakingPanel(): ReactElement {
         </Stack>
         {error ? <Alert severity="error">{error}</Alert> : null}
         {txHash ? (
-          <TransactionStatus transactionHash={txHash} onFinalized={() => void revalidateMeridianData()} />
+          <TransactionStatus
+            transactionHash={txHash}
+            onFinalized={() => void revalidateMeridianData()}
+          />
         ) : null}
         {unsignedTx ? (
           <TransactionReviewCard
@@ -161,5 +167,5 @@ export default function StakingPanel(): ReactElement {
         ) : null}
       </Stack>
     </Paper>
-  );
+  )
 }
