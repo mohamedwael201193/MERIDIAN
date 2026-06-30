@@ -1,40 +1,35 @@
-'use client';
+'use client'
 
-import { useCallback } from 'react';
-import { Button, Stack, Typography, Alert, Chip } from '@mui/material';
-import { useWalletSession } from '@lib/hooks/useWalletSession';
-import { useClickReady } from '@lib/hooks/useClickReady';
-import { formatMotes, explorerAccountUrl } from '@lib/contracts';
-import { PublicKey } from 'casper-js-sdk';
+import { useCallback } from 'react'
+import { Button, Stack, Typography, Alert, Chip } from '@mui/material'
+import { useWalletSession } from '@lib/hooks/useWalletSession'
+import { useClickReady } from '@lib/hooks/useClickReady'
+import { connectCasperWallet, disconnectCasperWallet } from '@lib/wallet/connectCasperWallet'
+import { formatMotes, explorerAccountUrl } from '@lib/contracts'
+import { PublicKey } from 'casper-js-sdk'
 
 export default function WalletConnect() {
-  const { clickRef } = useClickReady();
-  const session = useWalletSession();
+  const { clickRef } = useClickReady()
+  const session = useWalletSession()
 
   const handleConnect = useCallback(() => {
-    if (!clickRef) return;
-    clickRef.signIn();
-  }, [clickRef]);
+    void connectCasperWallet(clickRef)
+  }, [clickRef])
 
   const handleDisconnect = useCallback(() => {
-    clickRef?.signOut();
-  }, [clickRef]);
+    void disconnectCasperWallet(clickRef).then(() => session.refresh())
+  }, [clickRef, session])
 
   const accountHash = session.publicKey
     ? PublicKey.fromHex(session.publicKey).accountHash().toPrefixedString()
-    : null;
+    : null
 
   if (!session.connected) {
     return (
-      <Button
-        variant="contained"
-        color="primary"
-        size="small"
-        onClick={handleConnect}
-      >
+      <Button variant="contained" color="primary" size="small" onClick={handleConnect}>
         Connect Wallet
       </Button>
-    );
+    )
   }
 
   return (
@@ -62,5 +57,5 @@ export default function WalletConnect() {
         Disconnect
       </Button>
     </Stack>
-  );
+  )
 }

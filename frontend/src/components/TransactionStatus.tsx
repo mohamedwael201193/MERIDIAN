@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 import {
   Alert,
   Box,
@@ -10,48 +10,54 @@ import {
   Stack,
   Typography,
   Link as MuiLink,
-} from '@mui/material';
-import { pollTransactionStatus, type TxPollStatus } from '@lib/transactions';
-import { explorerTxUrl, truncateHash } from '@lib/contracts';
+} from '@mui/material'
+import { pollTransactionStatus, type TxPollStatus } from '@lib/transactions'
+import { explorerTxUrl, truncateHash } from '@lib/contracts'
 
 interface TransactionStatusProps {
-  transactionHash: string | null;
-  onFinalized?: () => void;
+  transactionHash: string | null
+  onFinalized?: () => void
 }
 
-export default function TransactionStatus({ transactionHash, onFinalized }: TransactionStatusProps) {
-  const [status, setStatus] = useState<TxPollStatus>('pending');
-  const [detail, setDetail] = useState<string | undefined>();
+export default function TransactionStatus({
+  transactionHash,
+  onFinalized,
+}: TransactionStatusProps) {
+  const [status, setStatus] = useState<TxPollStatus>('pending')
+  const [detail, setDetail] = useState<string | undefined>()
 
   useEffect(() => {
-    if (!transactionHash) return;
+    if (!transactionHash) return
 
-    let cancelled = false;
-    setStatus('pending');
-    setDetail(undefined);
+    let cancelled = false
+    setStatus('pending')
+    setDetail(undefined)
 
     void (async () => {
-      const result = await pollTransactionStatus(transactionHash);
-      if (cancelled) return;
-      setStatus(result.status);
-      setDetail(result.detail);
+      const result = await pollTransactionStatus(transactionHash)
+      if (cancelled) return
+      setStatus(result.status)
+      setDetail(result.detail)
       if (result.status === 'finalized' || result.status === 'processed') {
-        onFinalized?.();
+        onFinalized?.()
       }
-    })();
+    })()
 
     return () => {
-      cancelled = true;
-    };
-  }, [transactionHash, onFinalized]);
+      cancelled = true
+    }
+  }, [transactionHash, onFinalized])
 
-  if (!transactionHash) return null;
+  if (!transactionHash) return null
 
-  const severity = status === 'failed' ? 'error' : status === 'finalized' ? 'success' : 'info';
-  const chipColor = status === 'failed' ? 'error' : status === 'finalized' ? 'success' : 'info';
+  const severity = status === 'failed' ? 'error' : status === 'finalized' ? 'success' : 'info'
+  const chipColor = status === 'failed' ? 'error' : status === 'finalized' ? 'success' : 'info'
 
   return (
-    <Paper variant="outlined" sx={{ mt: 2, p: 2.5, bgcolor: 'background.default', borderColor: 'divider' }}>
+    <Paper
+      variant="outlined"
+      sx={{ mt: 2, p: 2.5, bgcolor: 'background.default', borderColor: 'divider' }}
+    >
       <Stack gap={2}>
         <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={1.5}>
           <Box>
@@ -74,11 +80,16 @@ export default function TransactionStatus({ transactionHash, onFinalized }: Tran
           <Typography variant="caption" color="text.secondary">
             Hash
           </Typography>
-          <MuiLink href={explorerTxUrl(transactionHash)} target="_blank" rel="noreferrer" variant="body2">
+          <MuiLink
+            href={explorerTxUrl(transactionHash)}
+            target="_blank"
+            rel="noreferrer"
+            variant="body2"
+          >
             {truncateHash(transactionHash, 12, 10)}
           </MuiLink>
         </Stack>
       </Stack>
     </Paper>
-  );
+  )
 }

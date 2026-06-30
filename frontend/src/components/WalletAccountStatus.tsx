@@ -1,29 +1,42 @@
-'use client';
+'use client'
 
-import { useCallback } from 'react';
-import { Stack, Typography, Chip, Button } from '@mui/material';
-import { useWalletSession } from '@lib/hooks/useWalletSession';
-import { useClickReady } from '@lib/hooks/useClickReady';
-import { formatMotes, explorerAccountUrl } from '@lib/contracts';
-import { PublicKey } from 'casper-js-sdk';
+import { useCallback } from 'react'
+import { Stack, Typography, Chip, Button, Alert } from '@mui/material'
+import { useWalletSession } from '@lib/hooks/useWalletSession'
+import { useClickReady } from '@lib/hooks/useClickReady'
+import { connectCasperWallet, disconnectCasperWallet } from '@lib/wallet/connectCasperWallet'
+import { formatMotes, explorerAccountUrl } from '@lib/contracts'
+import { PublicKey } from 'casper-js-sdk'
 
-/** Dashboard top bar — connected account only (no connect button). */
 export default function WalletAccountStatus() {
-  const { clickRef } = useClickReady();
-  const session = useWalletSession();
+  const { clickRef } = useClickReady()
+  const session = useWalletSession()
+
+  const handleConnect = useCallback(() => {
+    void connectCasperWallet(clickRef)
+  }, [clickRef])
 
   const handleDisconnect = useCallback(() => {
-    clickRef?.signOut();
-  }, [clickRef]);
+    void disconnectCasperWallet(clickRef).then(() => session.refresh())
+  }, [clickRef, session])
 
   if (!session.connected || !session.publicKey) {
-    return null;
+    return (
+      <Button variant="contained" color="primary" size="small" onClick={handleConnect}>
+        Connect Wallet
+      </Button>
+    )
   }
 
-  const accountHash = PublicKey.fromHex(session.publicKey).accountHash().toPrefixedString();
+  const accountHash = PublicKey.fromHex(session.publicKey).accountHash().toPrefixedString()
 
   return (
     <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
+      {session.wrongNetwork ? (
+        <Alert severity="warning" sx={{ py: 0, px: 1 }}>
+          Wrong network
+        </Alert>
+      ) : null}
       <Chip
         size="small"
         label={session.accountLabel}
@@ -34,7 +47,11 @@ export default function WalletAccountStatus() {
         clickable
       />
       {session.balanceMotes ? (
-        <Typography variant="caption" color="text.secondary">
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: { xs: 'none', sm: 'block' } }}
+        >
           {formatMotes(session.balanceMotes)} CSPR
         </Typography>
       ) : null}
@@ -42,5 +59,5 @@ export default function WalletAccountStatus() {
         Disconnect
       </Button>
     </Stack>
-  );
+  )
 }

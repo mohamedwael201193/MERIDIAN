@@ -1,38 +1,38 @@
-'use client';
+'use client'
 
-import { useCallback, useState } from 'react';
-import { useWalletSession } from '@lib/hooks/useWalletSession';
-import { useClickReady } from '@lib/hooks/useClickReady';
-import { connectCasperWallet } from '@lib/wallet/connectCasperWallet';
-import { formatMotes, explorerAccountUrl } from '@lib/contracts';
-import { PublicKey } from 'casper-js-sdk';
+import { useCallback, useState } from 'react'
+import { useWalletSession } from '@lib/hooks/useWalletSession'
+import { useClickReady } from '@lib/hooks/useClickReady'
+import { connectCasperWallet, disconnectCasperWallet } from '@lib/wallet/connectCasperWallet'
+import { formatMotes, explorerAccountUrl } from '@lib/contracts'
+import { PublicKey } from 'casper-js-sdk'
 
 export default function LandingWalletButton() {
-  const { clickRef, ready } = useClickReady();
-  const session = useWalletSession();
-  const [connecting, setConnecting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { clickRef, ready } = useClickReady()
+  const session = useWalletSession()
+  const [connecting, setConnecting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleConnect = useCallback(async () => {
-    setError(null);
-    setConnecting(true);
+    setError(null)
+    setConnecting(true)
     try {
-      await connectCasperWallet(clickRef);
-      await session.refresh();
+      await connectCasperWallet(clickRef)
+      await session.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to connect wallet');
+      setError(err instanceof Error ? err.message : 'Failed to connect wallet')
     } finally {
-      setConnecting(false);
+      setConnecting(false)
     }
-  }, [clickRef, session]);
+  }, [clickRef, session])
 
-  const handleDisconnect = useCallback(() => {
-    clickRef?.signOut();
-    void session.refresh();
-  }, [clickRef, session]);
+  const handleDisconnect = useCallback(async () => {
+    await disconnectCasperWallet(clickRef)
+    await session.refresh()
+  }, [clickRef, session])
 
   if (session.connected && session.publicKey) {
-    const accountHash = PublicKey.fromHex(session.publicKey).accountHash().toPrefixedString();
+    const accountHash = PublicKey.fromHex(session.publicKey).accountHash().toPrefixedString()
 
     return (
       <div className="flex items-center gap-3">
@@ -47,16 +47,16 @@ export default function LandingWalletButton() {
         </a>
         <button
           type="button"
-          onClick={handleDisconnect}
+          onClick={() => void handleDisconnect()}
           className="inline-flex items-center rounded-md border border-white/20 px-4 py-2 text-sm font-medium text-white transition hover:border-red-500/50 hover:bg-red-500/10"
         >
           Disconnect
         </button>
       </div>
-    );
+    )
   }
 
-  const label = !ready ? 'Loading wallet…' : connecting ? 'Connecting…' : 'Connect Wallet';
+  const label = !ready ? 'Loading wallet…' : connecting ? 'Connecting…' : 'Connect Wallet'
 
   return (
     <div className="flex flex-col items-end gap-1">
@@ -68,7 +68,9 @@ export default function LandingWalletButton() {
       >
         {label}
       </button>
-      {error ? <span className="max-w-[220px] text-right text-xs text-red-400">{error}</span> : null}
+      {error ? (
+        <span className="max-w-[220px] text-right text-xs text-red-400">{error}</span>
+      ) : null}
     </div>
-  );
+  )
 }
