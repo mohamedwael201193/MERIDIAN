@@ -6,6 +6,8 @@ import {
   auditReviewSchema,
   auditSummarySchema,
   hashDecision,
+  loadAgentWallet,
+  postAgentDecision,
   type YieldDecision,
 } from '@meridian/agents-shared'
 
@@ -21,8 +23,10 @@ export class AuditAgent {
   private readonly ai: AiClient
   private readonly backend: BackendClient
   private readonly coordination: AgentCoordination
+  private readonly wallet
 
   constructor() {
+    this.wallet = loadAgentWallet('audit')
     this.ai = new AiClient({ env: process.env })
     this.backend = new BackendClient({
       baseUrl: process.env.BACKEND_URL ?? 'http://127.0.0.1:3000',
@@ -50,20 +54,13 @@ export class AuditAgent {
     await this.coordination.markReviewed(decisionHash, review.approved)
 
     const reviewHash = hashDecision('audit_review', { decisionHash, review })
-    await fetch(`${process.env.BACKEND_URL ?? 'http://127.0.0.1:3000'}/api/v1/decisions`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': process.env.MERIDIAN_API_KEY ?? '',
-      },
-      body: JSON.stringify({
-        agentName: 'audit',
-        decisionHash: reviewHash,
-        decisionType: 'yield_review',
-        payload: { decisionHash, review },
-        approved: review.approved,
-        reviewedBy: 'audit-agent',
-      }),
+    await postAgentDecision({
+      agentName: 'audit',
+      decisionHash: reviewHash,
+      decisionType: 'yield_review',
+      payload: { decisionHash, review },
+      approved: review.approved,
+      reviewedBy: 'audit-agent',
     })
 
     return { approved: review.approved, reviewHash }
@@ -79,19 +76,12 @@ export class AuditAgent {
     })
 
     const summaryHash = hashDecision('audit_summary', summary)
-    await fetch(`${process.env.BACKEND_URL ?? 'http://127.0.0.1:3000'}/api/v1/decisions`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': process.env.MERIDIAN_API_KEY ?? '',
-      },
-      body: JSON.stringify({
-        agentName: 'audit',
-        decisionHash: summaryHash,
-        decisionType: 'hourly_summary',
-        payload: summary,
-        approved: true,
-      }),
+    await postAgentDecision({
+      agentName: 'audit',
+      decisionHash: summaryHash,
+      decisionType: 'hourly_summary',
+      payload: summary,
+      approved: true,
     })
 
     return { summaryHash }
@@ -122,7 +112,7 @@ async function main(): Promise<void> {
   console.log(JSON.stringify({ agent: 'audit', review, summary }))
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
   console.error(error)
   process.exit(1)
 })

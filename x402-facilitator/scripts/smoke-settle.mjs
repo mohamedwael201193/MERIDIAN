@@ -2,7 +2,7 @@
 import { buildSignedPayment } from '../dist/facilitator-service.js'
 
 const payment = buildSignedPayment({
-  payerPemPath: process.env.ODRA_CASPER_LIVENET_SECRET_KEY_PATH ?? '',
+  payerPem: process.env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM ?? '',
   payToAccountHash: process.env.X402_PAY_TO_ACCOUNT_HASH ?? '',
   amountMotes: process.env.X402_PAYMENT_AMOUNT_MOTES ?? '10000000',
   chainName: process.env.CASPER_CHAIN_NAME ?? 'casper-test',

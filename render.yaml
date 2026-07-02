@@ -23,7 +23,7 @@ services:
       - key: AGENTS_ENABLED
         value: true
       - key: AGENT_INTERVAL_MS
-        value: "300000"
+        value: '300000'
       - key: DATABASE_URL
         sync: false
       - key: SUPABASE_URL
@@ -55,6 +55,24 @@ services:
       - key: MERIDIAN_CONTRACTS_PATH
         value: deployed/addresses.json
       - key: MERIDIAN_VALIDATOR_PUBLIC_KEY
+        sync: false
+      - key: MERIDIAN_YIELD_AGENT_PUBLIC_KEY
+        sync: false
+      - key: MERIDIAN_YIELD_AGENT_ACCOUNT_HASH
+        sync: false
+      - key: MERIDIAN_YIELD_AGENT_PRIVATE_KEY_PEM
+        sync: false
+      - key: MERIDIAN_COMPLIANCE_AGENT_PUBLIC_KEY
+        sync: false
+      - key: MERIDIAN_COMPLIANCE_AGENT_ACCOUNT_HASH
+        sync: false
+      - key: MERIDIAN_COMPLIANCE_AGENT_PRIVATE_KEY_PEM
+        sync: false
+      - key: MERIDIAN_AUDIT_AGENT_PUBLIC_KEY
+        sync: false
+      - key: MERIDIAN_AUDIT_AGENT_ACCOUNT_HASH
+        sync: false
+      - key: MERIDIAN_AUDIT_AGENT_PRIVATE_KEY_PEM
         sync: false
       - key: INDEXER_ENABLED
         value: true

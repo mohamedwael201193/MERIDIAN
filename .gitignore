@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 *.pem
+Account *_secret_key.pem
 *.key
 keys/
 **/secret_key*

@@ -70,6 +70,9 @@ importers:
 
   agents/shared:
     dependencies:
+      '@meridian/casper-sdk':
+        specifier: workspace:*
+        version: link:../../packages/meridian-casper-sdk
       '@meridian/env':
         specifier: workspace:*
         version: link:../../packages/meridian-env

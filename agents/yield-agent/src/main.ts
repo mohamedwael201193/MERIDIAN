@@ -3,7 +3,10 @@ import {
   AiClient,
   AgentCoordination,
   BackendClient,
+  enforceAmountLimit,
   hashDecision,
+  loadAgentWallet,
+  postAgentDecision,
   yieldDecisionSchema,
 } from '@meridian/agents-shared'
 
@@ -15,8 +18,10 @@ export class YieldAgent {
   private readonly ai: AiClient
   private readonly backend: BackendClient
   private readonly coordination: AgentCoordination
+  private readonly wallet
 
   constructor() {
+    this.wallet = loadAgentWallet('yield')
     this.ai = new AiClient({ env: process.env })
     this.backend = new BackendClient({
       baseUrl: process.env.BACKEND_URL ?? 'http://127.0.0.1:3000',
@@ -57,24 +62,18 @@ export class YieldAgent {
       if (!whitelist.includes(decision.validatorPublicKey)) {
         throw new Error('validator_not_whitelisted')
       }
+      enforceAmountLimit('yield', decision.amountMotes)
     }
 
     const decisionHash = hashDecision('yield', decision)
     await this.coordination.setPendingReview(decisionHash, decision)
     await this.coordination.publishDecision('yield', { decisionHash, decision })
 
-    await fetch(`${process.env.BACKEND_URL ?? 'http://127.0.0.1:3000'}/api/v1/decisions`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': process.env.MERIDIAN_API_KEY ?? '',
-      },
-      body: JSON.stringify({
-        agentName: 'yield',
-        decisionHash,
-        decisionType: 'yield_evaluation',
-        payload: decision,
-      }),
+    await postAgentDecision({
+      agentName: 'yield',
+      decisionHash,
+      decisionType: 'yield_evaluation',
+      payload: decision,
     })
 
     const approved = await this.coordination.isReviewApproved(decisionHash)
@@ -88,7 +87,7 @@ async function main(): Promise<void> {
   console.log(JSON.stringify({ agent: 'yield', ...result }))
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
   console.error(error)
   process.exit(1)
 })

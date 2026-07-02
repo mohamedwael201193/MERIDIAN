@@ -11,9 +11,7 @@ export {
   auditReviewSchema,
   auditSummarySchema,
 } from './schemas.js'
-export type {
-  YieldDecision,
-  ComplianceDecision,
-  AuditReview,
-  AuditSummary,
-} from './schemas.js'
+export type { YieldDecision, ComplianceDecision, AuditReview, AuditSummary } from './schemas.js'
+export { loadAgentWallet, enforceAmountLimit } from './agent-wallet.js'
+export type { AgentWallet, AgentAttestation } from './agent-wallet.js'
+export { postAgentDecision } from './decision-poster.js'

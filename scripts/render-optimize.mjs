@@ -59,13 +59,17 @@ async function setEnv(serviceId, pairs) {
   await api('PUT', `/services/${serviceId}/env-vars`, body)
 }
 
-function readPem() {
-  const path = env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM || env.ODRA_CASPER_LIVENET_SECRET_KEY_PATH
-  if (!path) return ''
-  if (path.includes('BEGIN')) return path
-  if (existsSync(path)) return readFileSync(path, 'utf8')
+function resolveEnvPem(key) {
+  const value = env[key]
+  if (!value) return ''
+  if (value.includes('BEGIN')) return value.replace(/\\n/g, '\n')
   return ''
 }
+
+const deployerPem = resolveEnvPem('MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM')
+const yieldPem = resolveEnvPem('MERIDIAN_YIELD_AGENT_PRIVATE_KEY_PEM')
+const compliancePem = resolveEnvPem('MERIDIAN_COMPLIANCE_AGENT_PRIVATE_KEY_PEM')
+const auditPem = resolveEnvPem('MERIDIAN_AUDIT_AGENT_PRIVATE_KEY_PEM')
 
 const services = await listMeridianServices()
 console.log('Meridian services:', Object.keys(services).join(', '))
@@ -76,7 +80,6 @@ const mcp = services['meridian-mcp-server']
 
 const backendUrl = backend?.serviceDetails?.url || backend?.url || ''
 const x402Url = x402?.serviceDetails?.url || x402?.url || 'https://meridian-x402-facilitator.onrender.com'
-const deployerPem = readPem()
 
 // Suspend redundant MERIDIAN-only services
 for (const name of ['meridian-agents', 'meridian-x402-resource']) {
@@ -120,6 +123,15 @@ if (x402?.id) {
     ['BACKEND_URL', backendUrl],
     ['MERIDIAN_API_KEY', env.MERIDIAN_API_KEY],
     ['MERIDIAN_VALIDATOR_PUBLIC_KEY', env.MERIDIAN_VALIDATOR_PUBLIC_KEY],
+    ['MERIDIAN_DEPLOYER_PUBLIC_KEY', env.MERIDIAN_DEPLOYER_PUBLIC_KEY],
+    ['MERIDIAN_DEPLOYER_ACCOUNT_HASH', env.MERIDIAN_DEPLOYER_ACCOUNT_HASH],
+    ['MERIDIAN_YIELD_AGENT_PUBLIC_KEY', env.MERIDIAN_YIELD_AGENT_PUBLIC_KEY],
+    ['MERIDIAN_YIELD_AGENT_ACCOUNT_HASH', env.MERIDIAN_YIELD_AGENT_ACCOUNT_HASH],
+    ['MERIDIAN_COMPLIANCE_AGENT_PUBLIC_KEY', env.MERIDIAN_COMPLIANCE_AGENT_PUBLIC_KEY],
+    ['MERIDIAN_COMPLIANCE_AGENT_ACCOUNT_HASH', env.MERIDIAN_COMPLIANCE_AGENT_ACCOUNT_HASH],
+    ['MERIDIAN_AUDIT_AGENT_PUBLIC_KEY', env.MERIDIAN_AUDIT_AGENT_PUBLIC_KEY],
+    ['MERIDIAN_AUDIT_AGENT_ACCOUNT_HASH', env.MERIDIAN_AUDIT_AGENT_ACCOUNT_HASH],
+    ['MERIDIAN_TOKEN_PACKAGE', env.MERIDIAN_TOKEN_PACKAGE],
     ['OFAC_SDN_FEED_URL', env.OFAC_SDN_FEED_URL],
   ])
 }
@@ -158,6 +170,17 @@ if (backend?.id) {
     ['MERIDIAN_API_KEY', env.MERIDIAN_API_KEY],
     ['MERIDIAN_CONTRACTS_PATH', 'deployed/addresses.json'],
     ['MERIDIAN_VALIDATOR_PUBLIC_KEY', env.MERIDIAN_VALIDATOR_PUBLIC_KEY],
+    ['MERIDIAN_DEPLOYER_PUBLIC_KEY', env.MERIDIAN_DEPLOYER_PUBLIC_KEY],
+    ['MERIDIAN_DEPLOYER_ACCOUNT_HASH', env.MERIDIAN_DEPLOYER_ACCOUNT_HASH],
+    ['MERIDIAN_YIELD_AGENT_PUBLIC_KEY', env.MERIDIAN_YIELD_AGENT_PUBLIC_KEY],
+    ['MERIDIAN_YIELD_AGENT_ACCOUNT_HASH', env.MERIDIAN_YIELD_AGENT_ACCOUNT_HASH],
+    ['MERIDIAN_YIELD_AGENT_PRIVATE_KEY_PEM', yieldPem],
+    ['MERIDIAN_COMPLIANCE_AGENT_PUBLIC_KEY', env.MERIDIAN_COMPLIANCE_AGENT_PUBLIC_KEY],
+    ['MERIDIAN_COMPLIANCE_AGENT_ACCOUNT_HASH', env.MERIDIAN_COMPLIANCE_AGENT_ACCOUNT_HASH],
+    ['MERIDIAN_COMPLIANCE_AGENT_PRIVATE_KEY_PEM', compliancePem],
+    ['MERIDIAN_AUDIT_AGENT_PUBLIC_KEY', env.MERIDIAN_AUDIT_AGENT_PUBLIC_KEY],
+    ['MERIDIAN_AUDIT_AGENT_ACCOUNT_HASH', env.MERIDIAN_AUDIT_AGENT_ACCOUNT_HASH],
+    ['MERIDIAN_AUDIT_AGENT_PRIVATE_KEY_PEM', auditPem],
     ['INDEXER_ENABLED', 'true'],
     ['INDEXER_BACKFILL_ON_START', 'true'],
     ['LOG_LEVEL', env.LOG_LEVEL || 'info'],

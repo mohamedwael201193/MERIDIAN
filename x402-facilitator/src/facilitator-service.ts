@@ -1,15 +1,14 @@
-import { readFileSync } from 'node:fs'
 import {
   AccountHash,
   HttpHandler,
-  KeyAlgorithm,
+  loadPrivateKeyFromPem,
   NativeTransferBuilder,
-  PrivateKey,
   PublicKey,
   RpcClient,
   Transaction,
 } from '@meridian/casper-sdk'
 import type { Transaction as CasperTransaction } from 'casper-js-sdk'
+import { resolveInlinePemFromEnv } from '@meridian/env'
 import type { PaymentPayload } from './types.js'
 import { hashAuthorization, isWithinTimeWindow } from './types.js'
 import type { PolicyEngine, ReplayGuard } from './policy.js'
@@ -25,7 +24,10 @@ export interface SettleResult {
   reason?: string
 }
 
-function createRpcClient(rpcUrl: string, apiKey: string | undefined): InstanceType<typeof RpcClient> {
+function createRpcClient(
+  rpcUrl: string,
+  apiKey: string | undefined,
+): InstanceType<typeof RpcClient> {
   const handler = new HttpHandler(rpcUrl, 'fetch')
   if (apiKey) {
     handler.setCustomHeaders({ Authorization: apiKey })
@@ -34,34 +36,12 @@ function createRpcClient(rpcUrl: string, apiKey: string | undefined): InstanceTy
 }
 
 function readDeployerPem(): string {
-  const inline = process.env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM
-  if (inline?.includes('BEGIN')) {
-    return inline.replace(/\\n/g, '\n')
-  }
-  const pemPath =
-    process.env.ODRA_CASPER_LIVENET_SECRET_KEY_PATH ??
-    process.env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM
-  if (!pemPath || pemPath.includes('BEGIN')) {
-    throw new Error('deployer_pem_not_configured')
-  }
-  return readFileSync(pemPath, 'utf8')
+  return resolveInlinePemFromEnv(process.env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM, 'deployer')
 }
 
-function loadPayerFromPem(pemPathOrInline: string) {
-  const pem = pemPathOrInline.includes('BEGIN') ? pemPathOrInline : readFileSync(pemPathOrInline, 'utf8')
-  const preferred = process.env.MERIDIAN_DEPLOYER_KEY_ALGORITHM
-  const order =
-    preferred === 'ED25519'
-      ? [KeyAlgorithm.ED25519, KeyAlgorithm.SECP256K1]
-      : [KeyAlgorithm.SECP256K1, KeyAlgorithm.ED25519]
-  for (const algorithm of order) {
-    try {
-      return PrivateKey.fromPem(pem, algorithm)
-    } catch {
-      /* try next algorithm */
-    }
-  }
-  throw new Error('unable_to_parse_deployer_pem')
+function loadDeployerKey() {
+  const pem = readDeployerPem()
+  return loadPrivateKeyFromPem(pem, process.env.MERIDIAN_DEPLOYER_KEY_ALGORITHM)
 }
 
 export class FacilitatorService {
@@ -131,7 +111,7 @@ export class FacilitatorService {
       if (payload.signedTransaction) {
         transaction = Transaction.fromJSON(payload.signedTransaction)
       } else {
-        const payer = loadPayerFromPem(readDeployerPem())
+        const payer = loadDeployerKey()
         const recipient = AccountHash.fromString(
           payload.authorization.to.startsWith('account-hash-')
             ? payload.authorization.to
@@ -150,12 +130,13 @@ export class FacilitatorService {
 
       const result = await this.rpc.putTransaction(transaction)
       const hash = result.transactionHash
-      const transactionHash =
-        typeof hash === 'string'
-          ? hash
-          : typeof hash?.toHex === 'function'
-            ? hash.toHex()
-            : JSON.stringify(hash).replace(/^"|"$/g, '')
+      let transactionHash: string
+      if (typeof hash === 'string') {
+        transactionHash = hash
+      } else {
+        const withToHex = hash as { toHex?: () => string }
+        transactionHash = withToHex.toHex?.() ?? JSON.stringify(hash).replace(/^"|"$/g, '')
+      }
 
       await this.replay.markUsed(payload.authorization.nonce)
       return {
@@ -180,17 +161,17 @@ export class FacilitatorService {
 }
 
 export function buildSignedPayment(input: {
-  payerPemPath?: string
+  payerPem?: string
   payToAccountHash: string
   amountMotes: string
   chainName: string
 }): PaymentPayload {
-  const pemContent = input.payerPemPath
-    ? input.payerPemPath.includes('BEGIN')
-      ? input.payerPemPath
-      : readFileSync(input.payerPemPath, 'utf8')
+  const pemContent = input.payerPem
+    ? input.payerPem.includes('BEGIN')
+      ? input.payerPem.replace(/\\n/g, '\n')
+      : resolveInlinePemFromEnv(input.payerPem, 'payer')
     : readDeployerPem()
-  const payer = loadPayerFromPem(pemContent)
+  const payer = loadPrivateKeyFromPem(pemContent, process.env.MERIDIAN_DEPLOYER_KEY_ALGORITHM)
   const pubHex = payer.publicKey.toHex()
   const now = Math.floor(Date.now() / 1000)
   const payTo = input.payToAccountHash.startsWith('account-hash-')
@@ -203,7 +184,7 @@ export function buildSignedPayment(input: {
     value: input.amountMotes,
     validAfter: now,
     validBefore: now + 300,
-    nonce: `${Date.now()}-${Math.random().toString(16).slice(2, 10)}`,
+    nonce: `${String(Date.now())}-${Math.random().toString(16).slice(2, 10)}`,
   }
   const digest = Buffer.from(hashAuthorization(authorization, `${input.chainName}:x402`), 'hex')
   const signature = Buffer.from(payer.signAndAddAlgorithmBytes(digest)).toString('hex')

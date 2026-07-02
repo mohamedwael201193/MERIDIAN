@@ -19,3 +19,10 @@ export const {
 } = sdk
 
 export type { Transaction as CasperTransaction } from 'casper-js-sdk'
+export {
+  loadPrivateKeyFromPem,
+  signDigest,
+  verifyAccountHashMatches,
+  verifyDigestSignature,
+  verifyPublicKeyMatches,
+} from './wallet.js'

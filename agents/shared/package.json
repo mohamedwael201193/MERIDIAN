@@ -20,6 +20,7 @@
     "test:ci": "vitest run --reporter=verbose"
   },
   "dependencies": {
+    "@meridian/casper-sdk": "workspace:*",
     "@meridian/env": "workspace:*",
     "@upstash/redis": "=1.35.6",
     "openai": "=4.77.0",

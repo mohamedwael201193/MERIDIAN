@@ -12,10 +12,10 @@ const TARGET = Number(process.env.X402_LOAD_TARGET ?? 100)
 const base = process.env.X402_FACILITATOR_URL ?? 'http://127.0.0.1:3001'
 const network = process.env.CASPER_CHAIN_NAME ?? 'casper-test'
 const amount = process.env.X402_PAYMENT_AMOUNT_MOTES ?? '2500000000'
-const pemPath = process.env.ODRA_CASPER_LIVENET_SECRET_KEY_PATH ?? ''
+const pemInline = process.env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM ?? ''
 
 async function balanceMotes() {
-  const pem = require('node:fs').readFileSync(pemPath, 'utf8')
+  const pem = pemInline.replace(/\\n/g, '\n')
   const payer = PrivateKey.fromPem(pem, KeyAlgorithm.SECP256K1)
   const handler = new HttpHandler(process.env.CASPER_RPC_URL ?? '', 'fetch')
   if (process.env.CASPER_API_KEY) handler.setCustomHeaders({ Authorization: process.env.CASPER_API_KEY })
@@ -34,7 +34,7 @@ const txHashes = []
 
 for (let i = 0; i < TARGET; i += 1) {
   const payment = buildSignedPayment({
-    payerPemPath: pemPath,
+    payerPem: pemInline,
     payToAccountHash: process.env.X402_PAY_TO_ACCOUNT_HASH ?? '',
     amountMotes: amount,
     chainName: network,

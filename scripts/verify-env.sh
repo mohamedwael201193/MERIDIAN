@@ -98,24 +98,38 @@ check_var MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM no
 
 if env_value_nonempty MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM; then
   pem_line=$(grep '^MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM=' .env | tail -1)
-  pem_path="${pem_line#*=}"
-  pem_path="${pem_path%%$'\r'}"
-  if [[ -f "$pem_path" ]]; then
-    echo -e "${GREEN}PASS${NC} | env | deployer PEM file exists"
+  pem_val="${pem_line#*=}"
+  pem_val="${pem_val%%$'\r'}"
+  if [[ "$pem_val" == *BEGIN* ]]; then
+    echo -e "${GREEN}PASS${NC} | env | deployer PEM is inline in .env"
     pass=$((pass + 1))
-    perms=$(stat -c '%a' "$pem_path" 2>/dev/null || stat -f '%OLp' "$pem_path" 2>/dev/null || echo '')
-    if [[ "$perms" == "600" ]]; then
-      echo -e "${GREEN}PASS${NC} | env | deployer PEM permissions are 600"
-      pass=$((pass + 1))
-    else
-      echo -e "${RED}FAIL${NC} | env | deployer PEM permissions are $perms (expected 600)"
-      fail=$((fail + 1))
-    fi
   else
-    echo -e "${RED}FAIL${NC} | env | deployer PEM file not found at configured path"
+    echo -e "${RED}FAIL${NC} | env | deployer PEM must be inline (run: node scripts/inline-pem-env.mjs)"
     fail=$((fail + 1))
   fi
 fi
+
+for agent_key in MERIDIAN_YIELD_AGENT_PRIVATE_KEY_PEM MERIDIAN_COMPLIANCE_AGENT_PRIVATE_KEY_PEM MERIDIAN_AUDIT_AGENT_PRIVATE_KEY_PEM; do
+  if env_value_nonempty "$agent_key"; then
+    line=$(grep "^${agent_key}=" .env | tail -1)
+    val="${line#*=}"
+    val="${val%%$'\r'}"
+    if [[ "$val" == *BEGIN* ]]; then
+      echo -e "${GREEN}PASS${NC} | env | $agent_key is inline"
+      pass=$((pass + 1))
+    else
+      echo -e "${RED}FAIL${NC} | env | $agent_key must be inline PEM"
+      fail=$((fail + 1))
+    fi
+  fi
+done
+
+check_var MERIDIAN_YIELD_AGENT_PUBLIC_KEY no
+check_var MERIDIAN_YIELD_AGENT_ACCOUNT_HASH no
+check_var MERIDIAN_COMPLIANCE_AGENT_PUBLIC_KEY no
+check_var MERIDIAN_COMPLIANCE_AGENT_ACCOUNT_HASH no
+check_var MERIDIAN_AUDIT_AGENT_PUBLIC_KEY no
+check_var MERIDIAN_AUDIT_AGENT_ACCOUNT_HASH no
 
 check_var ANTHROPIC_API_KEY no
 check_var GOOGLE_API_KEY no

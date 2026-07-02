@@ -98,10 +98,9 @@ async function setMany(serviceId, pairs) {
 }
 
 function readPem() {
-  const path = env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM || env.ODRA_CASPER_LIVENET_SECRET_KEY_PATH
-  if (!path) return ''
-  if (path.includes('BEGIN')) return path
-  if (existsSync(path)) return readFileSync(path, 'utf8')
+  const value = env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM
+  if (!value) return ''
+  if (value.includes('BEGIN')) return value.replace(/\\n/g, '\n')
   return ''
 }
 

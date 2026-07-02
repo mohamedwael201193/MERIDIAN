@@ -15,6 +15,14 @@ export {
   resolveOpenAiModel,
 }
 export type { AiProviderConfig, AiProviderKind } from './ai-providers.js'
+export { resolveInlinePemFromEnv, isInlinePem } from './pem.js'
+export {
+  AGENT_IDENTITY_CONFIG,
+  DEPLOYER_PEM_ENV,
+  assertAgentEnvSeparateFromDeployer,
+  getAgentIdentityConfig,
+} from './agent-identity.js'
+export type { AgentRole, AgentLimits, AgentIdentityConfig } from './agent-identity.js'
 
 const nonEmpty = z.string().trim().min(1)
 
@@ -63,10 +71,13 @@ export const meridianEnvSchema = phase1EnvSchema.extend({
   MERIDIAN_DEPLOYER_ACCOUNT_HASH: z.string().optional(),
   MERIDIAN_YIELD_AGENT_PUBLIC_KEY: z.string().optional(),
   MERIDIAN_YIELD_AGENT_PRIVATE_KEY_PEM: z.string().optional(),
+  MERIDIAN_YIELD_AGENT_ACCOUNT_HASH: z.string().optional(),
   MERIDIAN_COMPLIANCE_AGENT_PUBLIC_KEY: z.string().optional(),
   MERIDIAN_COMPLIANCE_AGENT_PRIVATE_KEY_PEM: z.string().optional(),
+  MERIDIAN_COMPLIANCE_AGENT_ACCOUNT_HASH: z.string().optional(),
   MERIDIAN_AUDIT_AGENT_PUBLIC_KEY: z.string().optional(),
   MERIDIAN_AUDIT_AGENT_PRIVATE_KEY_PEM: z.string().optional(),
+  MERIDIAN_AUDIT_AGENT_ACCOUNT_HASH: z.string().optional(),
   OFAC_SDN_FEED_URL: z.string().url().optional(),
   EU_CONSOLIDATED_LIST_URL: z.string().url().optional(),
   NEXT_PUBLIC_CASPER_NETWORK: z.string().optional(),
