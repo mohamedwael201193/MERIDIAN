@@ -101,7 +101,7 @@ if (x402?.id) {
     serviceDetails: {
       envSpecificDetails: {
         buildCommand:
-          'pnpm install --frozen-lockfile && pnpm --filter @meridian/casper-sdk run build && pnpm --filter @meridian/x402-facilitator run build',
+          'pnpm install --frozen-lockfile && pnpm --filter @meridian/env run build && pnpm --filter @meridian/casper-sdk run build && pnpm --filter @meridian/x402-facilitator run build',
         startCommand: 'X402_MODE=combined node x402-facilitator/dist/index.js',
       },
       healthCheckPath: '/health',
