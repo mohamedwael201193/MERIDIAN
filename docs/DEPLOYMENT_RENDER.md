@@ -38,16 +38,27 @@ See `render.yaml` for blueprint. Key commands:
 
 **Backend**
 
+Build, then **Pre-Deploy** migrations (failure cancels deploy), then start:
+
 ```bash
+# Build
 pnpm install --frozen-lockfile
 pnpm --filter @meridian/env run build
+pnpm --filter @meridian/casper-sdk run build
 pnpm --filter @meridian/agents-shared run build
 pnpm --filter @meridian/yield-agent run build
 pnpm --filter @meridian/compliance-agent run build
 pnpm --filter @meridian/audit-agent run build
 pnpm --filter @meridian/backend run build
+
+# Pre-Deploy (Render — before start; requires paid instance type)
+bash scripts/pre-deploy-migrate.sh
+
+# Start
 node backend/dist/main.js
 ```
+
+Post-deploy verification: `pnpm verify:db-schema`
 
 **x402 (combined)**
 

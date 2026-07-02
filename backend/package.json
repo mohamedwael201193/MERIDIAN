@@ -6,10 +6,11 @@
   "description": "MERIDIAN backend — Fastify API, CSPR.cloud indexer, Supabase",
   "main": "./dist/main.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && cp -r src/db/migrations dist/db/migrations",
     "dev": "tsx watch src/main.ts",
     "start": "node dist/main.js",
     "migrate": "tsx src/db/migrate.ts",
+    "migrate:prod": "node dist/db/migrate.js",
     "migrate:status": "tsx src/db/migrate.ts --status",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",

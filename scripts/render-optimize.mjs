@@ -66,6 +66,10 @@ function resolveEnvPem(key) {
   return ''
 }
 
+const BACKEND_BUILD =
+  'pnpm install --frozen-lockfile && pnpm --filter @meridian/env run build && pnpm --filter @meridian/casper-sdk run build && pnpm --filter @meridian/agents-shared run build && pnpm --filter @meridian/yield-agent run build && pnpm --filter @meridian/compliance-agent run build && pnpm --filter @meridian/audit-agent run build && pnpm --filter @meridian/backend run build'
+const BACKEND_PRE_DEPLOY = 'bash scripts/pre-deploy-migrate.sh'
+const BACKEND_START = 'node backend/dist/main.js'
 const deployerPem = resolveEnvPem('MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM')
 const yieldPem = resolveEnvPem('MERIDIAN_YIELD_AGENT_PRIVATE_KEY_PEM')
 const compliancePem = resolveEnvPem('MERIDIAN_COMPLIANCE_AGENT_PRIVATE_KEY_PEM')
@@ -141,9 +145,9 @@ if (backend?.id) {
   await api('PATCH', `/services/${backend.id}`, {
     serviceDetails: {
       envSpecificDetails: {
-        buildCommand:
-          'pnpm install --frozen-lockfile && pnpm --filter @meridian/env run build && pnpm --filter @meridian/casper-sdk run build && pnpm --filter @meridian/agents-shared run build && pnpm --filter @meridian/yield-agent run build && pnpm --filter @meridian/compliance-agent run build && pnpm --filter @meridian/audit-agent run build && pnpm --filter @meridian/backend run build',
-        startCommand: 'node backend/dist/main.js',
+        buildCommand: BACKEND_BUILD,
+        preDeployCommand: BACKEND_PRE_DEPLOY,
+        startCommand: BACKEND_START,
       },
       healthCheckPath: '/health',
     },
