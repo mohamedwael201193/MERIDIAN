@@ -12,7 +12,16 @@ if (existsSync(join(ROOT, '.env'))) {
   }
 }
 
-const RENDER_KEY = env.RENDER_API_KEY || env.rebder_api_key
+const RENDER_KEY =
+  process.env.RENDER_API_KEY ||
+  process.env.rebder_api_key ||
+  env.RENDER_API_KEY ||
+  env.rebder_api_key
+if (!RENDER_KEY) {
+  console.error('RENDER_API_KEY missing')
+  process.exit(1)
+}
+
 const AUTH = { Authorization: `Bearer ${RENDER_KEY}` }
 
 const URLS = {
