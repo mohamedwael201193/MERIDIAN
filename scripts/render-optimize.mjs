@@ -150,7 +150,6 @@ if (backend?.id) {
       plan: 'free',
       envSpecificDetails: {
         buildCommand: BACKEND_BUILD,
-        preDeployCommand: '',
         startCommand: BACKEND_START,
       },
       healthCheckPath: '/health',
