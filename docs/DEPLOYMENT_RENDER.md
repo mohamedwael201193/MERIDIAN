@@ -38,7 +38,7 @@ See `render.yaml` for blueprint. Key commands:
 
 **Backend**
 
-Build, then **Pre-Deploy** migrations (failure cancels deploy), then start:
+Build, then start (migrations run idempotently at startup on the free plan):
 
 ```bash
 # Build
@@ -51,11 +51,8 @@ pnpm --filter @meridian/compliance-agent run build
 pnpm --filter @meridian/audit-agent run build
 pnpm --filter @meridian/backend run build
 
-# Pre-Deploy (Render — before start; requires paid instance type)
-bash scripts/pre-deploy-migrate.sh
-
-# Start
-node backend/dist/main.js
+# Start (runs pending migrations, then the server)
+bash scripts/start-backend.sh
 ```
 
 Post-deploy verification: `pnpm verify:db-schema`

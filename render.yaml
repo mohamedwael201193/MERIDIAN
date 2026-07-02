@@ -2,7 +2,7 @@ services:
   - type: web
     name: meridian-backend
     runtime: node
-    plan: starter
+    plan: free
     region: frankfurt
     autoDeploy: true
     buildCommand: >-
@@ -14,8 +14,7 @@ services:
       pnpm --filter @meridian/compliance-agent run build &&
       pnpm --filter @meridian/audit-agent run build &&
       pnpm --filter @meridian/backend run build
-    startCommand: node backend/dist/main.js
-    preDeployCommand: bash scripts/pre-deploy-migrate.sh
+    startCommand: bash scripts/start-backend.sh
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV

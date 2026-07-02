@@ -72,8 +72,7 @@ function resolveEnvPem(key) {
 
 const BACKEND_BUILD =
   'pnpm install --frozen-lockfile && pnpm --filter @meridian/env run build && pnpm --filter @meridian/casper-sdk run build && pnpm --filter @meridian/agents-shared run build && pnpm --filter @meridian/yield-agent run build && pnpm --filter @meridian/compliance-agent run build && pnpm --filter @meridian/audit-agent run build && pnpm --filter @meridian/backend run build'
-const BACKEND_PRE_DEPLOY = 'bash scripts/pre-deploy-migrate.sh'
-const BACKEND_START = 'node backend/dist/main.js'
+const BACKEND_START = 'bash scripts/start-backend.sh'
 const deployerPem = resolveEnvPem('MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM')
 const yieldPem = resolveEnvPem('MERIDIAN_YIELD_AGENT_PRIVATE_KEY_PEM')
 const compliancePem = resolveEnvPem('MERIDIAN_COMPLIANCE_AGENT_PRIVATE_KEY_PEM')
@@ -145,12 +144,13 @@ if (x402?.id) {
 }
 
 if (backend?.id) {
-  console.log('Updating meridian-backend (with embedded agents)')
+  console.log('Updating meridian-backend (free tier, startup migrations)')
   await api('PATCH', `/services/${backend.id}`, {
     serviceDetails: {
+      plan: 'free',
       envSpecificDetails: {
         buildCommand: BACKEND_BUILD,
-        preDeployCommand: BACKEND_PRE_DEPLOY,
+        preDeployCommand: '',
         startCommand: BACKEND_START,
       },
       healthCheckPath: '/health',
