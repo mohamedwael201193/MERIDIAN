@@ -25,14 +25,14 @@ if (!RENDER_KEY) {
 const AUTH = { Authorization: `Bearer ${RENDER_KEY}` }
 
 const URLS = {
-  backend: 'https://meridian-backend-cu88.onrender.com',
+  backend: 'https://meridian-backend-ikx8.onrender.com',
   x402: 'https://meridian-x402-facilitator.onrender.com',
   resource: 'https://meridian-x402-resource.onrender.com',
   mcp: 'https://meridian-mcp-server-94q4.onrender.com',
 }
 
 const IDS = {
-  backend: 'srv-d90sq0bsq97s739mnin0',
+  backend: 'srv-d93aj1ernols73b8a170',
   agents: 'srv-d90sq5jeo5us73cau6vg',
   x402: 'srv-d90sq66q1p3s738jap8g',
   resource: 'srv-d90sq6ugvqtc739q7bq0',

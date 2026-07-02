@@ -144,10 +144,9 @@ if (x402?.id) {
 }
 
 if (backend?.id) {
-  console.log('Updating meridian-backend (free tier, startup migrations)')
+  console.log('Updating meridian-backend (startup migrations, no preDeploy)')
   await api('PATCH', `/services/${backend.id}`, {
     serviceDetails: {
-      plan: 'free',
       envSpecificDetails: {
         buildCommand: BACKEND_BUILD,
         startCommand: BACKEND_START,

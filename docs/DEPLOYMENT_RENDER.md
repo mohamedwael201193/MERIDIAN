@@ -9,7 +9,7 @@
 
 | Service     | Render name           | Type | URL                                            | What it does                                                                                                     |
 | ----------- | --------------------- | ---- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| **Backend** | `meridian-backend`    | Web  | https://meridian-backend-cu88.onrender.com     | Fastify REST API, Supabase indexer, embedded AI agents (`AGENTS_ENABLED=true`), OpenAPI `/docs`                  |
+| **Backend** | `meridian-backend`    | Web  | https://meridian-backend-ikx8.onrender.com     | Fastify REST API, Supabase indexer, embedded AI agents (`AGENTS_ENABLED=true`), OpenAPI `/docs`                  |
 | **x402**    | `meridian-x402`       | Web  | https://meridian-x402-facilitator.onrender.com | Combined facilitator + resource (`X402_MODE=combined`): `/verify`, `/settle`, `/supported`, paid `/api/*` routes |
 | **MCP**     | `meridian-mcp-server` | Web  | https://meridian-mcp-server-94q4.onrender.com  | 12 MCP tools over Streamable HTTP (`POST /mcp`)                                                                  |
 
@@ -56,6 +56,8 @@ bash scripts/start-backend.sh
 ```
 
 Post-deploy verification: `pnpm verify:db-schema`
+
+> **Free plan note:** Render may default new web services to Starter when a payment method is on the workspace. The API `plan: free` and downgrade PATCH often return HTTP 500 in that case. To stop Starter billing, set **Instance Type → Free** once in the [Render dashboard](https://dashboard.render.com/web/srv-d93aj1ernols73b8a170) for `meridian-backend`. Migrations run at startup via `scripts/start-backend.sh` — no `preDeployCommand` required.
 
 **x402 (combined)**
 
