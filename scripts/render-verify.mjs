@@ -14,8 +14,10 @@ if (existsSync(join(ROOT, '.env'))) {
 
 const RENDER_KEY =
   process.env.RENDER_API_KEY ||
+  process.env.render_api_key ||
   process.env.rebder_api_key ||
   env.RENDER_API_KEY ||
+  env.render_api_key ||
   env.rebder_api_key
 if (!RENDER_KEY) {
   console.error('RENDER_API_KEY missing')
@@ -85,10 +87,7 @@ async function fetchCheck(label, url, opts = {}) {
   }
 }
 
-console.log('Waiting for Render deploys...')
-const deploys = await waitDeploys(20)
-console.log('Deploy status:', JSON.stringify(deploys, null, 2))
-
+console.log('Running MERIDIAN production checks...')
 const apiKey = env.MERIDIAN_API_KEY || 'meridian-dev-api-key-change-in-production'
 const checks = []
 

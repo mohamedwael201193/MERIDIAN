@@ -18,8 +18,10 @@ if (existsSync(join(ROOT, '.env'))) {
 
 const RENDER_KEY =
   process.env.RENDER_API_KEY ||
+  process.env.render_api_key ||
   process.env.rebder_api_key ||
   env.RENDER_API_KEY ||
+  env.render_api_key ||
   env.rebder_api_key
 if (!RENDER_KEY) {
   console.error('RENDER_API_KEY missing')
@@ -188,7 +190,7 @@ if (backend?.id) {
     ['MERIDIAN_AUDIT_AGENT_ACCOUNT_HASH', env.MERIDIAN_AUDIT_AGENT_ACCOUNT_HASH],
     ['MERIDIAN_AUDIT_AGENT_PRIVATE_KEY_PEM', auditPem],
     ['INDEXER_ENABLED', 'true'],
-    ['INDEXER_BACKFILL_ON_START', 'true'],
+    ['INDEXER_BACKFILL_ON_START', 'false'],
     ['LOG_LEVEL', env.LOG_LEVEL || 'info'],
     ['OPENAI_API_KEY', env.OPENAI_API_KEY],
     ['OPENAI_BASE_URL', env.OPENAI_BASE_URL],

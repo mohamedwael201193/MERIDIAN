@@ -1,6 +1,6 @@
 import WebSocket from 'ws'
 import type { Logger } from '../utils/logger.js'
-import { sleep, withRetry } from '../utils/retry.js'
+import { withRetry } from '../utils/retry.js'
 
 export interface ContractLevelEventMessage {
   action: string
@@ -35,16 +35,22 @@ export class ContractEventStreamListener {
   private ws: WebSocket | null = null
   private stopped = false
   private reconnectAttempt = 0
+  private connecting = false
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null
 
   constructor(private readonly options: StreamListenerOptions) {}
 
   start(): void {
     this.stopped = false
-    void this.connect()
+    void this.ensureConnected()
   }
 
   stop(): void {
     this.stopped = true
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer)
+      this.reconnectTimer = null
+    }
     this.ws?.close()
     this.ws = null
   }
@@ -59,22 +65,32 @@ export class ContractEventStreamListener {
     return `${base}/contract-events?contract_package_hash=${hashes}&includes=raw_data`
   }
 
-  private async connect(): Promise<void> {
-    while (!this.stopped) {
-      try {
-        await this.openSocket()
-        this.reconnectAttempt = 0
-        return
-      } catch (error) {
-        this.reconnectAttempt += 1
-        const delay = Math.min(30_000, 1000 * 2 ** Math.min(this.reconnectAttempt, 5))
-        this.options.log.warn(
-          { err: error, attempt: this.reconnectAttempt, delayMs: delay },
-          'stream_reconnect',
-        )
-        this.options.onReconnect?.()
-        await sleep(delay)
-      }
+  private scheduleReconnect(reason: string): void {
+    if (this.stopped || this.reconnectTimer) return
+    this.reconnectAttempt += 1
+    const delay = Math.min(30_000, 1000 * 2 ** Math.min(this.reconnectAttempt, 5))
+    this.options.log.warn(
+      { attempt: this.reconnectAttempt, delayMs: delay, reason },
+      'stream_reconnect',
+    )
+    this.options.onReconnect?.()
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null
+      void this.ensureConnected()
+    }, delay)
+  }
+
+  private async ensureConnected(): Promise<void> {
+    if (this.stopped || this.connecting || this.ws?.readyState === WebSocket.OPEN) return
+    this.connecting = true
+    try {
+      await this.openSocket()
+      this.reconnectAttempt = 0
+    } catch (error) {
+      this.options.log.warn({ err: error }, 'stream_connect_failed')
+      this.scheduleReconnect('connect_failed')
+    } finally {
+      this.connecting = false
     }
   }
 
@@ -85,28 +101,44 @@ export class ContractEventStreamListener {
         headers: { authorization: this.options.apiKey },
       })
       this.ws = ws
+      let settled = false
+      let opened = false
+
+      const finish = (error?: Error) => {
+        if (settled) return
+        settled = true
+        if (error) reject(error)
+        else resolve()
+      }
 
       ws.on('open', () => {
+        opened = true
         this.options.log.info({ url: url.split('?')[0] }, 'stream_connected')
-        resolve()
+        finish()
       })
 
-      ws.on('message', (data) => {
-        void this.handleMessage(data.toString())
+      ws.on('message', (data: WebSocket.RawData) => {
+        const raw = Buffer.isBuffer(data)
+          ? data.toString('utf8')
+          : typeof data === 'string'
+            ? data
+            : Buffer.from(data as ArrayBuffer).toString('utf8')
+        void this.handleMessage(raw)
       })
 
       ws.on('error', (error) => {
         if (ws.readyState !== WebSocket.OPEN) {
-          reject(error)
+          finish(error instanceof Error ? error : new Error(String(error)))
         } else {
           this.options.log.error({ err: error }, 'stream_error')
         }
       })
 
       ws.on('close', () => {
-        if (!this.stopped) {
+        this.ws = null
+        if (!this.stopped && opened) {
           this.options.log.warn('stream_closed_reconnecting')
-          void this.connect()
+          this.scheduleReconnect('stream_closed')
         }
       })
     })

@@ -62,17 +62,17 @@ export async function buildApp() {
 
   let sync: SyncService | null = null
   if (env.INDEXER_ENABLED) {
+    const streamingKey = process.env.CSPR_CLOUD_AUTH_TOKEN?.trim() || env.CASPER_API_KEY
     sync = new SyncService({
       addresses,
       processor,
       checkpoints: checkpointRepo,
       rpc,
       streamingBaseUrl: env.CSPR_STREAMING_URL,
-      apiKey: env.CASPER_API_KEY,
+      apiKey: streamingKey,
       log,
       backfillOnStart: env.INDEXER_BACKFILL_ON_START,
     })
-    await sync.start()
   }
 
   const tokenService = new TokenService(tokenRepo)
@@ -111,8 +111,7 @@ export async function buildApp() {
 
   app.get('/health', async (_request, reply) => {
     const report = await runHealthChecks(healthDeps)
-    const criticalOk =
-      report.checks.postgres?.ok && report.checks.rpc?.ok
+    const criticalOk = report.checks.postgres?.ok && report.checks.rpc?.ok
     const code = criticalOk ? 200 : 503
     return reply.code(code).send(report)
   })
@@ -148,5 +147,5 @@ export async function buildApp() {
     await pool.end()
   })
 
-  return { app, env, log }
+  return { app, env, log, sync }
 }

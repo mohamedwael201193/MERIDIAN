@@ -78,7 +78,7 @@ services:
       - key: INDEXER_ENABLED
         value: true
       - key: INDEXER_BACKFILL_ON_START
-        value: true
+        value: false
       - key: LOG_LEVEL
         value: info
       - key: OPENAI_API_KEY
