@@ -19,12 +19,12 @@ import {
 } from '../packages/meridian-env/dist/index.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-const env = {}
+const env = { ...process.env }
 
 if (existsSync(join(ROOT, '.env'))) {
   for (const line of readFileSync(join(ROOT, '.env'), 'utf8').split('\n')) {
     const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/)
-    if (m) env[m[1]] = m[2]
+    if (m && env[m[1]] === undefined) env[m[1]] = m[2]
   }
 }
 
@@ -73,11 +73,16 @@ for (const role of roles) {
 }
 
 try {
-  const deployerPem = resolveInlinePemFromEnv(env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM, 'deployer')
-  const deployerKey = loadPrivateKeyFromPem(deployerPem)
-  verifyPublicKeyMatches(deployerKey, env.MERIDIAN_DEPLOYER_PUBLIC_KEY)
-  verifyAccountHashMatches(deployerKey, env.MERIDIAN_DEPLOYER_ACCOUNT_HASH)
-  ok('deployer wallet identity verified')
+  const deployerPem = env.MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM?.trim()
+  if (!deployerPem) {
+    ok('deployer wallet check skipped (not on this service)')
+  } else {
+    const normalized = resolveInlinePemFromEnv(deployerPem, 'deployer')
+    const deployerKey = loadPrivateKeyFromPem(normalized)
+    verifyPublicKeyMatches(deployerKey, env.MERIDIAN_DEPLOYER_PUBLIC_KEY)
+    verifyAccountHashMatches(deployerKey, env.MERIDIAN_DEPLOYER_ACCOUNT_HASH)
+    ok('deployer wallet identity verified')
+  }
 } catch (e) {
   bad('deployer wallet', e)
 }

@@ -66,7 +66,7 @@ async function setEnv(serviceId, pairs) {
 }
 
 function resolveEnvPem(key) {
-  const value = env[key]
+  const value = process.env[key] || env[key]
   if (!value) return ''
   if (value.includes('BEGIN')) return value.replace(/\\n/g, '\n')
   return ''

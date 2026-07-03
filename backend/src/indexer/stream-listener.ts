@@ -145,8 +145,13 @@ export class ContractEventStreamListener {
   }
 
   private async handleMessage(raw: string): Promise<void> {
+    const trimmed = raw.trim()
+    if (!trimmed || trimmed === 'Ping' || trimmed === 'Pong' || trimmed[0] !== '{') {
+      return
+    }
+
     try {
-      const message = JSON.parse(raw) as ContractLevelEventMessage
+      const message = JSON.parse(trimmed) as ContractLevelEventMessage
       if (message.action === 'emitted') {
         await withRetry(() => this.options.onEvent(message), {
           attempts: 3,
@@ -156,7 +161,10 @@ export class ContractEventStreamListener {
         })
       }
     } catch (error) {
-      this.options.log.error({ err: error }, 'stream_message_parse_error')
+      this.options.log.debug(
+        { err: error, preview: trimmed.slice(0, 64) },
+        'stream_message_skipped',
+      )
     }
   }
 }

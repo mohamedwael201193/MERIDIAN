@@ -8,23 +8,21 @@ import { dirname, join } from 'node:path'
 const root = dirname(fileURLToPath(import.meta.url))
 const intervalMs = Number(process.env.AGENT_INTERVAL_MS ?? 300_000)
 
-function loadInlinePemsFromDotEnv() {
+function loadEnv() {
+  const merged = { ...process.env }
   const envPath = join(root, '../.env')
-  if (!existsSync(envPath)) return
-  const pemKeys = [
-    'MERIDIAN_DEPLOYER_PRIVATE_KEY_PEM',
-    'MERIDIAN_YIELD_AGENT_PRIVATE_KEY_PEM',
-    'MERIDIAN_COMPLIANCE_AGENT_PRIVATE_KEY_PEM',
-    'MERIDIAN_AUDIT_AGENT_PRIVATE_KEY_PEM',
-  ]
+  if (!existsSync(envPath)) return merged
   for (const line of readFileSync(envPath, 'utf8').split('\n')) {
     const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/)
-    if (!m || !pemKeys.includes(m[1])) continue
-    if (m[2].includes('BEGIN')) process.env[m[1]] = m[2]
+    if (m && merged[m[1]] === undefined) merged[m[1]] = m[2]
   }
+  return merged
 }
 
-loadInlinePemsFromDotEnv()
+const runtimeEnv = loadEnv()
+for (const [key, value] of Object.entries(runtimeEnv)) {
+  if (value !== undefined) process.env[key] = value
+}
 
 async function preflight() {
   const script = join(root, '../scripts/verify-agent-identity.mjs')
