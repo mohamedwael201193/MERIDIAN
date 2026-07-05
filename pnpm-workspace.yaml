@@ -4,3 +4,4 @@ packages:
   - 'agents/*'
   - 'mcp-server'
   - 'x402-facilitator'
+  - 'frontend'
