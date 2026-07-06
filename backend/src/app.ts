@@ -17,6 +17,7 @@ import { DistributionRepository } from './db/repositories/distribution-repo.js'
 import { EventRepository } from './db/repositories/event-repo.js'
 import { HolderRepository } from './db/repositories/holder-repo.js'
 import { TokenRepository } from './db/repositories/token-repo.js'
+import { AgentTraceRepository } from './db/repositories/agent-trace-repo.js'
 import { runHealthChecks, runReadinessChecks } from './health/checks.js'
 import { EventProcessor } from './indexer/event-processor.js'
 import { SyncService } from './indexer/sync-service.js'
@@ -25,6 +26,8 @@ import { HolderService, TokenService, YieldService } from './services/index.js'
 import { createLogger } from './utils/logger.js'
 import { registerApiRoutes } from './api/routes/index.js'
 import { createApiKeyHook, registerErrorHandler } from './api/plugins/auth.js'
+import { PlannerService } from './planner/planner-service.js'
+import { invokeWriteTool } from './planner/write-tool-invoker.js'
 
 export async function buildApp() {
   const env = loadBackendEnv()
@@ -47,6 +50,7 @@ export async function buildApp() {
   const checkpointRepo = new CheckpointRepository(pool)
   const auditRepo = new AuditRepository(pool)
   const decisionRepo = new AgentDecisionRepository(pool)
+  const traceRepo = new AgentTraceRepository(pool)
 
   const processor = new EventProcessor(
     addresses,
@@ -77,6 +81,18 @@ export async function buildApp() {
   const tokenService = new TokenService(tokenRepo)
   const holderService = new HolderService(holderRepo)
   const yieldService = new YieldService(tokenRepo, distributionRepo, eventRepo)
+
+  const plannerService = new PlannerService(
+    traceRepo,
+    tokenService,
+    holderService,
+    yieldService,
+    eventRepo,
+    auditRepo,
+    rpc,
+    addresses,
+    invokeWriteTool,
+  )
 
   const healthDeps = {
     pool,
@@ -139,6 +155,8 @@ export async function buildApp() {
     events: eventRepo,
     audit: auditRepo,
     decisions: decisionRepo,
+    traces: traceRepo,
+    planner: plannerService,
   })
 
   app.addHook('onClose', async () => {

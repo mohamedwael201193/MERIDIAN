@@ -23,7 +23,7 @@ export class CasperRpcClient {
       body: JSON.stringify({ jsonrpc: '2.0', method, params, id: 1 }),
     })
     if (!response.ok) {
-      throw new Error(`rpc_http_${response.status}`)
+      throw new Error(`rpc_http_${String(response.status)}`)
     }
     const body = (await response.json()) as { result?: T; error?: { message: string } }
     if (body.error) {
@@ -50,6 +50,26 @@ export class CasperRpcClient {
         }
       },
       { attempts: 5, baseDelayMs: 500, maxDelayMs: 5000, label: 'info_get_status' },
+    )
+  }
+
+  async getAuctionValidators(limit = 10): Promise<Array<{ public_key: string; stake: string }>> {
+    return withRetry(
+      async () => {
+        const result = await this.call<{
+          auction_state: {
+            era_validators: Array<{
+              validator_weights: Array<{ public_key: string; weight: string }>
+            }>
+          }
+        }>('state_get_auction_info_v2', [])
+        const weights = result.auction_state.era_validators[0]?.validator_weights ?? []
+        return weights.slice(0, limit).map((v) => ({
+          public_key: v.public_key,
+          stake: v.weight,
+        }))
+      },
+      { attempts: 3, baseDelayMs: 500, maxDelayMs: 3000, label: 'state_get_auction_info_v2' },
     )
   }
 
