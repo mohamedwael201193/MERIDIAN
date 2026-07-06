@@ -1,8 +1,8 @@
 'use client'
 
 import { AccountHash, NativeTransferBuilder, PublicKey } from 'casper-js-sdk'
-import type { ICSPRClickSDK } from '@make-software/csprclick-core-types'
 import { MERIDIAN_NETWORK } from './contracts'
+import type { WalletSigner } from './wallet/walletSigner'
 
 export interface TransferAuthorization {
   from: string
@@ -54,11 +54,11 @@ function generateNonce(): string {
 }
 
 export async function buildX402Payment(
-  clickRef: ICSPRClickSDK,
+  signer: WalletSigner,
   accept: PaymentAccept,
   chainName = MERIDIAN_NETWORK,
 ): Promise<PaymentPayload> {
-  const publicKey = await clickRef.getActivePublicKey()
+  const publicKey = await signer.getActivePublicKey()
   if (!publicKey) {
     throw new Error('Connect wallet before signing x402 payment')
   }
@@ -82,7 +82,7 @@ export async function buildX402Payment(
   const domain = `${chainName}:x402`
   const authorizationMessage = canonicalAuthorization(authorization, domain)
   const digestHex = await hashAuthorization(authorization, domain)
-  const authSign = await clickRef.signMessage(digestHex, publicKey)
+  const authSign = await signer.signMessage(digestHex, publicKey)
   if (!authSign || authSign.cancelled || !authSign.signatureHex) {
     throw new Error(authSign?.error ?? 'Authorization signature rejected')
   }
@@ -97,7 +97,7 @@ export async function buildX402Payment(
     .payment(2_500_000_000)
     .build()
 
-  const txSign = await clickRef.sign(transaction.toJSON() as object, publicKey)
+  const txSign = await signer.sign(transaction.toJSON() as object, publicKey)
   if (!txSign || txSign.cancelled || !txSign.transaction) {
     throw new Error(txSign?.error ?? 'Transfer transaction signing rejected')
   }

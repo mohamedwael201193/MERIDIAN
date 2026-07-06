@@ -14,7 +14,10 @@ export function getCsprClickConfig(): CsprClickInitOptions {
     contentMode: CONTENT_MODE.IFRAME,
     providers: [WALLET_KEYS.CASPER_WALLET],
     chainName: MERIDIAN_NETWORK,
-    casperNode: 'https://node.testnet.casper.network/rpc',
+    casperNode:
+      process.env.NEXT_PUBLIC_CASPER_RPC_URL ??
+      process.env.CASPER_RPC_URL ??
+      'https://node.testnet.cspr.cloud/rpc',
     logLevel: 2,
   }
 }

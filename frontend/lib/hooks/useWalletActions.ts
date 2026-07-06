@@ -7,6 +7,7 @@ import { buildX402Payment, type PaymentAccept } from '@lib/x402'
 import { validatePublicKey } from '@lib/schemas'
 import { revalidateMeridianData } from '@lib/hooks/useMeridianData'
 import { connectCasperWallet, disconnectCasperWallet } from '@lib/wallet/connectCasperWallet'
+import { resolveWalletSigner } from '@lib/wallet/walletSigner'
 import { useClickReady } from './useClickReady'
 
 function errorMessage(error: unknown): string | null {
@@ -43,11 +44,16 @@ function walletErrorMessage(error: unknown): string {
 
 export function useWalletActions() {
   const { clickRef } = useClickReady()
+  const getSigner = () => {
+    const signer = resolveWalletSigner(clickRef)
+    if (!signer) throw new Error('Wallet not connected')
+    return signer
+  }
 
   const getActivePublicKey = async (): Promise<string> => {
-    if (!clickRef) throw new Error('Wallet not connected')
+    const signer = getSigner()
     try {
-      const publicKey = await clickRef.getActivePublicKey?.()
+      const publicKey = await signer.getActivePublicKey()
       if (!publicKey) throw new Error('Connect wallet first')
       validatePublicKey(publicKey)
       return publicKey
@@ -55,7 +61,7 @@ export function useWalletActions() {
       if (isSiteApprovalError(error)) {
         await disconnectCasperWallet(clickRef)
         await connectCasperWallet(clickRef)
-        const publicKey = await clickRef.getActivePublicKey?.()
+        const publicKey = await getSigner().getActivePublicKey()
         if (publicKey) {
           validatePublicKey(publicKey)
           return publicKey
@@ -66,19 +72,19 @@ export function useWalletActions() {
   }
 
   const signAndSubmit = async (unsigned: UnsignedTransaction) => {
-    if (!clickRef) throw new Error('Wallet not connected')
+    const signer = getSigner()
     const transaction = parseUnsignedTransaction(unsigned, 'Unsigned transaction')
     let publicKey = await getActivePublicKey()
 
     let signed
     try {
-      signed = await clickRef.sign(transaction.transaction as never, publicKey)
+      signed = await signer.sign(transaction.transaction as never, publicKey)
     } catch (error) {
       if (!isSiteApprovalError(error)) throw error
       await disconnectCasperWallet(clickRef)
       await connectCasperWallet(clickRef)
       publicKey = await getActivePublicKey()
-      signed = await clickRef.sign(transaction.transaction as never, publicKey)
+      signed = await getSigner().sign(transaction.transaction as never, publicKey)
     }
     if (!signed?.transaction) throw new Error(signed?.error ?? 'Wallet rejected signing')
     const hash = await submitSignedTransaction(signed.transaction)
@@ -91,13 +97,10 @@ export function useWalletActions() {
     signIn: () => connectCasperWallet(clickRef),
     signOut: () => disconnectCasperWallet(clickRef),
     async getPublicKey() {
-      if (!clickRef) return null
       try {
-        return (
-          (await clickRef.getActivePublicKey?.()) ?? clickRef.currentAccount?.public_key ?? null
-        )
+        return (await getSigner().getActivePublicKey()) ?? null
       } catch {
-        return clickRef.currentAccount?.public_key ?? null
+        return null
       }
     },
     getActivePublicKey,
@@ -108,14 +111,13 @@ export function useWalletActions() {
       return signAndSubmit(parseUnsignedTransaction(result, `${tool} response`))
     },
     async signX402Payment(accept: PaymentAccept) {
-      if (!clickRef) throw new Error('Wallet not connected')
       try {
-        return await buildX402Payment(clickRef, accept)
+        return await buildX402Payment(getSigner(), accept)
       } catch (error) {
         if (isSiteApprovalError(error)) {
           await disconnectCasperWallet(clickRef)
           await connectCasperWallet(clickRef)
-          return buildX402Payment(clickRef, accept)
+          return buildX402Payment(getSigner(), accept)
         }
         throw new Error(walletErrorMessage(error))
       }

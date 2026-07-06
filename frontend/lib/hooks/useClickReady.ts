@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useClickRef } from '@make-software/csprclick-ui'
 import type { ICSPRClickSDK } from '@make-software/csprclick-core-types'
+import { isDirectCasperWalletPresent } from '@lib/wallet/casperWalletDirect'
+import { preferDirectCasperWallet } from '@lib/wallet/walletMode'
 
 function isClickReady(clickRef: ICSPRClickSDK | null | undefined): clickRef is ICSPRClickSDK {
   return Boolean(
@@ -26,6 +28,7 @@ function getBrowserClickRef(clickRef: ICSPRClickSDK | null | undefined): ICSPRCl
 export function useClickReady(): { clickRef: ICSPRClickSDK | null; ready: boolean } {
   const clickRef = useClickRef()
   const [sdk, setSdk] = useState<ICSPRClickSDK | null>(() => getBrowserClickRef(clickRef))
+  const [timedOut, setTimedOut] = useState(false)
 
   useEffect(() => {
     const current = getBrowserClickRef(clickRef)
@@ -43,11 +46,20 @@ export function useClickReady(): { clickRef: ICSPRClickSDK | null; ready: boolea
       }
     }, 150)
 
-    return () => window.clearInterval(timer)
+    const timeout = window.setTimeout(() => {
+      setTimedOut(true)
+    }, 4_000)
+
+    return () => {
+      window.clearInterval(timer)
+      window.clearTimeout(timeout)
+    }
   }, [clickRef])
+
+  const directReady = preferDirectCasperWallet() && isDirectCasperWalletPresent()
 
   return {
     clickRef: sdk,
-    ready: Boolean(sdk),
+    ready: Boolean(sdk) || directReady || timedOut,
   }
 }
