@@ -29,6 +29,18 @@ const nextConfig = {
       '/api/transactions/status/[hash]': ['./../packages/meridian-casper-sdk/dist/**/*'],
     },
   },
+  async redirects() {
+    return [
+      { source: '/dashboard/staking', destination: '/staking', permanent: false },
+      { source: '/dashboard/compliance', destination: '/compliance', permanent: false },
+      { source: '/dashboard/agents', destination: '/agents', permanent: false },
+      { source: '/dashboard/audit', destination: '/audit', permanent: false },
+      { source: '/dashboard/mcp', destination: '/mcp', permanent: false },
+      { source: '/dashboard/tokens', destination: '/issue', permanent: false },
+      { source: '/dashboard/x402', destination: '/x402', permanent: false },
+      { source: '/dashboard/issue', destination: '/issue', permanent: false },
+    ]
+  },
   async headers() {
     return [
       {

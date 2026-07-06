@@ -1,3 +1,5 @@
+'use client'
+
 import { ReactElement, ReactNode } from 'react'
 import { Box, Breadcrumbs, Chip, Stack, Typography, Link as MuiLink } from '@mui/material'
 import Link from 'next/link'
