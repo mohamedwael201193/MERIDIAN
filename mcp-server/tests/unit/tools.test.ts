@@ -10,7 +10,9 @@ describe('MCP tool registry', () => {
   it('includes read and write tools', () => {
     expect(ALL_TOOL_NAMES).toContain('get_yield_rate')
     expect(ALL_TOOL_NAMES).toContain('delegate_stake')
+    expect(ALL_TOOL_NAMES).toContain('deposit_to_vault')
     expect(ALL_TOOL_NAMES).toContain('transfer_token')
     expect(ALL_TOOL_NAMES).toContain('subscribe_audit')
+    expect(ALL_TOOL_NAMES).not.toContain('issue_token')
   })
 })

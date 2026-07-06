@@ -1,8 +1,17 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import type { TransactionBuilder } from '../casper/tx-builder.js'
+import { MIN_DELEGATION_MOTES } from '../casper/tx-builder.js'
 
 const publicKeySchema = z.string().regex(/^0[123][0-9a-fA-F]{64,66}$/)
+const accountHashSchema = z
+  .string()
+  .min(10)
+  .describe('Casper account hash, with or without account-hash- prefix')
+const motesSchema = z
+  .string()
+  .regex(/^\d+$/)
+  .describe('Amount in motes (1 CSPR = 1_000_000_000 motes)')
 
 function textResult(data: unknown) {
   return { content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] }
@@ -10,28 +19,16 @@ function textResult(data: unknown) {
 
 export function registerWriteTools(server: McpServer, txBuilder: TransactionBuilder): void {
   server.registerTool(
-    'issue_token',
-    {
-      description:
-        'Disabled: MRWA fixed supply was minted at deployment; use transfer_token instead',
-      inputSchema: {
-        callerPublicKey: publicKeySchema,
-        symbol: z.string().default('MRWA'),
-        initialSupply: z.string().regex(/^\d+$/),
-      },
-    },
-    ({ callerPublicKey, symbol, initialSupply }) =>
-      textResult(txBuilder.buildIssueToken(callerPublicKey, symbol, initialSupply)),
-  )
-
-  server.registerTool(
     'transfer_token',
     {
-      description: 'Builds unsigned TransactionV1 for MRWA transfer (non-custodial)',
+      description:
+        'Build unsigned TransactionV1 for MRWA token transfer. Wallet signature required. No special role.',
       inputSchema: {
-        callerPublicKey: publicKeySchema,
-        recipientAccountHash: z.string().min(10),
-        amount: z.string().regex(/^\d+$/),
+        callerPublicKey: publicKeySchema.describe(
+          'Ed25519/secp256k1 public key of the signing wallet',
+        ),
+        recipientAccountHash: accountHashSchema,
+        amount: motesSchema.describe('MRWA amount in smallest units'),
       },
     },
     ({ callerPublicKey, recipientAccountHash, amount }) =>
@@ -41,11 +38,12 @@ export function registerWriteTools(server: McpServer, txBuilder: TransactionBuil
   server.registerTool(
     'register_holder',
     {
-      description: 'Builds unsigned TransactionV1 to register a compliant holder',
+      description:
+        'Build unsigned TransactionV1 to register a compliant holder in ComplianceRegistry. Requires issuer attestation bytes.',
       inputSchema: {
         callerPublicKey: publicKeySchema,
-        holderAccountHash: z.string().min(10),
-        attestationBytes: z.string().min(2),
+        holderAccountHash: accountHashSchema,
+        attestationBytes: z.string().min(2).describe('Hex-encoded attestation payload'),
       },
     },
     ({ callerPublicKey, holderAccountHash, attestationBytes }) =>
@@ -57,10 +55,11 @@ export function registerWriteTools(server: McpServer, txBuilder: TransactionBuil
   server.registerTool(
     'revoke_holder',
     {
-      description: 'Builds unsigned TransactionV1 to revoke a holder (compliance officer)',
+      description:
+        'Build unsigned TransactionV1 to revoke a holder. COMPLIANCE_OFFICER role required on-chain.',
       inputSchema: {
         callerPublicKey: publicKeySchema,
-        holderAccountHash: z.string().min(10),
+        holderAccountHash: accountHashSchema,
         reason: z.string().min(1).max(500),
       },
     },
@@ -71,11 +70,13 @@ export function registerWriteTools(server: McpServer, txBuilder: TransactionBuil
   server.registerTool(
     'delegate_stake',
     {
-      description: 'Builds unsigned native Casper delegation transaction for user staking',
+      description: `Build unsigned native Casper delegation from the user's wallet. Minimum ${MIN_DELEGATION_MOTES.toString()} motes (500 CSPR). Separate from MERIDIAN vault staking.`,
       inputSchema: {
         callerPublicKey: publicKeySchema,
-        validator: publicKeySchema,
-        amount: z.string().regex(/^\d+$/),
+        validator: publicKeySchema.describe('Validator public key from list_validators'),
+        amount: motesSchema.describe(
+          `Must be >= ${MIN_DELEGATION_MOTES.toString()} motes (500 CSPR)`,
+        ),
       },
     },
     ({ callerPublicKey, validator, amount }) =>
@@ -83,15 +84,29 @@ export function registerWriteTools(server: McpServer, txBuilder: TransactionBuil
   )
 
   server.registerTool(
+    'deposit_to_vault',
+    {
+      description:
+        'Build unsigned payable deposit into MERIDIAN StakingVault. Separate from native delegate_stake. Wallet must attach CSPR value when signing.',
+      inputSchema: {
+        callerPublicKey: publicKeySchema,
+        amount: motesSchema.describe('CSPR motes to deposit into the vault'),
+      },
+    },
+    ({ callerPublicKey, amount }) =>
+      textResult(txBuilder.buildDepositToVault(callerPublicKey, amount)),
+  )
+
+  server.registerTool(
     'restake',
     {
       description:
-        'Curator-only: builds unsigned TransactionV1 for vault restake between validators',
+        'Curator-only: builds unsigned TransactionV1 for vault restake between validators. Requires VALIDATOR_CURATOR role.',
       inputSchema: {
         callerPublicKey: publicKeySchema,
         fromValidator: publicKeySchema,
         toValidator: publicKeySchema,
-        amount: z.string().regex(/^\d+$/),
+        amount: motesSchema,
       },
     },
     ({ callerPublicKey, fromValidator, toValidator, amount }) =>
@@ -101,7 +116,8 @@ export function registerWriteTools(server: McpServer, txBuilder: TransactionBuil
   server.registerTool(
     'distribute_rewards',
     {
-      description: 'Builds unsigned TransactionV1 for yield distribution',
+      description:
+        'Build unsigned TransactionV1 for vault yield distribution. Vault operator role required.',
       inputSchema: {
         callerPublicKey: publicKeySchema,
         eraId: z.number().int().nonnegative(),
@@ -113,11 +129,11 @@ export function registerWriteTools(server: McpServer, txBuilder: TransactionBuil
 }
 
 export const WRITE_TOOL_NAMES = [
-  'issue_token',
   'transfer_token',
   'register_holder',
   'revoke_holder',
   'delegate_stake',
+  'deposit_to_vault',
   'restake',
   'distribute_rewards',
 ] as const

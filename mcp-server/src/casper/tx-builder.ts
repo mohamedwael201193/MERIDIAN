@@ -16,7 +16,14 @@ export interface UnsignedTransaction {
   transactionType: string
   transaction: unknown
   note: string
+  attachedValueMotes?: string
+  requiredRole?: string
+  expectedResult?: string
+  explorerHint?: string
 }
+
+/** Casper protocol minimum delegation: 500 CSPR */
+export const MIN_DELEGATION_MOTES = 500_000_000_000n
 
 function normalizeAccountHash(value: string): string {
   return value.startsWith('account-hash-') ? value : `account-hash-${value}`
@@ -124,7 +131,7 @@ export class TransactionBuilder {
   ): UnsignedTransaction {
     const vault = this.addresses.contracts.StakingVault
     if (!vault) throw new Error('StakingVault not deployed')
-    return this.contractCall(
+    const tx = this.contractCall(
       callerPublicKeyHex,
       vault.package_hash,
       'restake',
@@ -135,8 +142,9 @@ export class TransactionBuilder {
       },
       50_000_000_000,
       'restake',
-      'Requires CURATOR role after signing',
+      'Requires VALIDATOR_CURATOR role after signing',
     )
+    return { ...tx, requiredRole: 'VALIDATOR_CURATOR' }
   }
 
   buildDelegateStake(
@@ -144,6 +152,12 @@ export class TransactionBuilder {
     validatorPublicKeyHex: string,
     amountMotes: string,
   ): UnsignedTransaction {
+    const amount = BigInt(amountMotes)
+    if (amount < MIN_DELEGATION_MOTES) {
+      throw new Error(
+        `Minimum native delegation is 500 CSPR (${MIN_DELEGATION_MOTES.toString()} motes). Got ${amountMotes} motes.`,
+      )
+    }
     const pk = PublicKey.fromHex(callerPublicKeyHex)
     const validator = PublicKey.fromHex(validatorPublicKeyHex)
     const transaction = new NativeDelegateBuilder()
@@ -156,8 +170,29 @@ export class TransactionBuilder {
     return this.wrap(
       'delegate_stake',
       transaction,
-      'Native Casper delegation — signs a valid stake transaction from the connected wallet',
+      `Native Casper delegation of ${amountMotes} motes (min 500 CSPR enforced). Sign in wallet to delegate.`,
     )
+  }
+
+  buildDepositToVault(callerPublicKeyHex: string, amountMotes: string): UnsignedTransaction {
+    const vault = this.addresses.contracts.StakingVault
+    if (!vault) throw new Error('StakingVault not deployed')
+    if (BigInt(amountMotes) <= 0n) throw new Error('deposit amount must be positive')
+    const tx = this.contractCall(
+      callerPublicKeyHex,
+      vault.package_hash,
+      'deposit',
+      {},
+      50_000_000_000,
+      'deposit_to_vault',
+      `MERIDIAN vault deposit of ${amountMotes} motes. Wallet must attach ${amountMotes} motes as payable value when signing.`,
+    )
+    return {
+      ...tx,
+      attachedValueMotes: amountMotes,
+      expectedResult: 'CSPR deposited into StakingVault; vault delegates on your behalf',
+      explorerHint: 'https://testnet.cspr.live',
+    }
   }
 
   buildDistributeRewards(callerPublicKeyHex: string, eraId: number): UnsignedTransaction {
@@ -182,7 +217,7 @@ export class TransactionBuilder {
   ): UnsignedTransaction {
     const registry = this.addresses.contracts.ComplianceRegistry
     if (!registry) throw new Error('ComplianceRegistry not deployed')
-    return this.contractCall(
+    const tx = this.contractCall(
       callerPublicKeyHex,
       registry.package_hash,
       'revoke',
@@ -194,19 +229,7 @@ export class TransactionBuilder {
       'revoke_holder',
       'Requires compliance officer role + timelock',
     )
-  }
-
-  buildIssueToken(
-    callerPublicKeyHex: string,
-    symbol: string,
-    initialSupply: string,
-  ): UnsignedTransaction {
-    void callerPublicKeyHex
-    void symbol
-    void initialSupply
-    throw new Error(
-      'issue_token is disabled: MRWA is a fixed-supply token minted at deployment. Use transfer_token for MRWA transfers or staking deposit for new yield activity.',
-    )
+    return { ...tx, requiredRole: 'COMPLIANCE_OFFICER' }
   }
 
   buildNativeTransfer(

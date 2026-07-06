@@ -4,21 +4,16 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import rateLimit from 'express-rate-limit'
-import { Registry, Counter, collectDefaultMetrics } from 'prom-client'
+import { Registry, collectDefaultMetrics } from 'prom-client'
 import { loadAddresses, loadConfig } from './config.js'
 import { createMcpServer } from './server.js'
+import { ALL_TOOL_NAMES } from './tools/write-tools.js'
 
 const config = loadConfig()
 const addresses = loadAddresses(config.MERIDIAN_CONTRACTS_PATH)
 
 const metricsRegistry = new Registry()
 collectDefaultMetrics({ register: metricsRegistry })
-const toolCallsTotal = new Counter({
-  name: 'meridian_mcp_tool_calls_total',
-  help: 'MCP tool invocations',
-  labelNames: ['tool', 'status'],
-  registers: [metricsRegistry],
-})
 
 async function startStdio(): Promise<void> {
   const server = createMcpServer(config, addresses)
@@ -26,12 +21,18 @@ async function startStdio(): Promise<void> {
   await server.connect(transport)
 }
 
-async function startHttp(): Promise<void> {
+function startHttp(): void {
   const app = createMcpExpressApp({ host: config.MERIDIAN_MCP_HOST })
   app.set('trust proxy', 1)
 
-  app.get('/health', async (_req, res) => {
-    res.json({ status: 'ok', transport: 'http', tools: 12, timestamp: new Date().toISOString() })
+  app.get('/health', (_req, res) => {
+    res.json({
+      status: 'ok',
+      transport: 'http',
+      tools: ALL_TOOL_NAMES.length,
+      toolNames: ALL_TOOL_NAMES,
+      timestamp: new Date().toISOString(),
+    })
   })
 
   app.get('/metrics', async (_req, res) => {
@@ -51,12 +52,13 @@ async function startHttp(): Promise<void> {
     let transport = sessionId ? sessions.get(sessionId) : undefined
 
     if (!transport) {
-      transport = new StreamableHTTPServerTransport({
+      const newTransport = new StreamableHTTPServerTransport({
         sessionIdGenerator: () => crypto.randomUUID(),
         onsessioninitialized: (id) => {
-          sessions.set(id, transport!)
+          sessions.set(id, newTransport)
         },
       })
+      transport = newTransport
       const server = createMcpServer(config, addresses)
       await server.connect(transport as Parameters<McpServer['connect']>[0])
     }
@@ -97,13 +99,13 @@ async function startHttp(): Promise<void> {
 
 async function main(): Promise<void> {
   if (config.MERIDIAN_MCP_TRANSPORT === 'http') {
-    await startHttp()
+    startHttp()
   } else {
     await startStdio()
   }
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
   console.error(error)
   process.exit(1)
 })

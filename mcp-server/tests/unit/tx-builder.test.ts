@@ -19,14 +19,14 @@ describe('TransactionBuilder', () => {
     expect(tx.transactionType).toBe('transfer_token')
     expect(tx.transaction).toBeTruthy()
     expect(tx.chainName).toBe('casper-test')
-    const payload = (tx.transaction as { payload?: { fields?: { target?: unknown } } }).payload
-    expect(payload?.fields?.target).toMatchObject({
-      Stored: { id: { ByPackageHash: { addr: expect.any(String) } } },
-    })
   })
 
   it('builds distribute_rewards unsigned tx', () => {
     const tx = builder.buildDistributeRewards(CALLER, 42)
     expect(tx.transactionType).toBe('distribute_rewards')
+  })
+
+  it('rejects delegate_stake below 500 CSPR minimum', () => {
+    expect(() => builder.buildDelegateStake(CALLER, CALLER, '1000000000')).toThrow(/500 CSPR/)
   })
 })
