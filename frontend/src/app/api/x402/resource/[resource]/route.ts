@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {
-  getPaidResourceData,
-  getX402Amount,
-  getX402Network,
-  getX402PayTo,
-  settleX402Payment,
-  type PaymentPayload,
-} from '@lib/server/x402-local'
+import { buildX402PaymentRequired } from '@lib/server/x402-config'
 
 const RESOURCES: Record<string, string> = {
   'yield-rate': '/api/yield-rate',
@@ -21,28 +14,14 @@ export async function GET(request: NextRequest, context: { params: { resource: s
 
   const paymentHeader = request.headers.get('x-payment') ?? undefined
 
-  try {
-    if (!paymentHeader) {
-      return NextResponse.json(
-        {
-          x402Version: 1,
-          accepts: [
-            {
-              scheme: 'exact',
-              network: getX402Network(),
-              maxAmountRequired: getX402Amount(),
-              resource: path,
-              payTo: getX402PayTo(),
-              asset: 'CSPR',
-            },
-          ],
-        },
-        { status: 402 },
-      )
-    }
+  if (!paymentHeader) {
+    return NextResponse.json(buildX402PaymentRequired(path), { status: 402 })
+  }
 
-    const payment = JSON.parse(paymentHeader) as PaymentPayload
-    const settle = await settleX402Payment(payment)
+  try {
+    const payment = JSON.parse(paymentHeader) as unknown
+    const { settleX402Payment, getPaidResourceData } = await import('@lib/server/x402-local')
+    const settle = await settleX402Payment(payment as never)
     if (!settle.success) {
       return NextResponse.json({ error: 'settlement_failed', detail: settle }, { status: 402 })
     }

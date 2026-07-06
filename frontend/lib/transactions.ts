@@ -81,10 +81,7 @@ export async function pollTransactionStatus(
       const body = (await res.json()) as TxPollResult
       if (body.status === 'failed') return body
       if (body.status === 'processed' || body.status === 'finalized') {
-        if (attempt >= 2) {
-          return { status: 'finalized' }
-        }
-        return { status: 'processed' }
+        return { status: 'finalized', detail: body.detail }
       }
     } catch {
       // Transaction may not be indexed yet

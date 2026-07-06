@@ -2,6 +2,7 @@ import 'server-only'
 import { Transaction } from 'casper-js-sdk'
 import { backendFetch } from './backend'
 import { createCasperRpcClient, formatTransactionHash } from './casper-rpc'
+import { getX402Amount, getX402Network, getX402PayTo } from './x402-config'
 import {
   hashAuthorization,
   verifyAuthorizationSignature,
@@ -9,6 +10,7 @@ import {
 } from './x402-auth'
 
 export type { TransferAuthorization }
+export { getX402Amount, getX402Network, getX402PayTo, hashAuthorization }
 
 export type PaymentPayload = {
   authorization: TransferAuthorization
@@ -17,23 +19,6 @@ export type PaymentPayload = {
   publicKey: string
   signedTransaction?: unknown
 }
-
-const DEFAULT_PAY_TO =
-  'account-hash-267bc977600c9512c0ce5e96af4d0057d514998cc752e28b8f5e91b654a72c27'
-
-export function getX402Amount(): string {
-  return process.env.X402_PAYMENT_AMOUNT_MOTES ?? '2500000000'
-}
-
-export function getX402PayTo(): string {
-  return process.env.X402_PAY_TO_ACCOUNT_HASH ?? DEFAULT_PAY_TO
-}
-
-export function getX402Network(): string {
-  return process.env.CASPER_CHAIN_NAME ?? process.env.NEXT_PUBLIC_CASPER_NETWORK ?? 'casper-test'
-}
-
-export { hashAuthorization }
 
 function normalizeAccountHash(value: string): string {
   return value.startsWith('account-hash-') ? value : `account-hash-${value}`

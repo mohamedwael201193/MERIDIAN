@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyX402Payment, type PaymentPayload } from '@lib/server/x402-local'
+import type { PaymentPayload } from '@lib/server/x402-local'
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ valid: false, reason: 'payment_required' }, { status: 400 })
     }
 
+    const { verifyX402Payment } = await import('@lib/server/x402-local')
     return NextResponse.json(verifyX402Payment(body.payment, body.network))
   } catch (error) {
     return NextResponse.json(

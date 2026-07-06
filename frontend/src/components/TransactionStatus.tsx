@@ -17,11 +17,13 @@ import { explorerTxUrl, truncateHash } from '@lib/contracts'
 interface TransactionStatusProps {
   transactionHash: string | null
   onFinalized?: () => void
+  onStatusChange?: (status: TxPollStatus, detail?: string) => void
 }
 
 export default function TransactionStatus({
   transactionHash,
   onFinalized,
+  onStatusChange,
 }: TransactionStatusProps) {
   const [status, setStatus] = useState<TxPollStatus>('pending')
   const [detail, setDetail] = useState<string | undefined>()
@@ -38,6 +40,7 @@ export default function TransactionStatus({
       if (cancelled) return
       setStatus(result.status)
       setDetail(result.detail)
+      onStatusChange?.(result.status, result.detail)
       if (result.status === 'finalized' || result.status === 'processed') {
         onFinalized?.()
       }
@@ -46,7 +49,7 @@ export default function TransactionStatus({
     return () => {
       cancelled = true
     }
-  }, [transactionHash, onFinalized])
+  }, [transactionHash, onFinalized, onStatusChange])
 
   if (!transactionHash) return null
 
@@ -65,7 +68,11 @@ export default function TransactionStatus({
               Transaction Status
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Submitted to Casper testnet and being checked for finality.
+              {status === 'failed'
+                ? 'The transaction was included on-chain but execution failed.'
+                : status === 'finalized'
+                  ? 'Transaction reached finality on Casper testnet.'
+                  : 'Submitted to Casper testnet and being checked for finality.'}
             </Typography>
           </Box>
           <Stack direction="row" gap={1} alignItems="center">

@@ -22,7 +22,12 @@ const nextConfig = {
   },
   outputFileTracingIncludes: {
     '/api/mcp': ['./../mcp-server/dist/**/*', './../deployed/addresses.json'],
+    '/api/x402/resource/[resource]': ['./../packages/meridian-casper-sdk/dist/**/*'],
+    '/api/x402/verify': ['./../packages/meridian-casper-sdk/dist/**/*'],
+    '/api/x402/settle': ['./../packages/meridian-casper-sdk/dist/**/*'],
+    '/api/transactions/status/[hash]': ['./../packages/meridian-casper-sdk/dist/**/*'],
   },
+  serverExternalPackages: ['casper-js-sdk', '@meridian/casper-sdk'],
   async headers() {
     return [
       {

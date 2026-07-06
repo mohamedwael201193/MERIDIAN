@@ -95,6 +95,10 @@ export default function X402PaymentFlow(): ReactElement {
     setLoading(true)
     try {
       const res = await fetch(`/api/x402/resource/${resource}`)
+      const contentType = res.headers.get('content-type') ?? ''
+      if (!contentType.includes('application/json')) {
+        throw new Error(`Server returned ${res.status} (expected JSON, got HTML). Redeploy may be required.`)
+      }
       const body = await res.json()
       if (res.status === 402) {
         setPaymentRequired(body as PaymentRequiredResponse)

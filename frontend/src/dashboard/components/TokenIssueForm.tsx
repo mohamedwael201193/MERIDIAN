@@ -5,7 +5,7 @@ import { Stack, TextField, Button, Alert, CircularProgress } from '@mui/material
 import { meridianApi } from '@lib/api'
 import type { UnsignedTransaction } from '@lib/types'
 import { useWalletActions } from '@lib/hooks/useWalletActions'
-import { parseUnsignedTransaction } from '@lib/transactions'
+import { parseUnsignedTransaction, type TxPollStatus } from '@lib/transactions'
 import TransactionStatus from '@/components/TransactionStatus'
 import TransactionReviewCard from '@/components/TransactionReviewCard'
 import FlowStepper from '@/components/FlowStepper'
@@ -24,10 +24,17 @@ export default function TokenIssueForm(): ReactElement {
   const [initialSupply, setInitialSupply] = useState('1000000')
   const [unsignedTx, setUnsignedTx] = useState<UnsignedTransaction | null>(null)
   const [txHash, setTxHash] = useState<string | null>(null)
+  const [txStatus, setTxStatus] = useState<TxPollStatus | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const activeStep = txHash ? 3 : unsignedTx ? 2 : 0
+  const activeStep = txHash
+    ? txStatus === 'finalized'
+      ? 3
+      : 2
+    : unsignedTx
+      ? 2
+      : 0
 
   const buildTransaction = async () => {
     setError(null)
@@ -59,6 +66,7 @@ export default function TokenIssueForm(): ReactElement {
     try {
       const hash = await wallet.signAndSubmit(unsignedTx)
       setTxHash(hash)
+      setTxStatus('pending')
       setUnsignedTx(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signing or submission failed')
@@ -98,6 +106,7 @@ export default function TokenIssueForm(): ReactElement {
       {txHash ? (
         <TransactionStatus
           transactionHash={txHash}
+          onStatusChange={(status) => setTxStatus(status)}
           onFinalized={() => void revalidateMeridianData()}
         />
       ) : null}
