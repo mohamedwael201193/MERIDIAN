@@ -148,6 +148,14 @@ Private keys never leave the Casper Wallet extension.
 | x402: `Unexpected token '<', "<!DOCTYPE "...`           | `/api/x402/resource/yield-rate` crashed (500 HTML) on module import                    | Lightweight `x402-config.ts` for 402 response; dynamic import for settle; content-type check in UI |
 | Misleading generic error text                           | Frontend called `.json()` on HTML error pages                                          | Clear message when server returns HTML instead of JSON                                             |
 
+### Phase G — Prevent failing wallet popups + fix Vercel Casper SDK bundle
+
+| Symptom                                                               | Cause                                                                                             | Fix                                                                                                                |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| x402 after wallet approval: `Cannot find module casper-js-sdk`        | Next.js externalized `casper-js-sdk` / the workspace Casper wrapper from Vercel serverless output | Removed `serverExternalPackages`; `x402-auth` now verifies signatures through direct `casper-js-sdk` loading       |
+| Issue Token opened wallet then failed `User error: 31003`             | `issue_token` was a self-transfer placeholder; MRWA has fixed supply minted at deployment         | Disabled issue signing in UI and MCP; page now explains the token is already deployed                              |
+| Staking opened curator-only `restake` then failed `User error: 20003` | User-facing staking panel called `restake`, but the contract requires `VALIDATOR_CURATOR_ROLE`    | Added `delegate_stake` MCP tool using Casper native delegation; `restake` remains available only for curator flows |
+
 ---
 
 ## 6. On-Chain Transactions You Ran (July 6, 2026)
@@ -163,8 +171,9 @@ After the status-polling fix, the UI now shows **`failed`** with the on-chain er
 
 **Remaining contract-level work (not UI):**
 
-- `issue_token` MCP tool may still build a **self-transfer placeholder** instead of a MeridianToken deploy — needs MCP/contract review.
-- `restake` requires the caller to hold **CURATOR** role on StakingVault — grant role or use the curator account for demo.
+- `issue_token` is now disabled because MRWA fixed supply was minted at deployment.
+- `restake` still requires the caller to hold **CURATOR** role on StakingVault — grant role or use the curator account for operator demos.
+- Normal user staking now uses `delegate_stake` (native Casper delegation), which is separate from curator restake.
 
 ---
 

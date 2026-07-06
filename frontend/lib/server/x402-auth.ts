@@ -1,7 +1,6 @@
 import 'server-only'
 import { createHash } from 'node:crypto'
 import { PublicKey } from 'casper-js-sdk'
-import { verifyDigestSignature } from '@meridian/casper-sdk'
 
 export type TransferAuthorization = {
   from: string
@@ -80,11 +79,6 @@ export function verifyAuthorizationSignature(input: {
 
   return messages.some((message) =>
     signatures.some((signatureHex) => {
-      try {
-        if (verifyDigestSignature(input.publicKey, message, signatureHex)) return true
-      } catch {
-        /* try next variant */
-      }
       try {
         return PublicKey.fromHex(input.publicKey).verifySignature(
           message,

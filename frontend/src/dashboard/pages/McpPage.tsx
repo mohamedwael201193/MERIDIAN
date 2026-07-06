@@ -66,7 +66,7 @@ const READ_TOOLS: McpTool[] = [
 const WRITE_TOOLS: McpTool[] = [
   {
     id: 'issue_token',
-    description: 'Build an unsigned self-transfer template for the deployed fixed-supply token.',
+    description: 'Disabled: MRWA fixed supply was minted at deployment.',
     example: '{"symbol":"MRWA","initialSupply":"1000000"}',
   },
   {
@@ -85,8 +85,13 @@ const WRITE_TOOLS: McpTool[] = [
     example: '{"holderAccountHash":"account-hash-...","reason":"manual_review"}',
   },
   {
+    id: 'delegate_stake',
+    description: 'Build a native Casper delegation transaction for user staking.',
+    example: '{"validator":"...","amount":"1000000000"}',
+  },
+  {
     id: 'restake',
-    description: 'Restake accrued yield rewards into the StakingVault.',
+    description: 'Curator-only restake between validators in the StakingVault.',
     example: '{"fromValidator":"...","toValidator":"...","amount":"1000000000"}',
   },
   {

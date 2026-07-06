@@ -11,6 +11,7 @@ export const {
   HttpHandler,
   Key,
   KeyAlgorithm,
+  NativeDelegateBuilder,
   NativeTransferBuilder,
   PrivateKey,
   PublicKey,

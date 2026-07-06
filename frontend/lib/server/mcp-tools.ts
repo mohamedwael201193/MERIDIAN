@@ -5,6 +5,7 @@ export const WRITE_TOOL_NAMES = [
   'transfer_token',
   'register_holder',
   'revoke_holder',
+  'delegate_stake',
   'restake',
   'distribute_rewards',
 ] as const

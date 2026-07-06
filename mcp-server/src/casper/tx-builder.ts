@@ -3,6 +3,7 @@ import {
   CLValue,
   ContractCallBuilder,
   Key,
+  NativeDelegateBuilder,
   NativeTransferBuilder,
   PublicKey,
 } from '@meridian/casper-sdk'
@@ -138,6 +139,27 @@ export class TransactionBuilder {
     )
   }
 
+  buildDelegateStake(
+    callerPublicKeyHex: string,
+    validatorPublicKeyHex: string,
+    amountMotes: string,
+  ): UnsignedTransaction {
+    const pk = PublicKey.fromHex(callerPublicKeyHex)
+    const validator = PublicKey.fromHex(validatorPublicKeyHex)
+    const transaction = new NativeDelegateBuilder()
+      .from(pk)
+      .validator(validator)
+      .amount(amountMotes)
+      .chainName(this.chainName)
+      .payment(5_000_000_000)
+      .build()
+    return this.wrap(
+      'delegate_stake',
+      transaction,
+      'Native Casper delegation — signs a valid stake transaction from the connected wallet',
+    )
+  }
+
   buildDistributeRewards(callerPublicKeyHex: string, eraId: number): UnsignedTransaction {
     const vault = this.addresses.contracts.StakingVault
     if (!vault) throw new Error('StakingVault not deployed')
@@ -179,20 +201,11 @@ export class TransactionBuilder {
     symbol: string,
     initialSupply: string,
   ): UnsignedTransaction {
-    const token = this.addresses.contracts.MeridianToken
-    if (!token) throw new Error('MeridianToken not deployed')
-    const pk = PublicKey.fromHex(callerPublicKeyHex)
-    return this.contractCall(
-      callerPublicKeyHex,
-      token.package_hash,
-      'transfer',
-      {
-        recipient: CLValue.newCLKey(keyFromAccountHash(pk.accountHash().toPrefixedString())),
-        amount: CLValue.newCLUInt256(initialSupply),
-      },
-      5_000_000_000,
-      'issue_token',
-      `MRWA (${symbol}) uses fixed supply at deploy; this builds a self-transfer template for ${initialSupply} base units`,
+    void callerPublicKeyHex
+    void symbol
+    void initialSupply
+    throw new Error(
+      'issue_token is disabled: MRWA is a fixed-supply token minted at deployment. Use transfer_token for MRWA transfers or staking deposit for new yield activity.',
     )
   }
 

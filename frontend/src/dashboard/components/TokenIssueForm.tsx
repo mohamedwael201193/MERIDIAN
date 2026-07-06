@@ -1,15 +1,8 @@
 'use client'
 
 import { useState, ReactElement } from 'react'
-import { Stack, TextField, Button, Alert, CircularProgress } from '@mui/material'
-import { meridianApi } from '@lib/api'
-import type { UnsignedTransaction } from '@lib/types'
-import { useWalletActions } from '@lib/hooks/useWalletActions'
-import { parseUnsignedTransaction, type TxPollStatus } from '@lib/transactions'
-import TransactionStatus from '@/components/TransactionStatus'
-import TransactionReviewCard from '@/components/TransactionReviewCard'
+import { Stack, TextField, Button, Alert } from '@mui/material'
 import FlowStepper from '@/components/FlowStepper'
-import { revalidateMeridianData } from '@lib/hooks/useMeridianData'
 
 const STEPS = [
   { label: 'Details', icon: 'mdi:form-textbox' },
@@ -19,60 +12,16 @@ const STEPS = [
 ]
 
 export default function TokenIssueForm(): ReactElement {
-  const wallet = useWalletActions()
   const [symbol, setSymbol] = useState('MRWA')
   const [initialSupply, setInitialSupply] = useState('1000000')
-  const [unsignedTx, setUnsignedTx] = useState<UnsignedTransaction | null>(null)
-  const [txHash, setTxHash] = useState<string | null>(null)
-  const [txStatus, setTxStatus] = useState<TxPollStatus | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
 
-  const activeStep = txHash
-    ? txStatus === 'finalized'
-      ? 3
-      : 2
-    : unsignedTx
-      ? 2
-      : 0
+  const activeStep = 0
 
-  const buildTransaction = async () => {
-    setError(null)
-    setTxHash(null)
-    const publicKey = await wallet.getPublicKey()
-    if (!publicKey) {
-      setError('Connect your wallet before issuing a token.')
-      return
-    }
-    setLoading(true)
-    try {
-      const { result } = await meridianApi.mcpTool('issue_token', {
-        callerPublicKey: publicKey,
-        symbol,
-        initialSupply,
-      })
-      setUnsignedTx(parseUnsignedTransaction(result, 'issue_token response'))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to build transaction')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const signAndSubmit = async () => {
-    if (!unsignedTx) return
-    setLoading(true)
-    setError(null)
-    try {
-      const hash = await wallet.signAndSubmit(unsignedTx)
-      setTxHash(hash)
-      setTxStatus('pending')
-      setUnsignedTx(null)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signing or submission failed')
-    } finally {
-      setLoading(false)
-    }
+  const buildTransaction = () => {
+    setError(
+      'MRWA is already deployed as a fixed-supply token. There is no public issue/mint transaction to sign; use Transfer Token or Staking to create new on-chain activity.',
+    )
   }
 
   return (
@@ -82,43 +31,24 @@ export default function TokenIssueForm(): ReactElement {
         label="Symbol"
         value={symbol}
         onChange={(e) => setSymbol(e.target.value)}
-        disabled={Boolean(unsignedTx) || Boolean(txHash)}
+        disabled
       />
       <TextField
         label="Initial supply (whole units)"
         value={initialSupply}
         onChange={(e) => setInitialSupply(e.target.value)}
-        disabled={Boolean(unsignedTx) || Boolean(txHash)}
+        disabled
       />
       <Stack direction="row" gap={2}>
-        <Button
-          variant="contained"
-          onClick={buildTransaction}
-          disabled={loading || Boolean(unsignedTx)}
-          startIcon={
-            loading && !unsignedTx ? <CircularProgress size={18} color="inherit" /> : undefined
-          }
-        >
-          {loading && !unsignedTx ? 'Building…' : 'Build via MCP'}
+        <Button variant="contained" onClick={buildTransaction}>
+          Token already deployed
         </Button>
       </Stack>
-      {error ? <Alert severity="error">{error}</Alert> : null}
-      {txHash ? (
-        <TransactionStatus
-          transactionHash={txHash}
-          onStatusChange={(status) => setTxStatus(status)}
-          onFinalized={() => void revalidateMeridianData()}
-        />
-      ) : null}
-      {unsignedTx ? (
-        <TransactionReviewCard
-          transaction={unsignedTx}
-          title="Issue Token Transaction"
-          description="MCP built an unsigned token issuance transaction. Review the summary and sign it with your wallet."
-          loading={loading}
-          onSignAndSubmit={signAndSubmit}
-        />
-      ) : null}
+      <Alert severity="info">
+        MRWA fixed supply was minted when the MeridianToken contract was deployed. This page no
+        longer opens Casper Wallet for an invalid self-transfer issue template.
+      </Alert>
+      {error ? <Alert severity="warning">{error}</Alert> : null}
     </Stack>
   )
 }

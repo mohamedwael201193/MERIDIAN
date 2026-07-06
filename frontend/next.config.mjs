@@ -1,10 +1,10 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { config } from 'dotenv';
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { config } from 'dotenv'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-config({ path: path.resolve(__dirname, '../.env') });
+config({ path: path.resolve(__dirname, '../.env') })
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -20,14 +20,15 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  outputFileTracingIncludes: {
-    '/api/mcp': ['./../mcp-server/dist/**/*', './../deployed/addresses.json'],
-    '/api/x402/resource/[resource]': ['./../packages/meridian-casper-sdk/dist/**/*'],
-    '/api/x402/verify': ['./../packages/meridian-casper-sdk/dist/**/*'],
-    '/api/x402/settle': ['./../packages/meridian-casper-sdk/dist/**/*'],
-    '/api/transactions/status/[hash]': ['./../packages/meridian-casper-sdk/dist/**/*'],
+  experimental: {
+    outputFileTracingIncludes: {
+      '/api/mcp': ['./../mcp-server/dist/**/*', './../deployed/addresses.json'],
+      '/api/x402/resource/[resource]': ['./../packages/meridian-casper-sdk/dist/**/*'],
+      '/api/x402/verify': ['./../packages/meridian-casper-sdk/dist/**/*'],
+      '/api/x402/settle': ['./../packages/meridian-casper-sdk/dist/**/*'],
+      '/api/transactions/status/[hash]': ['./../packages/meridian-casper-sdk/dist/**/*'],
+    },
   },
-  serverExternalPackages: ['casper-js-sdk', '@meridian/casper-sdk'],
   async headers() {
     return [
       {
@@ -38,8 +39,8 @@ const nextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
         ],
       },
-    ];
+    ]
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

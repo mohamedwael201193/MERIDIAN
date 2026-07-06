@@ -24,7 +24,6 @@ export default function StakingPanel(): ReactElement {
   const wallet = useWalletActions()
   const { data: yieldInfo, isLoading } = useTokenYield()
   const [validators, setValidators] = useState<Array<{ public_key: string; name?: string }>>([])
-  const [fromValidator, setFromValidator] = useState('')
   const [toValidator, setToValidator] = useState('')
   const [amount, setAmount] = useState('1000000000')
   const [unsignedTx, setUnsignedTx] = useState<UnsignedTransaction | null>(null)
@@ -41,7 +40,6 @@ export default function StakingPanel(): ReactElement {
           result
         if (Array.isArray(list) && list.length) {
           setValidators(list as Array<{ public_key: string; name?: string }>)
-          setFromValidator(list[0]?.public_key ?? '')
           setToValidator(list[1]?.public_key ?? list[0]?.public_key ?? '')
         }
       } catch {
@@ -50,29 +48,28 @@ export default function StakingPanel(): ReactElement {
     })()
   }, [])
 
-  const buildRestake = async () => {
+  const buildStake = async () => {
     setError(null)
     setTxHash(null)
     const publicKey = await wallet.getPublicKey()
     if (!publicKey) {
-      setError('Connect wallet to restake.')
+      setError('Connect wallet to stake.')
       return
     }
-    if (!fromValidator || !toValidator) {
-      setError('Select source and destination validators.')
+    if (!toValidator) {
+      setError('Select a validator.')
       return
     }
     setLoading(true)
     try {
-      const { result } = await meridianApi.mcpTool('restake', {
+      const { result } = await meridianApi.mcpTool('delegate_stake', {
         callerPublicKey: publicKey,
-        fromValidator,
-        toValidator,
+        validator: toValidator,
         amount,
       })
-      setUnsignedTx(parseUnsignedTransaction(result, 'restake response'))
+      setUnsignedTx(parseUnsignedTransaction(result, 'stake delegation response'))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to build restake transaction')
+      setError(err instanceof Error ? err.message : 'Failed to build stake transaction')
     } finally {
       setLoading(false)
     }
@@ -115,20 +112,7 @@ export default function StakingPanel(): ReactElement {
       <Stack gap={2}>
         <TextField
           select
-          label="From validator"
-          value={fromValidator}
-          onChange={(e) => setFromValidator(e.target.value)}
-          disabled={!validators.length}
-        >
-          {validators.map((v) => (
-            <MenuItem key={v.public_key} value={v.public_key}>
-              {v.name ?? v.public_key.slice(0, 16)}…
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          select
-          label="To validator"
+          label="Validator"
           value={toValidator}
           onChange={(e) => setToValidator(e.target.value)}
           disabled={!validators.length}
@@ -145,8 +129,8 @@ export default function StakingPanel(): ReactElement {
           onChange={(e) => setAmount(e.target.value)}
         />
         <Stack direction="row" gap={2}>
-          <Button variant="contained" onClick={buildRestake} disabled={loading}>
-            Build restake (MCP)
+          <Button variant="contained" onClick={buildStake} disabled={loading}>
+            Build stake delegation (MCP)
           </Button>
         </Stack>
         {error ? <Alert severity="error">{error}</Alert> : null}
@@ -159,8 +143,8 @@ export default function StakingPanel(): ReactElement {
         {unsignedTx ? (
           <TransactionReviewCard
             transaction={unsignedTx}
-            title="Restake Transaction"
-            description="MCP prepared a vault restake transaction. Confirm the network and sign in your wallet."
+            title="Stake Delegation Transaction"
+            description="MCP prepared a native Casper delegation transaction. Confirm the validator, network, and amount before signing."
             loading={loading}
             onSignAndSubmit={signAndSubmit}
           />

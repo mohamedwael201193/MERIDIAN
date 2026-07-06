@@ -13,6 +13,7 @@ const { TransactionBuilder } = require('../../../mcp-server/dist/casper/tx-build
     buildTransferToken(caller: string, recipient: string, amount: string): unknown
     buildRegisterHolder(caller: string, holder: string, attestation: string): unknown
     buildRevokeHolder(caller: string, holder: string, reason: string): unknown
+    buildDelegateStake(caller: string, validator: string, amount: string): unknown
     buildRestake(caller: string, from: string, to: string, amount: string): unknown
     buildDistributeRewards(caller: string, eraId: number): unknown
   }
@@ -67,6 +68,12 @@ export async function buildWriteToolLocally(
         callerPublicKey,
         argString(args, 'holderAccountHash'),
         argString(args, 'reason'),
+      )
+    case 'delegate_stake':
+      return builder.buildDelegateStake(
+        callerPublicKey,
+        argString(args, 'validator'),
+        argString(args, 'amount'),
       )
     case 'restake':
       return builder.buildRestake(

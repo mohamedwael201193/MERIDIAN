@@ -9,77 +9,105 @@ function textResult(data: unknown) {
 }
 
 export function registerWriteTools(server: McpServer, txBuilder: TransactionBuilder): void {
-  server.tool(
+  server.registerTool(
     'issue_token',
-    'Builds unsigned TransactionV1 to mint MRWA tokens (non-custodial)',
     {
-      callerPublicKey: publicKeySchema,
-      symbol: z.string().default('MRWA'),
-      initialSupply: z.string().regex(/^\d+$/),
+      description:
+        'Disabled: MRWA fixed supply was minted at deployment; use transfer_token instead',
+      inputSchema: {
+        callerPublicKey: publicKeySchema,
+        symbol: z.string().default('MRWA'),
+        initialSupply: z.string().regex(/^\d+$/),
+      },
     },
-    async ({ callerPublicKey, symbol, initialSupply }) =>
+    ({ callerPublicKey, symbol, initialSupply }) =>
       textResult(txBuilder.buildIssueToken(callerPublicKey, symbol, initialSupply)),
   )
 
-  server.tool(
+  server.registerTool(
     'transfer_token',
-    'Builds unsigned TransactionV1 for MRWA transfer (non-custodial)',
     {
-      callerPublicKey: publicKeySchema,
-      recipientAccountHash: z.string().min(10),
-      amount: z.string().regex(/^\d+$/),
+      description: 'Builds unsigned TransactionV1 for MRWA transfer (non-custodial)',
+      inputSchema: {
+        callerPublicKey: publicKeySchema,
+        recipientAccountHash: z.string().min(10),
+        amount: z.string().regex(/^\d+$/),
+      },
     },
-    async ({ callerPublicKey, recipientAccountHash, amount }) =>
+    ({ callerPublicKey, recipientAccountHash, amount }) =>
       textResult(txBuilder.buildTransferToken(callerPublicKey, recipientAccountHash, amount)),
   )
 
-  server.tool(
+  server.registerTool(
     'register_holder',
-    'Builds unsigned TransactionV1 to register a compliant holder',
     {
-      callerPublicKey: publicKeySchema,
-      holderAccountHash: z.string().min(10),
-      attestationBytes: z.string().min(2),
+      description: 'Builds unsigned TransactionV1 to register a compliant holder',
+      inputSchema: {
+        callerPublicKey: publicKeySchema,
+        holderAccountHash: z.string().min(10),
+        attestationBytes: z.string().min(2),
+      },
     },
-    async ({ callerPublicKey, holderAccountHash, attestationBytes }) =>
+    ({ callerPublicKey, holderAccountHash, attestationBytes }) =>
       textResult(
         txBuilder.buildRegisterHolder(callerPublicKey, holderAccountHash, attestationBytes),
       ),
   )
 
-  server.tool(
+  server.registerTool(
     'revoke_holder',
-    'Builds unsigned TransactionV1 to revoke a holder (compliance officer)',
     {
-      callerPublicKey: publicKeySchema,
-      holderAccountHash: z.string().min(10),
-      reason: z.string().min(1).max(500),
+      description: 'Builds unsigned TransactionV1 to revoke a holder (compliance officer)',
+      inputSchema: {
+        callerPublicKey: publicKeySchema,
+        holderAccountHash: z.string().min(10),
+        reason: z.string().min(1).max(500),
+      },
     },
-    async ({ callerPublicKey, holderAccountHash, reason }) =>
+    ({ callerPublicKey, holderAccountHash, reason }) =>
       textResult(txBuilder.buildRevokeHolder(callerPublicKey, holderAccountHash, reason)),
   )
 
-  server.tool(
-    'restake',
-    'Builds unsigned TransactionV1 for vault restake between validators',
+  server.registerTool(
+    'delegate_stake',
     {
-      callerPublicKey: publicKeySchema,
-      fromValidator: publicKeySchema,
-      toValidator: publicKeySchema,
-      amount: z.string().regex(/^\d+$/),
+      description: 'Builds unsigned native Casper delegation transaction for user staking',
+      inputSchema: {
+        callerPublicKey: publicKeySchema,
+        validator: publicKeySchema,
+        amount: z.string().regex(/^\d+$/),
+      },
     },
-    async ({ callerPublicKey, fromValidator, toValidator, amount }) =>
+    ({ callerPublicKey, validator, amount }) =>
+      textResult(txBuilder.buildDelegateStake(callerPublicKey, validator, amount)),
+  )
+
+  server.registerTool(
+    'restake',
+    {
+      description:
+        'Curator-only: builds unsigned TransactionV1 for vault restake between validators',
+      inputSchema: {
+        callerPublicKey: publicKeySchema,
+        fromValidator: publicKeySchema,
+        toValidator: publicKeySchema,
+        amount: z.string().regex(/^\d+$/),
+      },
+    },
+    ({ callerPublicKey, fromValidator, toValidator, amount }) =>
       textResult(txBuilder.buildRestake(callerPublicKey, fromValidator, toValidator, amount)),
   )
 
-  server.tool(
+  server.registerTool(
     'distribute_rewards',
-    'Builds unsigned TransactionV1 for yield distribution',
     {
-      callerPublicKey: publicKeySchema,
-      eraId: z.number().int().nonnegative(),
+      description: 'Builds unsigned TransactionV1 for yield distribution',
+      inputSchema: {
+        callerPublicKey: publicKeySchema,
+        eraId: z.number().int().nonnegative(),
+      },
     },
-    async ({ callerPublicKey, eraId }) =>
+    ({ callerPublicKey, eraId }) =>
       textResult(txBuilder.buildDistributeRewards(callerPublicKey, eraId)),
   )
 }
@@ -89,6 +117,7 @@ export const WRITE_TOOL_NAMES = [
   'transfer_token',
   'register_holder',
   'revoke_holder',
+  'delegate_stake',
   'restake',
   'distribute_rewards',
 ] as const
