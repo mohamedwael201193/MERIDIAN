@@ -1,6 +1,9 @@
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
+
+const moduleDir = dirname(fileURLToPath(import.meta.url))
 
 const contractEntrySchema = z.object({
   contract_hash: z.string(),
@@ -27,8 +30,30 @@ export function stripHashPrefix(value: string): string {
   return value.replace(/^(hash-|contract-package-)/, '')
 }
 
+/** Resolve deployed/addresses.json across monorepo cwd and bundled dist copies. */
+export function resolveContractsPath(configuredPath: string): string {
+  const repoRootFromDist = resolve(moduleDir, '../../..')
+  const candidates = [
+    resolve(process.cwd(), configuredPath),
+    resolve(repoRootFromDist, configuredPath),
+    resolve(repoRootFromDist, 'deployed/addresses.json'),
+    resolve(moduleDir, '../deployed/addresses.json'),
+    resolve(process.cwd(), 'deployed/addresses.json'),
+    resolve(process.cwd(), '../deployed/addresses.json'),
+    resolve(process.cwd(), 'src/deployed/addresses.json'),
+  ]
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) return candidate
+  }
+
+  throw new Error(
+    `Contract addresses file not found (configured=${configuredPath}). Tried: ${candidates.join(', ')}`,
+  )
+}
+
 export function loadDeployedAddresses(path: string): DeployedAddresses {
-  const absolute = resolve(path)
+  const absolute = resolveContractsPath(path)
   const raw = readFileSync(absolute, 'utf8')
   return addressesSchema.parse(JSON.parse(raw))
 }

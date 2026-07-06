@@ -1,7 +1,10 @@
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
 import { parseMeridianEnv } from '@meridian/env'
+
+const moduleDir = dirname(fileURLToPath(import.meta.url))
 
 const envSchema = z.object({
   MERIDIAN_MCP_TRANSPORT: z.enum(['stdio', 'http']).default('stdio'),
@@ -34,7 +37,27 @@ export function loadConfig(source: Record<string, string | undefined> = process.
   return { ...cloud, ...mcp }
 }
 
+export function resolveContractsPath(configuredPath: string): string {
+  const repoRootFromDist = resolve(moduleDir, '../..')
+  const candidates = [
+    resolve(process.cwd(), configuredPath),
+    resolve(repoRootFromDist, configuredPath),
+    resolve(repoRootFromDist, 'deployed/addresses.json'),
+    resolve(moduleDir, 'deployed/addresses.json'),
+    resolve(process.cwd(), 'deployed/addresses.json'),
+    resolve(process.cwd(), 'src/deployed/addresses.json'),
+  ]
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) return candidate
+  }
+
+  throw new Error(
+    `Contract addresses file not found (configured=${configuredPath}). Tried: ${candidates.join(', ')}`,
+  )
+}
+
 export function loadAddresses(path: string): DeployedAddresses {
-  const absolute = resolve(process.cwd(), path)
+  const absolute = resolveContractsPath(path)
   return JSON.parse(readFileSync(absolute, 'utf8')) as DeployedAddresses
 }

@@ -1,4 +1,3 @@
-import { resolve } from 'node:path'
 import { Redis } from '@upstash/redis'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
@@ -30,7 +29,7 @@ import { createApiKeyHook, registerErrorHandler } from './api/plugins/auth.js'
 export async function buildApp() {
   const env = loadBackendEnv()
   const log = createLogger(env.LOG_LEVEL)
-  const addressesPath = resolve(process.cwd(), env.MERIDIAN_CONTRACTS_PATH)
+  const addressesPath = env.MERIDIAN_CONTRACTS_PATH
   const addresses = loadDeployedAddresses(addressesPath)
 
   const pool = createPool(env.DATABASE_URL, log)

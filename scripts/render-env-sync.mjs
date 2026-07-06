@@ -87,6 +87,7 @@ const auditPem = resolveEnvPem('MERIDIAN_AUDIT_AGENT_PRIVATE_KEY_PEM')
 if (backend?.id) {
   console.log('Syncing meridian-backend env')
   await setEnv(backend.id, [
+    ['MERIDIAN_CONTRACTS_PATH', 'deployed/addresses.json'],
     ['BACKEND_URL', backendUrl],
     ['X402_FACILITATOR_URL', x402Url],
     ['CSPR_CLOUD_AUTH_TOKEN', env.CSPR_CLOUD_AUTH_TOKEN || env.CASPER_API_KEY],
@@ -131,6 +132,7 @@ if (x402?.id) {
 if (mcp?.id) {
   console.log('Syncing meridian-mcp-server env')
   await setEnv(mcp.id, [
+    ['MERIDIAN_CONTRACTS_PATH', 'deployed/addresses.json'],
     ['BACKEND_URL', backendUrl],
     ['MERIDIAN_API_KEY', env.MERIDIAN_API_KEY],
     ['CASPER_API_KEY', env.CASPER_API_KEY],
@@ -150,3 +152,10 @@ if (mcp?.id) {
 }
 
 console.log(JSON.stringify({ backendUrl, x402Url, mcpUrl }, null, 2))
+
+for (const name of ['meridian-backend', 'meridian-mcp-server', 'meridian-x402']) {
+  const svc = services[name] || (name === 'meridian-x402' ? x402 : null)
+  if (!svc?.id) continue
+  console.log(`Triggering deploy: ${name}`)
+  await api('POST', `/services/${svc.id}/deploys`, { clearCache: 'clear' })
+}
