@@ -119,6 +119,20 @@ export interface UnsignedTransaction {
   transactionType: string
   transaction: unknown
   note: string
+  attachedValueMotes?: string
+  requiredRole?: string
+  expectedResult?: string
+  explorerHint?: string
+}
+
+export interface AgentTraceRow {
+  id: string
+  session_id: string
+  agent_name: string
+  step_type: string
+  message: string
+  payload: Record<string, unknown>
+  created_at: string
 }
 
 export interface BackendHealth {

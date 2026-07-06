@@ -3,12 +3,14 @@
 import { ReactElement } from 'react'
 import { Alert, Box, Button, Chip, Paper, Stack, Typography } from '@mui/material'
 import type { UnsignedTransaction } from '@lib/types'
+import { explorerTxUrl } from '@lib/contracts'
 
 interface TransactionReviewCardProps {
   transaction: UnsignedTransaction
   title?: string
   description?: string
   loading?: boolean
+  txHash?: string | null
   onSignAndSubmit: () => void | Promise<void>
 }
 
@@ -27,8 +29,11 @@ export default function TransactionReviewCard({
   title = 'Transaction Ready',
   description = 'Review this unsigned TransactionV1, then approve it in your wallet.',
   loading = false,
+  txHash = null,
   onSignAndSubmit,
 }: TransactionReviewCardProps): ReactElement {
+  const explorerBase = transaction.explorerHint ?? 'https://testnet.cspr.live'
+
   return (
     <Paper
       variant="outlined"
@@ -52,22 +57,43 @@ export default function TransactionReviewCard({
           <Chip color="error" label="Wallet signature required" />
         </Stack>
 
+        <Alert severity="warning" sx={{ alignItems: 'flex-start' }}>
+          <Typography variant="subtitle2" fontWeight={700}>
+            Why signing is required
+          </Typography>
+          <Typography variant="body2">{transaction.note}</Typography>
+        </Alert>
+
+        {transaction.expectedResult ? (
+          <Alert severity="info">
+            <Typography variant="subtitle2" fontWeight={700}>
+              Expected result
+            </Typography>
+            <Typography variant="body2">{transaction.expectedResult}</Typography>
+          </Alert>
+        ) : null}
+
         <Stack direction="row" gap={1} flexWrap="wrap">
           <Chip size="small" label={transaction.transactionType || 'TransactionV1'} />
           <Chip size="small" variant="outlined" label={`Network ${transaction.network}`} />
           <Chip size="small" variant="outlined" label={`Chain ${transaction.chainName}`} />
-          <Chip
-            size="small"
-            variant="outlined"
-            label={`Payload ${transactionSize(transaction.transaction)}`}
-          />
+          <Chip size="small" variant="outlined" label={`Payload ${transactionSize(transaction.transaction)}`} />
+          {transaction.requiredRole ? (
+            <Chip size="small" color="warning" label={`Role: ${transaction.requiredRole}`} />
+          ) : null}
+          {transaction.attachedValueMotes ? (
+            <Chip
+              size="small"
+              color="primary"
+              label={`Attach ${transaction.attachedValueMotes} motes`}
+            />
+          ) : null}
         </Stack>
 
-        {transaction.note ? (
-          <Alert severity="info" sx={{ alignItems: 'center' }}>
-            {transaction.note}
-          </Alert>
-        ) : null}
+        <Typography variant="caption" color="text.secondary">
+          Explorer: {explorerBase}
+          {txHash ? ` · ${explorerTxUrl(txHash)}` : ' · hash appears after broadcast'}
+        </Typography>
 
         <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5} alignItems={{ sm: 'center' }}>
           <Button

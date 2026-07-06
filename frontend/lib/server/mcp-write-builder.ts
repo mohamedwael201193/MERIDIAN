@@ -9,11 +9,11 @@ const { TransactionBuilder } = require('../../../mcp-server/dist/casper/tx-build
     chainName: string,
     addresses: unknown,
   ) => {
-    buildIssueToken(caller: string, symbol: string, supply: string): unknown
     buildTransferToken(caller: string, recipient: string, amount: string): unknown
     buildRegisterHolder(caller: string, holder: string, attestation: string): unknown
     buildRevokeHolder(caller: string, holder: string, reason: string): unknown
     buildDelegateStake(caller: string, validator: string, amount: string): unknown
+    buildDepositToVault(caller: string, amount: string): unknown
     buildRestake(caller: string, from: string, to: string, amount: string): unknown
     buildDistributeRewards(caller: string, eraId: number): unknown
   }
@@ -22,6 +22,8 @@ const { TransactionBuilder } = require('../../../mcp-server/dist/casper/tx-build
 import { isWriteTool, WRITE_TOOL_NAMES, type WriteToolName } from './mcp-tools'
 
 export { isWriteTool, WRITE_TOOL_NAMES, type WriteToolName }
+
+const MIN_DELEGATION_MOTES = 500_000_000_000n
 
 async function loadAddresses() {
   return JSON.parse(await readFile(join(process.cwd(), '../deployed/addresses.json'), 'utf8')) as {
@@ -45,12 +47,6 @@ export async function buildWriteToolLocally(
   const callerPublicKey = argString(args, 'callerPublicKey')
 
   switch (tool) {
-    case 'issue_token':
-      return builder.buildIssueToken(
-        callerPublicKey,
-        argString(args, 'symbol', 'MRWA'),
-        argString(args, 'initialSupply'),
-      )
     case 'transfer_token':
       return builder.buildTransferToken(
         callerPublicKey,
@@ -69,12 +65,17 @@ export async function buildWriteToolLocally(
         argString(args, 'holderAccountHash'),
         argString(args, 'reason'),
       )
-    case 'delegate_stake':
-      return builder.buildDelegateStake(
-        callerPublicKey,
-        argString(args, 'validator'),
-        argString(args, 'amount'),
-      )
+    case 'delegate_stake': {
+      const amount = argString(args, 'amount')
+      if (BigInt(amount) < MIN_DELEGATION_MOTES) {
+        throw new Error(
+          `Minimum native delegation is 500 CSPR (${MIN_DELEGATION_MOTES.toString()} motes). Got ${amount} motes.`,
+        )
+      }
+      return builder.buildDelegateStake(callerPublicKey, argString(args, 'validator'), amount)
+    }
+    case 'deposit_to_vault':
+      return builder.buildDepositToVault(callerPublicKey, argString(args, 'amount'))
     case 'restake':
       return builder.buildRestake(
         callerPublicKey,

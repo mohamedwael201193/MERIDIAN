@@ -45,7 +45,7 @@ export const dashboardRoutes: DashboardRoute[] = [
     name: 'AI Agents',
     path: '/dashboard/agents',
     icon: <MdSmartToy className="h-5 w-5" />,
-    description: 'Yield, Compliance, and Audit agents',
+    description: 'Agent Activity Center — live MCP timeline',
   },
   {
     name: 'Audit Trail',

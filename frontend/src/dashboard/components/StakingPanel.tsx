@@ -14,6 +14,8 @@ import {
 import { useTokenYield, revalidateMeridianData } from '@lib/hooks/useMeridianData'
 import { useWalletActions } from '@lib/hooks/useWalletActions'
 import { formatApy, formatMotes, MERIDIAN_TOKEN_PACKAGE } from '@lib/contracts'
+
+const MIN_DELEGATION_MOTES = 500_000_000_000n
 import { meridianApi } from '@lib/api'
 import type { UnsignedTransaction } from '@lib/types'
 import { parseUnsignedTransaction } from '@lib/transactions'
@@ -25,7 +27,7 @@ export default function StakingPanel(): ReactElement {
   const { data: yieldInfo, isLoading } = useTokenYield()
   const [validators, setValidators] = useState<Array<{ public_key: string; name?: string }>>([])
   const [toValidator, setToValidator] = useState('')
-  const [amount, setAmount] = useState('1000000000')
+  const [amount, setAmount] = useState(String(MIN_DELEGATION_MOTES))
   const [unsignedTx, setUnsignedTx] = useState<UnsignedTransaction | null>(null)
   const [txHash, setTxHash] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -58,6 +60,15 @@ export default function StakingPanel(): ReactElement {
     }
     if (!toValidator) {
       setError('Select a validator.')
+      return
+    }
+    try {
+      if (BigInt(amount) < MIN_DELEGATION_MOTES) {
+        setError(`Minimum delegation is 500 CSPR (${MIN_DELEGATION_MOTES.toString()} motes).`)
+        return
+      }
+    } catch {
+      setError('Enter a valid motes amount.')
       return
     }
     setLoading(true)
@@ -127,7 +138,12 @@ export default function StakingPanel(): ReactElement {
           label="Amount (motes)"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          helperText={`Minimum ${MIN_DELEGATION_MOTES.toString()} motes (500 CSPR) for native delegation`}
         />
+        <Alert severity="info">
+          Native Casper delegation via <strong>delegate_stake</strong>. MERIDIAN vault deposits use{' '}
+          <strong>deposit_to_vault</strong> from MCP.
+        </Alert>
         <Stack direction="row" gap={2}>
           <Button variant="contained" onClick={buildStake} disabled={loading}>
             Build stake delegation (MCP)

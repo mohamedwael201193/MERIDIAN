@@ -1,5 +1,6 @@
 import type {
   AgentDecisionRow,
+  AgentTraceRow,
   ApiEnvelope,
   AuditSummaryRow,
   ComplianceStatus,
@@ -35,18 +36,20 @@ function extractErrorMessage(body: unknown, fallback: string): string {
 }
 
 async function clientFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers)
+  headers.set('Content-Type', 'application/json')
+
   const res = await fetch(path, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...init?.headers,
-    },
+    headers,
   })
 
-  const body = await res.json().catch(() => null)
+  const body: unknown = await res.json().catch(() => null)
 
   if (!res.ok) {
-    throw new Error(extractErrorMessage(body, res.statusText || `Request failed (${res.status})`))
+    throw new Error(
+      extractErrorMessage(body, res.statusText || `Request failed (${String(res.status)})`),
+    )
   }
 
   return body as T
@@ -66,9 +69,10 @@ export const meridianApi = {
     clientFetch<ApiEnvelope<YieldInfo>>(`/api/tokens/${encodeURIComponent(packageHash)}/yield`),
 
   yieldHistory: (limit = 50) =>
-    clientFetch<ApiEnvelope<YieldHistoryItem[]>>(`/api/yields/history?limit=${limit}`),
+    clientFetch<ApiEnvelope<YieldHistoryItem[]>>(`/api/yields/history?limit=${String(limit)}`),
 
-  holders: (limit = 100) => clientFetch<ApiEnvelope<HolderRow[]>>(`/api/holders?limit=${limit}`),
+  holders: (limit = 100) =>
+    clientFetch<ApiEnvelope<HolderRow[]>>(`/api/holders?limit=${String(limit)}`),
 
   holderCompliance: (accountHash: string) =>
     clientFetch<ApiEnvelope<ComplianceStatus>>(
@@ -76,13 +80,24 @@ export const meridianApi = {
     ),
 
   events: (limit = 50) =>
-    clientFetch<ApiEnvelope<MeridianEventRow[]>>(`/api/events?limit=${limit}`),
+    clientFetch<ApiEnvelope<MeridianEventRow[]>>(`/api/events?limit=${String(limit)}`),
 
   auditSummaries: (limit = 20) =>
-    clientFetch<ApiEnvelope<AuditSummaryRow[]>>(`/api/audit/summaries?limit=${limit}`),
+    clientFetch<ApiEnvelope<AuditSummaryRow[]>>(`/api/audit/summaries?limit=${String(limit)}`),
 
   decisions: (limit = 50) =>
-    clientFetch<ApiEnvelope<AgentDecisionRow[]>>(`/api/decisions?limit=${limit}`),
+    clientFetch<ApiEnvelope<AgentDecisionRow[]>>(`/api/decisions?limit=${String(limit)}`),
+
+  traces: (limit = 100, sessionId?: string) =>
+    clientFetch<ApiEnvelope<AgentTraceRow[]>>(
+      `/api/traces?limit=${String(limit)}${sessionId ? `&sessionId=${encodeURIComponent(sessionId)}` : ''}`,
+    ),
+
+  plannerExecute: (input: { objective: string; callerPublicKey?: string; sessionId?: string }) =>
+    clientFetch<{ data: unknown }>('/api/planner/execute', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
 
   mcpTool: (tool: string, args: Record<string, unknown> = {}) =>
     clientFetch<{ result: unknown }>('/api/mcp', {

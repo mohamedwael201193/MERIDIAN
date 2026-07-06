@@ -1,11 +1,11 @@
 import 'server-only'
 
 export const WRITE_TOOL_NAMES = [
-  'issue_token',
   'transfer_token',
   'register_holder',
   'revoke_holder',
   'delegate_stake',
+  'deposit_to_vault',
   'restake',
   'distribute_rewards',
 ] as const

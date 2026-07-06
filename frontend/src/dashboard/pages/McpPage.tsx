@@ -65,11 +65,6 @@ const READ_TOOLS: McpTool[] = [
 
 const WRITE_TOOLS: McpTool[] = [
   {
-    id: 'issue_token',
-    description: 'Disabled: MRWA fixed supply was minted at deployment.',
-    example: '{"symbol":"MRWA","initialSupply":"1000000"}',
-  },
-  {
     id: 'transfer_token',
     description: 'Build a token transfer between two accounts.',
     example: '{"recipientAccountHash":"account-hash-...","amount":"1000"}',
@@ -81,18 +76,23 @@ const WRITE_TOOLS: McpTool[] = [
   },
   {
     id: 'revoke_holder',
-    description: "Revoke a holder's compliant status.",
+    description: "Revoke a holder's compliant status (COMPLIANCE_OFFICER role).",
     example: '{"holderAccountHash":"account-hash-...","reason":"manual_review"}',
   },
   {
     id: 'delegate_stake',
-    description: 'Build a native Casper delegation transaction for user staking.',
-    example: '{"validator":"...","amount":"1000000000"}',
+    description: 'Native Casper delegation from wallet (min 500 CSPR).',
+    example: '{"validator":"01...","amount":"500000000000"}',
+  },
+  {
+    id: 'deposit_to_vault',
+    description: 'Deposit CSPR into MERIDIAN StakingVault (separate from native delegation).',
+    example: '{"amount":"1000000000"}',
   },
   {
     id: 'restake',
     description: 'Curator-only restake between validators in the StakingVault.',
-    example: '{"fromValidator":"...","toValidator":"...","amount":"1000000000"}',
+    example: '{"fromValidator":"01...","toValidator":"01...","amount":"500000000000"}',
   },
   {
     id: 'distribute_rewards',
