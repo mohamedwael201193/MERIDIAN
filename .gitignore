@@ -19,6 +19,8 @@ keys/
 node_modules/
 dist/
 build/
+.next/
+**/.next/
 .turbo/
 *.tsbuildinfo
 coverage/
