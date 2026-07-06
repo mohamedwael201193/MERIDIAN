@@ -20,6 +20,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  outputFileTracingIncludes: {
+    '/api/mcp': ['./../mcp-server/dist/**/*', './../deployed/addresses.json'],
+  },
   async headers() {
     return [
       {

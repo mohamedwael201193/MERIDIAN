@@ -18,25 +18,21 @@ const { TransactionBuilder } = require('../../../mcp-server/dist/casper/tx-build
   }
 }
 
-export const WRITE_TOOL_NAMES = [
-  'issue_token',
-  'transfer_token',
-  'register_holder',
-  'revoke_holder',
-  'restake',
-  'distribute_rewards',
-] as const
+import { isWriteTool, WRITE_TOOL_NAMES, type WriteToolName } from './mcp-tools'
 
-export type WriteToolName = (typeof WRITE_TOOL_NAMES)[number]
-
-export function isWriteTool(tool: string): tool is WriteToolName {
-  return (WRITE_TOOL_NAMES as readonly string[]).includes(tool)
-}
+export { isWriteTool, WRITE_TOOL_NAMES, type WriteToolName }
 
 async function loadAddresses() {
   return JSON.parse(await readFile(join(process.cwd(), '../deployed/addresses.json'), 'utf8')) as {
     chain_name: string
   }
+}
+
+function argString(args: Record<string, unknown>, key: string, fallback = ''): string {
+  const value = args[key]
+  if (typeof value === 'string') return value
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  return fallback
 }
 
 export async function buildWriteToolLocally(
@@ -45,43 +41,45 @@ export async function buildWriteToolLocally(
 ): Promise<unknown> {
   const addresses = await loadAddresses()
   const builder = new TransactionBuilder(addresses.chain_name, addresses)
-  const callerPublicKey = String(args.callerPublicKey ?? '')
+  const callerPublicKey = argString(args, 'callerPublicKey')
 
   switch (tool) {
     case 'issue_token':
       return builder.buildIssueToken(
         callerPublicKey,
-        String(args.symbol ?? 'MRWA'),
-        String(args.initialSupply ?? ''),
+        argString(args, 'symbol', 'MRWA'),
+        argString(args, 'initialSupply'),
       )
     case 'transfer_token':
       return builder.buildTransferToken(
         callerPublicKey,
-        String(args.recipientAccountHash ?? ''),
-        String(args.amount ?? ''),
+        argString(args, 'recipientAccountHash'),
+        argString(args, 'amount'),
       )
     case 'register_holder':
       return builder.buildRegisterHolder(
         callerPublicKey,
-        String(args.holderAccountHash ?? ''),
-        String(args.attestationBytes ?? ''),
+        argString(args, 'holderAccountHash'),
+        argString(args, 'attestationBytes'),
       )
     case 'revoke_holder':
       return builder.buildRevokeHolder(
         callerPublicKey,
-        String(args.holderAccountHash ?? ''),
-        String(args.reason ?? ''),
+        argString(args, 'holderAccountHash'),
+        argString(args, 'reason'),
       )
     case 'restake':
       return builder.buildRestake(
         callerPublicKey,
-        String(args.fromValidator ?? ''),
-        String(args.toValidator ?? ''),
-        String(args.amount ?? ''),
+        argString(args, 'fromValidator'),
+        argString(args, 'toValidator'),
+        argString(args, 'amount'),
       )
     case 'distribute_rewards':
       return builder.buildDistributeRewards(callerPublicKey, Number(args.eraId ?? 0))
-    default:
-      throw new Error(`Unknown write tool: ${tool}`)
+    default: {
+      const unknownTool: string = tool
+      throw new Error(`Unknown write tool: ${unknownTool}`)
+    }
   }
 }
