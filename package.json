@@ -25,6 +25,7 @@
     "sync:api-key": "node scripts/sync-meridian-api-key.mjs",
     "verify:phase1": "node scripts/verify-phase1.mjs",
     "verify:all": "bash scripts/verify-all.sh",
+    "build:vercel": "pnpm --filter @meridian/casper-sdk build && pnpm --filter @meridian/env build && pnpm --filter @meridian/mcp-server build && pnpm --filter @meridian/frontend build",
     "prepare": "lefthook install"
   },
   "devDependencies": {

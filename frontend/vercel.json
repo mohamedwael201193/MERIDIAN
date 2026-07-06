@@ -2,6 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "installCommand": "cd .. && pnpm install --frozen-lockfile",
-  "buildCommand": "cd .. && pnpm --filter @meridian/mcp-server build && pnpm --filter @meridian/frontend build",
+  "buildCommand": "cd .. && pnpm --filter @meridian/casper-sdk build && pnpm --filter @meridian/env build && pnpm --filter @meridian/mcp-server build && pnpm --filter @meridian/frontend build",
   "outputDirectory": ".next"
 }
