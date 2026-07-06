@@ -39,6 +39,9 @@ const nextConfig = {
       { source: '/dashboard/tokens', destination: '/issue', permanent: false },
       { source: '/dashboard/x402', destination: '/x402', permanent: false },
       { source: '/dashboard/issue', destination: '/issue', permanent: false },
+      { source: '/dashboard/start', destination: '/start', permanent: false },
+      { source: '/dashboard/playground', destination: '/playground', permanent: false },
+      { source: '/dashboard/prompts', destination: '/prompts', permanent: false },
     ]
   },
   async headers() {

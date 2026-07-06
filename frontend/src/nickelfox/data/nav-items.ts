@@ -13,6 +13,15 @@ export interface NavGroup {
 
 export const navGroups: NavGroup[] = [
   {
+    id: 'start',
+    label: 'Get Started',
+    items: [
+      { id: 0, path: '/start', title: 'Start with MERIDIAN', icon: 'mdi:rocket-launch-outline' },
+      { id: 10, path: '/playground', title: 'AI Playground', icon: 'mdi:flask-outline' },
+      { id: 11, path: '/prompts', title: 'Prompt Library', icon: 'mdi:text-box-multiple-outline' },
+    ],
+  },
+  {
     id: 'overview',
     label: 'Overview',
     items: [{ id: 1, path: '/dashboard', title: 'Dashboard', icon: 'mdi:view-dashboard-outline' }],

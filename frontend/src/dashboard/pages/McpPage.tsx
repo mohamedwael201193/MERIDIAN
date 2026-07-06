@@ -21,6 +21,7 @@ import TransactionStatus from '@/components/TransactionStatus'
 import TransactionReviewCard from '@/components/TransactionReviewCard'
 import StructuredDataCard from '@/components/StructuredDataCard'
 import PageHeader from '@/components/PageHeader'
+import McpConnectionPanel from '@/components/McpConnectionPanel'
 import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
 import { revalidateMeridianData } from '@lib/hooks/useMeridianData'
 
@@ -178,6 +179,9 @@ export default function McpPage(): ReactElement {
           stepLabel="Step 6 of 8"
           description="Invoke MERIDIAN's Model Context Protocol server directly. Read tools return data instantly; write tools return an unsigned transaction for your wallet to sign."
         />
+      </Box>
+      <Box gridColumn={{ xs: 'span 12' }}>
+        <McpConnectionPanel />
       </Box>
       <Box gridColumn={{ xs: 'span 12', lg: 'span 4' }}>
         <Paper sx={{ p: { xs: 3, sm: 4 }, border: '1px solid', borderColor: 'divider', mb: 3 }}>

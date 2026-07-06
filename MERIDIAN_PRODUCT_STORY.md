@@ -395,6 +395,64 @@ Casper's low fees, fast finality, and native payment authorization make this via
 
 ---
 
+## 16. Autonomous Agents
+
+MERIDIAN runs three autonomous agents with real LLM providers:
+
+| Agent               | Trigger              | Output                                       |
+| ------------------- | -------------------- | -------------------------------------------- |
+| **YieldAgent**      | Era evaluation       | Restake proposals with whitelist enforcement |
+| **ComplianceAgent** | Transfer events      | allow / revoke / review decisions            |
+| **AuditAgent**      | Hourly + adversarial | Blocks bad yield decisions; audit summaries  |
+
+Each posts structured decisions to `POST /api/v1/decisions`. AuditAgent adversarial review is the strongest guard against LLM mistakes on financial actions.
+
+The **Planner Agent** (backend `/api/v1/planner/execute`) orchestrates user objectives: discover tools → read first → write only when needed → stream traces.
+
+---
+
+## 17. Agent Wallets
+
+| Key type         | Holder                             | Purpose                                               |
+| ---------------- | ---------------------------------- | ----------------------------------------------------- |
+| **User wallet**  | Human (Casper Wallet / CSPR.click) | Signs MCP write tools — transfers, stake, compliance  |
+| **Agent keys**   | Yield / Compliance / Audit PEM     | Signs agent attestations only — not user transactions |
+| **Deployer key** | Protocol operator                  | Contract deployment — never shared with agents        |
+
+MERIDIAN enforces agent/deployer key separation via `@meridian/env` identity checks.
+
+User-facing MCP writes are **always non-custodial**. Agent keys never replace the user's wallet for delegation or transfers.
+
+---
+
+## 18. Agent-to-Agent Economy
+
+The machine economy stack:
+
+```
+Agent A (Planner) ──MCP read──► free indexed data
+Agent A ──x402 402──► Agent B premium API ──► unlock audit
+Agent A ──MCP write──► user wallet signs ──► on-chain attestation
+AuditAgent ──adversarial──► blocks YieldAgent if policy violated
+```
+
+Future: autonomous agent wallets pay x402 without human approval for micro-amounts; humans retain veto on high-value writes.
+
+---
+
+## Onboarding (zero-friction)
+
+| Page                         | URL           |
+| ---------------------------- | ------------- |
+| Start with MERIDIAN          | `/start`      |
+| AI Playground                | `/playground` |
+| Prompt Library (111 prompts) | `/prompts`    |
+| Agent Activity Center        | `/agents`     |
+
+Docs: `docs/QUICK_START.md`, `docs/CURSOR_SETUP.md`, `docs/CLAUDE_SETUP.md`
+
+---
+
 ## Live endpoints
 
 | Service  | URL                                            |
@@ -409,18 +467,18 @@ Casper's low fees, fast finality, and native payment authorization make this via
 
 ## Repository map
 
-| Path                       | Role                                   |
-| -------------------------- | -------------------------------------- |
-| `mcp-server/`              | **The product** — MCP tools for agents |
-| `agents/planner-agent/`    | Objective → tool selection → traces    |
-| `agents/yield-agent/`      | Autonomous yield decisions             |
-| `agents/compliance-agent/` | Sanctions screening                    |
-| `agents/audit-agent/`      | Adversarial review + summaries         |
-| `backend/`                 | Indexer + API + trace SSE              |
-| `frontend/`                | Agent Activity Center visualizer       |
-| `x402-facilitator/`        | Micropayment verify/settle             |
-| `contracts/`               | Odra smart contracts                   |
-| `deployed/addresses.json`  | Testnet contract addresses             |
+| Path                       | Role                                       |
+| -------------------------- | ------------------------------------------ |
+| `mcp-server/`              | **The product** — MCP tools for agents     |
+| `backend/src/planner/`     | Planner Agent — objective → tools → traces |
+| `agents/yield-agent/`      | Autonomous yield decisions                 |
+| `agents/compliance-agent/` | Sanctions screening                        |
+| `agents/audit-agent/`      | Adversarial review + summaries             |
+| `backend/`                 | Indexer + API + trace SSE                  |
+| `frontend/`                | Agent Activity Center visualizer           |
+| `x402-facilitator/`        | Micropayment verify/settle                 |
+| `contracts/`               | Odra smart contracts                       |
+| `deployed/addresses.json`  | Testnet contract addresses                 |
 
 ---
 

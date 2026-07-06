@@ -1,0 +1,7 @@
+{
+  "mcp.servers": {
+    "meridian": {
+      "url": "https://meridian-mcp-server-94q4.onrender.com/mcp"
+    }
+  }
+}
