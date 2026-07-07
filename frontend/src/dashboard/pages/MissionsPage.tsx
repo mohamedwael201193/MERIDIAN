@@ -8,7 +8,6 @@ import {
   Button,
   Chip,
   MenuItem,
-  Paper,
   Stack,
   TextField,
   Typography,
@@ -21,6 +20,8 @@ import {
   type MissionCategory,
 } from '@lib/mission-library'
 import PageHeader from '@/components/PageHeader'
+import StatusRibbon from '@/design/components/StatusRibbon'
+import GlassCard from '@/design/components/GlassCard'
 
 export default function MissionsPage(): ReactElement {
   const router = useRouter()
@@ -43,16 +44,16 @@ export default function MissionsPage(): ReactElement {
 
   return (
     <Box>
+      <StatusRibbon />
       <PageHeader
-        icon="mdi:target"
-        eyebrow="Mission Library"
-        title="Execute Missions"
-        description={`${String(MISSION_COUNT)} production missions — each runs immediately through the Planner Agent.`}
+        icon="mdi:file-document-outline"
+        eyebrow="Templates"
+        title="Mission templates"
+        description={`${String(MISSION_COUNT)} production templates — each runs through the agent pipeline.`}
       />
 
       <Alert severity="info" sx={{ mb: 3 }}>
-        Missions replace the prompt library. Click Run to open the Agent Console with the planner
-        objective pre-filled. No copy-paste required.
+        Select a template to open the briefing with the objective pre-filled.
       </Alert>
 
       <Stack direction={{ xs: 'column', sm: 'row' }} gap={2} mb={3}>
@@ -80,7 +81,7 @@ export default function MissionsPage(): ReactElement {
 
       <Stack gap={2}>
         {filtered.map((mission) => (
-          <Paper key={mission.id} sx={{ p: 3 }}>
+          <GlassCard key={mission.id} padding={3}>
             <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={2}>
               <Box flex={1}>
                 <Stack direction="row" gap={1} mb={1} flexWrap="wrap">
@@ -107,7 +108,7 @@ export default function MissionsPage(): ReactElement {
                 Run Mission
               </Button>
             </Stack>
-          </Paper>
+          </GlassCard>
         ))}
       </Stack>
     </Box>

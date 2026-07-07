@@ -67,10 +67,10 @@ export function EmptyState({
   return (
     <Box textAlign="center" py={5} px={2}>
       <Typography variant="h5" color="common.white" fontWeight={600} mb={1}>
-        What can I help with?
+        Ready when you are
       </Typography>
       <Typography variant="body2" color="text.secondary" mb={2}>
-        Tap a suggestion below or type your own question.
+        Tap a suggestion or type your objective below.
       </Typography>
     </Box>
   )

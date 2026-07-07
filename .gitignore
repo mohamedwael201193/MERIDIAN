@@ -52,3 +52,5 @@ logs/
 # Cursor / agent artifacts
 .cursor/
 agent-transcripts/
+.vercel
+.env*

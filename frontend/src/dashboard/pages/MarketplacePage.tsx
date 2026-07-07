@@ -15,6 +15,7 @@ import { Icon } from '@iconify/react'
 import { AGENT_TEMPLATES } from '@lib/agent-marketplace'
 import { updateAgentProfile } from '@lib/agent-profile'
 import PageHeader from '@/components/PageHeader'
+import StatusRibbon from '@/design/components/StatusRibbon'
 
 export default function MarketplacePage(): ReactElement {
   const router = useRouter()
@@ -39,6 +40,7 @@ export default function MarketplacePage(): ReactElement {
 
   return (
     <Box>
+      <StatusRibbon />
       <PageHeader
         icon="mdi:store-outline"
         eyebrow="Agent Marketplace"

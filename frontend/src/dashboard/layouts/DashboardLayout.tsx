@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import '@/nickelfox/index.css'
 import MainLayout from '@/nickelfox/layouts/main-layout'
 import BreakpointsProvider from '@/nickelfox/providers/BreakpointsProvider'
+import { CommandPaletteProvider } from '@/design/components/CommandPalette'
 import theme from '@/nickelfox/theme/theme'
 
 export default function DashboardLayout({ children }: { children: ReactNode }): ReactElement {
@@ -13,12 +14,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }): 
   return (
     <ThemeProvider theme={theme}>
       <BreakpointsProvider>
-        <CssBaseline />
-        <MainLayout>
-          <Fade in key={pathname} timeout={220}>
-            <div>{children}</div>
-          </Fade>
-        </MainLayout>
+        <CommandPaletteProvider>
+          <CssBaseline />
+          <MainLayout>
+            <Fade in key={pathname} timeout={220}>
+              <div>{children}</div>
+            </Fade>
+          </MainLayout>
+        </CommandPaletteProvider>
       </BreakpointsProvider>
     </ThemeProvider>
   )

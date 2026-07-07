@@ -1,10 +1,15 @@
 'use client'
 
 import { ReactElement } from 'react'
-import { Box, Paper, Stack, Typography } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
 import { useAgentTraceStream } from '@lib/hooks/useAgentTraceStream'
 import { loadAgentProfile } from '@lib/agent-profile'
 import Link from 'next/link'
+import GlassCard from '@/design/components/GlassCard'
+import StatusRibbon from '@/design/components/StatusRibbon'
+import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
+import { meridianTokens } from '@/design/tokens'
+import { explorerTxUrl } from '@lib/contracts'
 
 function formatWhen(iso: string): string {
   return new Intl.DateTimeFormat(undefined, {
@@ -20,76 +25,85 @@ export default function ActivityPage(): ReactElement {
   const profile = loadAgentProfile()
 
   const milestones = traces.filter((t) =>
-    ['complete', 'finality', 'objective_received'].includes(t.step_type),
+    ['complete', 'finality', 'deploy_broadcast', 'objective_received'].includes(t.step_type),
   )
 
   return (
-    <Box maxWidth={720} mx="auto" px={{ xs: 2, sm: 3 }} py={4}>
-      <Typography variant="h4" color="common.white" fontWeight={700} mb={0.5}>
+    <Box maxWidth={meridianTokens.spacing.pageMax} mx="auto">
+      <StatusRibbon />
+      <Typography sx={{ ...meridianTokens.typography.display, color: 'common.white', mb: 0.5 }}>
         History
       </Typography>
       <Typography variant="body1" color="text.secondary" mb={4}>
         {profile.missionsCompleted > 0
-          ? `You've completed ${String(profile.missionsCompleted)} request${profile.missionsCompleted === 1 ? '' : 's'}.`
-          : 'Your completed requests will appear here.'}
+          ? `${String(profile.missionsCompleted)} completed mission${profile.missionsCompleted === 1 ? '' : 's'}`
+          : 'Completed missions and on-chain activity'}
       </Typography>
 
       <Stack gap={2}>
         {profile.history.length > 0
-          ? profile.history.map((h) => (
-              <Paper
-                key={h.sessionId}
-                sx={{
-                  p: 3,
-                  borderRadius: 4,
-                  bgcolor: 'rgba(255,255,255,0.03)',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                }}
-              >
-                <Typography variant="body1" color="common.white" mb={0.5}>
-                  {h.objective}
-                </Typography>
-                <Typography variant="caption" color="text.disabled">
-                  {formatWhen(h.completedAt)}
-                </Typography>
-              </Paper>
-            ))
-          : milestones.slice(0, 10).map((t) => (
-              <Paper
-                key={t.id}
-                sx={{
-                  p: 3,
-                  borderRadius: 4,
-                  bgcolor: 'rgba(255,255,255,0.03)',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                }}
-              >
-                <Typography variant="body2" color="common.white">
+          ? profile.history.map((h) => {
+              const sessionTraces = traces.filter((t) => t.session_id === h.sessionId)
+              const txTrace = sessionTraces.find((t) => t.step_type === 'deploy_broadcast')
+              const txPayload = txTrace?.payload as { transactionHash?: string } | undefined
+              const txHash = txPayload?.transactionHash
+
+              return (
+                <GlassCard key={h.sessionId} padding={3}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start" gap={2}>
+                    <Box flex={1}>
+                      <Typography variant="body1" color="common.white" fontWeight={500} mb={0.5}>
+                        {h.objective}
+                      </Typography>
+                      <Typography variant="caption" color="text.disabled">
+                        {formatWhen(h.completedAt)}
+                      </Typography>
+                    </Box>
+                    {txHash ? (
+                      <Box
+                        component="a"
+                        href={explorerTxUrl(txHash)}
+                        target="_blank"
+                        rel="noreferrer"
+                        sx={{ color: 'primary.light', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 0.5 }}
+                      >
+                        <IconifyIcon icon="mdi:open-in-new" width={16} />
+                        <Typography variant="caption">Explorer</Typography>
+                      </Box>
+                    ) : null}
+                  </Stack>
+                </GlassCard>
+              )
+            })
+          : milestones.slice(0, 12).map((t) => (
+              <GlassCard key={t.id} padding={3}>
+                <Typography variant="body2" color="common.white" mb={0.5}>
                   {t.message}
                 </Typography>
                 <Typography variant="caption" color="text.disabled">
                   {formatWhen(t.created_at)}
                 </Typography>
-              </Paper>
+              </GlassCard>
             ))}
 
         {profile.history.length === 0 && milestones.length === 0 ? (
-          <Box textAlign="center" py={8}>
-            <Typography variant="h6" color="text.secondary" mb={2}>
-              No history yet
-            </Typography>
-            <Typography
-              component={Link}
-              href="/agent"
-              variant="body1"
-              color="primary.main"
-              sx={{ textDecoration: 'none' }}
-            >
-              Go to Home and ask your first question →
-            </Typography>
-          </Box>
+          <GlassCard padding={6}>
+            <Box textAlign="center">
+              <IconifyIcon icon="mdi:history" width={40} color={meridianTokens.color.textMuted} />
+              <Typography variant="h6" color="text.secondary" mt={2} mb={1}>
+                No history yet
+              </Typography>
+              <Typography
+                component={Link}
+                href="/agent"
+                variant="body1"
+                color="primary.main"
+                sx={{ textDecoration: 'none' }}
+              >
+                Open briefing and assign your first task
+              </Typography>
+            </Box>
+          </GlassCard>
         ) : null}
       </Stack>
     </Box>

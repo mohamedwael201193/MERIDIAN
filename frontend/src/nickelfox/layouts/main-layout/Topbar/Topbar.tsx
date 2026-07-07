@@ -7,6 +7,7 @@ import { drawerCloseWidth, drawerOpenWidth } from '..'
 import WalletAccountStatus from '@/components/WalletAccountStatus'
 import { useBreakpoints } from '@/nickelfox/providers/BreakpointsProvider'
 import { useReady } from '@lib/hooks/useMeridianData'
+import { useCommandPalette } from '@/design/components/CommandPalette'
 
 const Topbar = ({
   open,
@@ -17,6 +18,7 @@ const Topbar = ({
 }): ReactElement => {
   const { down } = useBreakpoints()
   const { data } = useReady()
+  const { setOpen } = useCommandPalette()
   const isMobileScreen = down('sm')
   const backendStatus = typeof data?.status === 'string' ? data.status : 'checking'
 
@@ -71,6 +73,25 @@ const Topbar = ({
           />
         </Stack>
         <Stack direction="row" gap={1.5} alignItems="center" justifyContent="flex-end" mr={3}>
+          <Chip
+            size="small"
+            variant="outlined"
+            icon={<IconifyIcon icon="mdi:magnify" width={14} />}
+            label="⌘K Search"
+            onClick={() => setOpen(true)}
+            sx={{
+              display: { xs: 'none', md: 'flex' },
+              cursor: 'pointer',
+              '& .MuiChip-icon': { ml: 0.5 },
+            }}
+          />
+          <IconButton
+            aria-label="Open command palette"
+            onClick={() => setOpen(true)}
+            sx={{ display: { xs: 'flex', md: 'none' } }}
+          >
+            <IconifyIcon icon="mdi:magnify" width={22} />
+          </IconButton>
           <WalletAccountStatus />
         </Stack>
       </Toolbar>
