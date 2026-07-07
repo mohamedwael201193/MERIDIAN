@@ -27,7 +27,7 @@ export const dashboardRoutes: DashboardRoute[] = [
     name: 'Tokens',
     path: '/issue',
     icon: <MdToken className="h-5 w-5" />,
-    description: 'MeridianToken registry and issuance',
+    description: 'MeridianToken package, supply, and executable transfer actions',
   },
   {
     name: 'Staking & Yield',

@@ -21,9 +21,14 @@ describe('TransactionBuilder', () => {
     expect(tx.chainName).toBe('casper-test')
   })
 
-  it('builds distribute_rewards unsigned tx', () => {
-    const tx = builder.buildDistributeRewards(CALLER, 42)
-    expect(tx.transactionType).toBe('distribute_rewards')
+  it('blocks distribute_rewards for user wallets', () => {
+    expect(() => builder.buildDistributeRewards(CALLER, 42)).toThrow(
+      /YieldDistributor contract as caller/,
+    )
+  })
+
+  it('blocks deposit_to_vault until payable cargo purse wiring exists', () => {
+    expect(() => builder.buildDepositToVault(CALLER, '10000000000')).toThrow(/__cargo_purse/)
   })
 
   it('rejects delegate_stake below 500 CSPR minimum', () => {

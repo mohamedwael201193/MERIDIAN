@@ -148,7 +148,7 @@ export default function AgentConsolePage(): ReactElement {
             />
           ) : null}
 
-          {runtime.steps.length > 0 && runtime.phase === 'complete' && !runtime.unsignedTx ? (
+          {runtime.steps.length > 0 && runtime.phase === 'read_result' && !runtime.unsignedTx ? (
             <Paper sx={{ p: 3, mt: 3 }}>
               <Typography variant="subtitle2" color="common.white" mb={1}>
                 Read tool results

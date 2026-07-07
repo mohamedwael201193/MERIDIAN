@@ -132,8 +132,9 @@ export class PlannerService {
       }
     }
 
-    await this.trace(sessionId, 'complete', 'Planner execution finished', {
+    await this.trace(sessionId, 'planner_result', 'Planner produced executable tool results', {
       stepCount: executed.length,
+      hasWrite: executed.some((step) => step.kind === 'write'),
     })
 
     return { sessionId, reasoning: plan.reasoning, steps: executed }
@@ -141,8 +142,25 @@ export class PlannerService {
 
   private buildPlan(objective: string, callerPublicKey?: string, callerAccountHash?: string) {
     const lower = objective.toLowerCase()
+    const hasWriteIntent =
+      /\b(delegate|stake|staking|transfer|send|register|revoke|restake|rewards)\b/.test(lower) ||
+      /\b(deposit.*vault|vault deposit|distribute.*reward)\b/.test(lower)
 
-    if (/\b(apy|yield|rate)\b/.test(lower) && /\b(history|distribution)\b/.test(lower)) {
+    if (/\b(issue|mint)\b/.test(lower)) {
+      throw new Error(
+        'Token issuance is not executable on the deployed MeridianToken package. No unsigned deploy was created.',
+      )
+    }
+
+    if (hasWriteIntent && !callerPublicKey) {
+      throw new Error('Connect Casper Wallet before requesting an on-chain write operation.')
+    }
+
+    if (
+      /\b(apy|yield|rate)\b/.test(lower) &&
+      /\b(history|distribution)\b/.test(lower) &&
+      !hasWriteIntent
+    ) {
       return {
         reasoning:
           'Yield report requires current metrics and distribution history — both are read-only.',
@@ -163,10 +181,7 @@ export class PlannerService {
       }
     }
 
-    if (
-      /\b(portfolio|snapshot|exposure|kpi)\b/.test(lower) &&
-      !/\b(delegate|stake|transfer|register)\b/.test(lower)
-    ) {
+    if (/\b(portfolio|snapshot|exposure|kpi)\b/.test(lower) && !hasWriteIntent) {
       return {
         reasoning:
           'Portfolio review aggregates read tools: token info, yield metrics, and validator landscape.',
@@ -193,7 +208,11 @@ export class PlannerService {
       }
     }
 
-    if (/\b(audit|subscribe)\b/.test(lower) && /\b(premium|x402|payment|subscribe)\b/.test(lower)) {
+    if (
+      /\b(audit|subscribe)\b/.test(lower) &&
+      /\b(premium|x402|payment|subscribe)\b/.test(lower) &&
+      !hasWriteIntent
+    ) {
       return {
         reasoning:
           'Premium audit requires subscribe_audit. Without x402 payment header, tool returns PAYMENT_REQUIRED — user must pay then retry.',
@@ -208,7 +227,7 @@ export class PlannerService {
       }
     }
 
-    if (/\b(audit|summaries)\b/.test(lower)) {
+    if (/\b(audit|summaries)\b/.test(lower) && !hasWriteIntent) {
       return {
         reasoning: 'Audit summaries are available from indexed backend via subscribe_audit flow.',
         steps: [
@@ -314,7 +333,7 @@ export class PlannerService {
             args: {
               callerPublicKey,
               holderAccountHash: holderHash,
-              attestationBytes: '00',
+              attestationBytes: 'default',
             },
             rationale: 'Build unsigned compliance registration transaction',
           },
@@ -354,7 +373,7 @@ export class PlannerService {
       }
     }
 
-    if (/\b(compliance audit|holder status|my wallet)\b/.test(lower)) {
+    if (/\b(compliance audit|holder status|my wallet)\b/.test(lower) && !hasWriteIntent) {
       const accountHash = callerAccountHash ?? 'account-hash-required'
       return {
         reasoning:
@@ -370,10 +389,7 @@ export class PlannerService {
       }
     }
 
-    if (
-      /\b(apy|yield|rate)\b/.test(lower) &&
-      !/\b(delegate|stake|transfer|register|revoke)\b/.test(lower)
-    ) {
+    if (/\b(apy|yield|rate)\b/.test(lower) && !hasWriteIntent) {
       return {
         reasoning:
           'The objective asks about yield or APY. I will call get_yield_rate first because it is a read tool and does not require wallet signing.',
@@ -403,10 +419,7 @@ export class PlannerService {
       }
     }
 
-    if (
-      /\b(compliance|registered|holder status)\b/.test(lower) &&
-      !/\b(register|revoke)\b/.test(lower)
-    ) {
+    if (/\b(compliance|registered|holder status)\b/.test(lower) && !hasWriteIntent) {
       const hashMatch =
         objective.match(/account-hash-[0-9a-f]+/i) ?? objective.match(/[0-9a-f]{64}/i)
       const accountHash = hashMatch?.[0] ?? ''

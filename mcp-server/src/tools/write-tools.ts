@@ -39,11 +39,16 @@ export function registerWriteTools(server: McpServer, txBuilder: TransactionBuil
     'register_holder',
     {
       description:
-        'Build unsigned TransactionV1 to register a compliant holder in ComplianceRegistry. Requires issuer attestation bytes.',
+        'Build unsigned TransactionV1 to register a compliant holder in ComplianceRegistry. Deployed contract requires CONTRACT_OWNER signer.',
       inputSchema: {
         callerPublicKey: publicKeySchema,
         holderAccountHash: accountHashSchema,
-        attestationBytes: z.string().min(2).describe('Hex-encoded attestation payload'),
+        attestationBytes: z
+          .string()
+          .min(2)
+          .describe(
+            'Odra Attestation bytesrepr hex (u32,bool,u64,bool) or "default" for permissive testnet attestation',
+          ),
       },
     },
     ({ callerPublicKey, holderAccountHash, attestationBytes }) =>
@@ -87,7 +92,7 @@ export function registerWriteTools(server: McpServer, txBuilder: TransactionBuil
     'deposit_to_vault',
     {
       description:
-        'Build unsigned payable deposit into MERIDIAN StakingVault. Separate from native delegate_stake. Wallet must attach CSPR value when signing.',
+        'Currently fails honestly: StakingVault deposit requires Odra payable __cargo_purse wiring that browser TransactionV1 builder does not attach yet.',
       inputSchema: {
         callerPublicKey: publicKeySchema,
         amount: motesSchema.describe('CSPR motes to deposit into the vault'),
@@ -117,7 +122,7 @@ export function registerWriteTools(server: McpServer, txBuilder: TransactionBuil
     'distribute_rewards',
     {
       description:
-        'Build unsigned TransactionV1 for vault yield distribution. Vault operator role required.',
+        'Currently fails honestly: StakingVault distribute_rewards requires YieldDistributor contract caller, not a user wallet.',
       inputSchema: {
         callerPublicKey: publicKeySchema,
         eraId: z.number().int().nonnegative(),

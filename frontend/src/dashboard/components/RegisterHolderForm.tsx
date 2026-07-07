@@ -20,7 +20,7 @@ function isHex(value: string): boolean {
 export default function RegisterHolderForm(): ReactElement {
   const wallet = useWalletActions()
   const [holderAccountHash, setHolderAccountHash] = useState('')
-  const [attestationBytes, setAttestationBytes] = useState('')
+  const [attestationBytes, setAttestationBytes] = useState('default')
   const [unsignedTx, setUnsignedTx] = useState<UnsignedTransaction | null>(null)
   const [txHash, setTxHash] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -59,9 +59,9 @@ export default function RegisterHolderForm(): ReactElement {
       return
     }
 
-    const normalizedAttestation = attestationBytes.trim().replace(/^0x/, '')
-    if (!isHex(normalizedAttestation)) {
-      setError('Attestation bytes must be an even-length hex string.')
+    const normalizedAttestation = attestationBytes.trim().replace(/^0x/, '') || 'default'
+    if (normalizedAttestation !== 'default' && !isHex(normalizedAttestation)) {
+      setError('Attestation must be "default" or an even-length hex bytesrepr payload.')
       return
     }
 
@@ -100,7 +100,7 @@ export default function RegisterHolderForm(): ReactElement {
       <Stack gap={2.5}>
         <Stack gap={0.5}>
           <Typography variant="h5" color="common.white">
-            Register Holder
+            Register holder
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Build a real ComplianceRegistry register_holder transaction through MCP, then sign it
@@ -127,8 +127,8 @@ export default function RegisterHolderForm(): ReactElement {
         </Stack>
 
         <TextField
-          label="Attestation bytes (hex)"
-          placeholder="Hex attestation payload from compliance screening"
+          label="Attestation"
+          helperText='Use "default" for permissive testnet attestation, or paste Odra bytesrepr hex.'
           value={attestationBytes}
           onChange={(e) => setAttestationBytes(e.target.value)}
           disabled={Boolean(unsignedTx)}

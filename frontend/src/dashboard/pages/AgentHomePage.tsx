@@ -15,6 +15,7 @@ import BriefingHeader from '@/design/components/BriefingHeader'
 import BriefingGrid from '@/design/components/BriefingGrid'
 import AgentPipeline from '@/design/components/AgentPipeline'
 import CommandBar from '@/design/components/CommandBar'
+import WalletExecutionPanel from '@/design/components/WalletExecutionPanel'
 import { ChatBubble, ResultBubble } from '@/components/agent/ChatBubble'
 import SuggestionChips from '@/components/agent/SuggestionChips'
 import ApprovalPrompt, { SuccessBanner } from '@/components/agent/ApprovalPrompt'
@@ -108,7 +109,7 @@ export default function AgentHomePage(): ReactElement {
       {
         id: crypto.randomUUID(),
         type: 'success',
-        subtitle: 'Transaction confirmed on Casper testnet.',
+        subtitle: 'Transaction finalized on Casper testnet. Backend reads have been refreshed.',
         explorerHref: explorerTxUrl(hash),
       },
     ])
@@ -138,6 +139,11 @@ export default function AgentHomePage(): ReactElement {
         unsignedTxPending={Boolean(runtime.unsignedTx)}
         runtimePhase={runtime.phase}
       />
+      <WalletExecutionPanel
+        phase={runtime.phase}
+        unsignedTxPending={Boolean(runtime.unsignedTx)}
+        txHash={runtime.txHash}
+      />
 
       {!installed ? (
         <Box textAlign="center" py={2} mb={2}>
@@ -165,8 +171,8 @@ export default function AgentHomePage(): ReactElement {
                   Specialist agents
                 </Typography>
                 <Grid container spacing={2} mb={3}>
-                  {SPECIALIST_AGENTS.slice(0, 3).map((agent) => (
-                    <Grid item xs={12} md={4} key={agent.id}>
+                  {SPECIALIST_AGENTS.slice(0, 4).map((agent) => (
+                    <Grid item xs={12} md={6} xl={3} key={agent.id}>
                       <AgentEmployeeCard
                         agent={{
                           ...agent,

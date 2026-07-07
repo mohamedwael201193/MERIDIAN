@@ -30,6 +30,7 @@ export function useWalletSession(): WalletSession {
   const [directPublicKey, setDirectPublicKey] = useState<string | null>(() =>
     preferDirectCasperWallet() ? getDirectWalletPublicKey() : null,
   )
+  const [rpcBalanceMotes, setRpcBalanceMotes] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
     if (preferDirectCasperWallet()) {
@@ -100,6 +101,32 @@ export function useWalletSession(): WalletSession {
   }, [clickRef, refresh])
 
   const publicKey = preferDirectCasperWallet() ? directPublicKey : (account?.public_key ?? null)
+  const providerBalance = account?.liquid_balance ?? account?.balance ?? null
+
+  useEffect(() => {
+    if (!publicKey || providerBalance) {
+      setRpcBalanceMotes(null)
+      return
+    }
+
+    const state = { cancelled: false }
+    void (async () => {
+      try {
+        const response = await fetch(`/api/accounts/${encodeURIComponent(publicKey)}/balance`)
+        const body = (await response.json()) as { balanceMotes?: string }
+        if (state.cancelled) return
+        setRpcBalanceMotes(body.balanceMotes ?? null)
+      } catch {
+        if (state.cancelled) return
+        setRpcBalanceMotes(null)
+      }
+    })()
+
+    return () => {
+      state.cancelled = true
+    }
+  }, [publicKey, providerBalance])
+
   const wrongNetwork = preferDirectCasperWallet()
     ? false
     : Boolean(clickRef?.chainName && clickRef.chainName !== MERIDIAN_NETWORK)
@@ -108,7 +135,7 @@ export function useWalletSession(): WalletSession {
     connected: Boolean(publicKey),
     publicKey,
     accountLabel: publicKey ? truncateHash(publicKey, 10, 8) : null,
-    balanceMotes: account?.liquid_balance ?? account?.balance ?? null,
+    balanceMotes: providerBalance ?? rpcBalanceMotes,
     wrongNetwork,
     refresh,
   }

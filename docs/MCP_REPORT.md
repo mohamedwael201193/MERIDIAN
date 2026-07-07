@@ -5,16 +5,16 @@
 
 ## Write tools
 
-| Tool                 | MCP registered | Planner route | write-tool-invoker | Tx builder | Prod audit                  |
-| -------------------- | -------------- | ------------- | ------------------ | ---------- | --------------------------- |
-| `delegate_stake`     | YES            | YES           | YES                | YES        | PASS                        |
-| `deposit_to_vault`   | YES            | YES           | YES                | YES        | PASS                        |
-| `restake`            | YES            | YES           | YES                | YES        | PASS                        |
-| `register_holder`    | YES            | YES (local)   | YES                | YES        | FAIL (planner routing)      |
-| `revoke_holder`      | YES            | YES (local)   | YES                | YES        | FAIL (no route prod)        |
-| `transfer_token`     | YES            | YES (local)   | YES                | YES        | FAIL (422 prod)             |
-| `distribute_rewards` | YES            | YES           | YES                | YES        | Not in default audit script |
-| `issue_token`        | NO             | NO            | NO                 | NO         | NOT IMPLEMENTED             |
+| Tool                 | MCP registered | Planner route | write-tool-invoker | Tx builder | Prod audit                                                         |
+| -------------------- | -------------- | ------------- | ------------------ | ---------- | ------------------------------------------------------------------ |
+| `delegate_stake`     | YES            | YES           | YES                | YES        | PASS                                                               |
+| `deposit_to_vault`   | YES            | YES           | YES                | BLOCKED    | Requires Odra payable `__cargo_purse`; no unsigned deploy returned |
+| `restake`            | YES            | YES           | YES                | YES        | PASS                                                               |
+| `register_holder`    | YES            | YES (local)   | YES                | YES        | PASS local; requires contract owner signer                         |
+| `revoke_holder`      | YES            | YES (local)   | YES                | YES        | FAIL (no route prod)                                               |
+| `transfer_token`     | YES            | YES (local)   | YES                | YES        | FAIL (422 prod)                                                    |
+| `distribute_rewards` | YES            | YES           | YES                | BLOCKED    | Requires YieldDistributor contract caller; no user-wallet deploy   |
+| `issue_token`        | NO             | NO            | NO                 | NO         | NOT IMPLEMENTED                                                    |
 
 ## Read tools (verified)
 
@@ -56,7 +56,9 @@ Expected: 13 tools, healthy status.
 ## Required fixes
 
 1. Deploy backend with planner register/transfer/revoke fixes
-2. Add `issue_token` if hackathon demo requires minting
+2. Implement Odra payable cargo-purse transaction support before enabling `deposit_to_vault`
+3. Replace user-wallet `distribute_rewards` with a YieldDistributor/agent-signed execution path or remove it from writable templates
+4. Add `issue_token` only if a future contract upgrade exposes a real mint/issue entrypoint
 
 ## Test commands
 

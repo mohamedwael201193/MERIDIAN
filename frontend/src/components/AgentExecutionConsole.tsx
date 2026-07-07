@@ -22,7 +22,7 @@ const CONSOLE_STAGES: ConsoleStage[] = [
   { id: 'broadcast', label: 'Broadcast…', traceTypes: ['deploy_broadcast'] },
   { id: 'finalized', label: 'Finalized…', traceTypes: ['finality', 'indexer_updated'] },
   { id: 'explorer', label: 'Explorer', traceTypes: [] },
-  { id: 'complete', label: 'Mission Complete', traceTypes: ['complete'] },
+  { id: 'complete', label: 'On-chain state verified', traceTypes: ['complete'] },
 ]
 
 const PHASE_ORDER: RuntimePhase[] = [
@@ -37,7 +37,14 @@ const PHASE_ORDER: RuntimePhase[] = [
   'complete',
 ]
 
-const WRITE_CONSOLE_STAGES = new Set(['wallet', 'waiting', 'broadcast', 'finalized', 'explorer'])
+const WRITE_CONSOLE_STAGES = new Set([
+  'wallet',
+  'waiting',
+  'broadcast',
+  'finalized',
+  'explorer',
+  'complete',
+])
 
 function stageStatus(
   stageId: string,
@@ -50,9 +57,8 @@ function stageStatus(
     return 'skipped'
   }
 
-  if (phase === 'read_complete') {
-    if (['thinking', 'selecting', 'calling', 'analyzing', 'complete'].includes(stageId))
-      return 'done'
+  if (phase === 'read_result') {
+    if (['thinking', 'selecting', 'calling', 'analyzing'].includes(stageId)) return 'done'
     if (WRITE_CONSOLE_STAGES.has(stageId)) return 'skipped'
     return 'pending'
   }
@@ -106,7 +112,7 @@ export default function AgentExecutionConsole({
 
   const activeProgress = useMemo(() => {
     if (phase === 'idle') return 0
-    if (phase === 'complete' || phase === 'read_complete') return 100
+    if (phase === 'complete' || phase === 'read_result') return 100
     const visible = CONSOLE_STAGES.filter(
       (s) => stageStatus(s.id, phase, sessionTraces, txHash, isWriteFlow) !== 'skipped',
     )
@@ -123,7 +129,7 @@ export default function AgentExecutionConsole({
           Agent Console
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Ask in natural language or run a mission. Every stage appears here — no raw JSON.
+          Ask in natural language or run a mission. Every visible stage is backed by trace data.
         </Typography>
       </Paper>
     )
@@ -224,11 +230,11 @@ export default function AgentExecutionConsole({
         </Alert>
       ) : null}
 
-      {phase === 'complete' || phase === 'read_complete' ? (
-        <Alert severity="success" sx={{ mt: 2 }}>
+      {phase === 'complete' || phase === 'read_result' ? (
+        <Alert severity={isWriteFlow ? 'success' : 'info'} sx={{ mt: 2 }}>
           {isWriteFlow
-            ? 'Mission complete. Check the timeline below for full trace history.'
-            : 'Read complete. No wallet signature was required.'}
+            ? 'On-chain transaction finalized. State refresh is now driven by the indexer.'
+            : 'Live data returned from read tools. No transaction stages were run.'}
         </Alert>
       ) : null}
     </Paper>

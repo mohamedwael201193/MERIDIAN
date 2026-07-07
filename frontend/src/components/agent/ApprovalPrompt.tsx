@@ -54,7 +54,7 @@ export default function ApprovalPrompt({
 }
 
 export function SuccessBanner({
-  title = 'Done!',
+  title = 'Finality verified',
   subtitle,
   explorerHref,
 }: {

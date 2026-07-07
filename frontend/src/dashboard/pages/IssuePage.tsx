@@ -12,9 +12,9 @@ export default function IssuePage(): ReactElement {
         <PageHeader
           icon="mdi:token"
           eyebrow="Assets"
-          title="Issue Token"
+          title="Token contract"
           stepLabel="Step 2 of 8"
-          description="Create a new compliant RWA token on Casper testnet. MERIDIAN's MCP server builds the transaction — you review and sign it with your wallet."
+          description="MRWA is already deployed on Casper testnet. This page shows the fixed-supply contract status and blocks invalid mint flows."
         />
       </Box>
       <Box gridColumn={{ xs: 'span 12', lg: 'span 8' }}>
@@ -36,10 +36,10 @@ export default function IssuePage(): ReactElement {
             component="ol"
             sx={{ pl: 2.5, m: 0, color: 'text.secondary', '& li': { mb: 1.5, fontSize: 14 } }}
           >
-            <li>MCP builds an unsigned issuance transaction from your symbol and supply.</li>
-            <li>Review the transaction summary — network, payload size, method.</li>
-            <li>Sign and submit with Casper Wallet. Keys never leave your device.</li>
-            <li>Track finalization, then find your token on the Dashboard and Compliance pages.</li>
+            <li>The token was issued during MeridianToken deployment.</li>
+            <li>No public mint or issue entrypoint exists on the deployed package.</li>
+            <li>Executable write actions are Transfer Token, Stake, Vault Deposit, Restake, Register, Revoke, and Distribute Rewards.</li>
+            <li>If token issuance is required, deploy a new contract version with a real owner-gated entrypoint first.</li>
           </Box>
         </Paper>
       </Box>

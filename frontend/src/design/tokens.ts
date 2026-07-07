@@ -108,8 +108,8 @@ export const PIPELINE_STAGES: PipelineStageDef[] = [
   },
   {
     id: 'simulation',
-    label: 'Simulation',
-    human: 'Validating amounts, targets, and expected outcomes',
+    label: 'Unsigned deploy',
+    human: 'Deploy JSON generated for wallet signing',
     traceTypes: [],
   },
   {
@@ -133,7 +133,7 @@ export const PIPELINE_STAGES: PipelineStageDef[] = [
   {
     id: 'confirmed',
     label: 'Confirmed',
-    human: 'Finality reached and indexer will reflect state',
+    human: 'Finality reached and backend reads revalidated',
     traceTypes: ['finality', 'indexer_updated', 'complete'],
   },
 ]

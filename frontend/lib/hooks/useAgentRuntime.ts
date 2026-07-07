@@ -7,6 +7,7 @@ import { parseUnsignedTransaction } from '@lib/transactions'
 import { explorerTxUrl } from '@lib/contracts'
 import { recordMissionComplete } from '@lib/agent-profile'
 import { accountHashFromPublicKey } from '@lib/wallet/accountHash'
+import { revalidateMeridianData } from '@lib/hooks/useMeridianData'
 import type { UnsignedTransaction } from '@lib/types'
 
 export type RuntimePhase =
@@ -19,7 +20,7 @@ export type RuntimePhase =
   | 'waiting'
   | 'broadcast'
   | 'finalized'
-  | 'read_complete'
+  | 'read_result'
   | 'complete'
   | 'error'
 
@@ -108,8 +109,15 @@ export function useAgentRuntime() {
           setPhase('wallet')
           setUnsignedTx(parseUnsignedTransaction(writeStep.unsignedTransaction, writeStep.tool))
         } else {
-          setPhase('read_complete')
-          recordMissionComplete(objective, result.sessionId, publicKey)
+          setPhase('read_result')
+          await emitTrace(
+            result.sessionId,
+            'read_result',
+            'Live read data returned from MCP tools and indexed Casper state',
+            {
+              tools: result.steps.filter((step) => step.kind === 'read').map((step) => step.tool),
+            },
+          ).catch(() => undefined)
         }
         return { ok: true, result }
       } catch (err) {
@@ -163,12 +171,17 @@ export function useAgentRuntime() {
       transactionHash: txHash,
       explorerUrl: explorerTxUrl(txHash),
     })
+    await revalidateMeridianData()
     await emitTrace(
       sessionId,
       'indexer_updated',
-      'Indexer will reflect on-chain state on next poll',
+      'Frontend revalidated backend/indexer reads after finality',
     )
-    await emitTrace(sessionId, 'complete', 'Mission completed after wallet approval')
+    await emitTrace(
+      sessionId,
+      'complete',
+      'On-chain transaction finalized and state refresh requested',
+    )
 
     if (lastObjective) {
       const publicKey = await wallet.getPublicKey()

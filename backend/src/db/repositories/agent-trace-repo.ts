@@ -11,6 +11,8 @@ export type TraceStepType =
   | 'deploy_broadcast'
   | 'finality'
   | 'indexer_updated'
+  | 'planner_result'
+  | 'read_result'
   | 'decision_recorded'
   | 'x402_payment'
   | 'error'

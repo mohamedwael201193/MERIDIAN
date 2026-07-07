@@ -61,9 +61,7 @@ export class YieldService {
     const totalStaked = BigInt(token.total_staked)
     const totalRewards = recent.reduce((sum, row) => sum + BigInt(row.total_rewards), 0n)
     const apyBps =
-      totalStaked > 0n && recent.length > 0
-        ? Number((totalRewards * 10_000n) / totalStaked)
-        : 0
+      totalStaked > 0n && recent.length > 0 ? Number((totalRewards * 10_000n) / totalStaked) : 0
     return {
       packageHash: token.package_hash,
       contractName: token.contract_name,
@@ -88,7 +86,7 @@ export class YieldService {
   }
 
   async getDepositEvents(limit: number) {
-    const deposits = await this.events.listByName('Deposited', limit)
+    const deposits = await this.events.listByName('DepositReceived', limit)
     return deposits.map((event) => ({
       blockHeight: Number(event.block_height),
       transactionHash: event.transaction_hash,

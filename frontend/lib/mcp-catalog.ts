@@ -76,11 +76,12 @@ export const MCP_TOOLS: McpToolMeta[] = [
     kind: 'write',
     description: 'Register a compliant holder in ComplianceRegistry.',
     walletRequired: true,
-    expectedResult: 'Unsigned register_holder tx after attestation.',
+    requiredRole: 'CONTRACT_OWNER',
+    expectedResult: 'Unsigned register_holder tx only for contract owner signer.',
     exampleArgs: {
       callerPublicKey: '01...',
       holderAccountHash: 'account-hash-...',
-      attestationBytes: '00',
+      attestationBytes: 'default',
     },
   },
   {
@@ -111,9 +112,10 @@ export const MCP_TOOLS: McpToolMeta[] = [
   {
     name: 'deposit_to_vault',
     kind: 'write',
-    description: 'Deposit CSPR into MERIDIAN StakingVault (separate from native delegation).',
+    description:
+      'Deposit CSPR into MERIDIAN StakingVault. Blocked until payable __cargo_purse wiring is implemented.',
     walletRequired: true,
-    expectedResult: 'Unsigned payable deposit; attach CSPR value when signing.',
+    expectedResult: 'No unsigned deploy is created yet; native delegate_stake remains executable.',
     exampleArgs: { callerPublicKey: '01...', amount: '1000000000' },
   },
   {
@@ -133,10 +135,11 @@ export const MCP_TOOLS: McpToolMeta[] = [
   {
     name: 'distribute_rewards',
     kind: 'write',
-    description: 'Trigger vault reward distribution for an era.',
+    description:
+      'Trigger vault reward distribution. Blocked for user wallets by YieldDistributor caller requirement.',
     walletRequired: true,
-    requiredRole: 'vault operator',
-    expectedResult: 'Unsigned distribute_rewards tx.',
+    requiredRole: 'YieldDistributor contract caller',
+    expectedResult: 'No unsigned deploy is created for user-wallet signing.',
     exampleArgs: { callerPublicKey: '01...', eraId: 0 },
   },
 ]

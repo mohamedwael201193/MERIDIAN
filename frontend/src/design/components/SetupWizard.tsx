@@ -11,6 +11,7 @@ import { loadAgentProfile, updateAgentProfile } from '@lib/agent-profile'
 import { connectCasperWallet } from '@lib/wallet/connectCasperWallet'
 import { useClickReady } from '@lib/hooks/useClickReady'
 import { meridianTokens } from '@/design/tokens'
+import { formatMotes, MERIDIAN_NETWORK } from '@lib/contracts'
 import Link from 'next/link'
 
 const fadeIn = keyframes`
@@ -22,20 +23,26 @@ type AiClient = 'cursor' | 'claude' | 'vscode' | 'other'
 
 const STEPS = [
   {
-    id: 'client',
-    title: 'Choose your AI client',
-    subtitle: 'Cursor, Claude Desktop, Claude Code, VS Code, or any MCP-compatible agent',
-    icon: 'mdi:application-outline',
+    id: 'wallet',
+    title: 'Connect wallet',
+    subtitle: 'Casper Wallet is required for every on-chain write operation',
+    icon: 'mdi:wallet-outline',
+  },
+  {
+    id: 'network',
+    title: 'Verify network',
+    subtitle: 'Confirm the wallet is connected to Casper testnet and balance is visible',
+    icon: 'mdi:server-network',
   },
   {
     id: 'mcp',
-    title: 'Install MCP configuration',
+    title: 'Install Meridian MCP',
     subtitle: 'Copy the connection JSON into your client settings',
     icon: 'mdi:connection',
   },
   {
     id: 'skill',
-    title: 'Install MERIDIAN Skill',
+    title: 'Install Meridian Skill',
     subtitle: 'Give your assistant Casper RWA policies and tool usage guidance',
     icon: 'mdi:brain',
   },
@@ -52,20 +59,27 @@ const STEPS = [
     icon: 'mdi:wallet-outline',
   },
   {
-    id: 'mission',
-    title: 'Run your first mission',
-    subtitle: 'Execute a read-only yield check to confirm the pipeline works',
+    id: 'first-read',
+    title: 'Run first read command',
+    subtitle: 'Execute a live yield check from MCP and indexed Casper state',
     icon: 'mdi:play-circle-outline',
   },
   {
+    id: 'first-write',
+    title: 'Run first on-chain transaction',
+    subtitle: 'Build, sign, broadcast, and finalize a real Casper testnet transaction',
+    icon: 'mdi:pen',
+  },
+  {
     id: 'done',
-    title: 'Setup complete',
-    subtitle: 'Your agent operating system is ready',
+    title: 'Success',
+    subtitle: 'Shown only after a finalized on-chain transaction is recorded',
     icon: 'mdi:check-circle-outline',
   },
 ] as const
 
 const FIRST_MISSION = 'What is the current MRWA yield APY?'
+const FIRST_WRITE_MISSION = 'Delegate 500 CSPR to the best validator'
 
 export default function SetupWizard(): ReactElement {
   const [step, setStep] = useState(0)
@@ -91,7 +105,7 @@ export default function SetupWizard(): ReactElement {
   }
 
   useEffect(() => {
-    if (step === 3) void verifyMcp()
+    if (step === 4) void verifyMcp()
   }, [step])
 
   const current = STEPS[step]
@@ -148,6 +162,46 @@ export default function SetupWizard(): ReactElement {
 
         {step === 0 && (
           <Stack gap={2}>
+            {wallet.connected ? (
+              <Stack direction="row" alignItems="center" gap={1}>
+                <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={20} />
+                <Typography color="success.light">Wallet connected: {wallet.accountLabel}</Typography>
+              </Stack>
+            ) : (
+              <PremiumButton onClick={() => void connectCasperWallet(clickRef)} icon="mdi:wallet-outline">
+                Connect wallet
+              </PremiumButton>
+            )}
+            <PremiumButton onClick={() => setStep(1)} disabled={!wallet.connected} icon="mdi:arrow-right">
+              Verify network
+            </PremiumButton>
+          </Stack>
+        )}
+
+        {step === 1 && (
+          <Stack gap={2}>
+            <Typography variant="body2" color="text.secondary">
+              Expected network: {MERIDIAN_NETWORK}
+            </Typography>
+            <Typography variant="body2" color={wallet.wrongNetwork ? 'warning.light' : 'success.light'}>
+              {wallet.wrongNetwork ? 'Wallet is on the wrong network' : 'Wallet network verified'}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Balance:{' '}
+              {wallet.balanceMotes ? `${formatMotes(wallet.balanceMotes)} CSPR` : 'Reading from Casper RPC'}
+            </Typography>
+            <PremiumButton
+              onClick={() => setStep(2)}
+              disabled={!wallet.connected || wallet.wrongNetwork}
+              icon="mdi:arrow-right"
+            >
+              Install MCP
+            </PremiumButton>
+          </Stack>
+        )}
+
+        {step === 2 && (
+          <Stack gap={2}>
             <TextField
               select
               label="AI client"
@@ -158,31 +212,21 @@ export default function SetupWizard(): ReactElement {
             >
               <MenuItem value="cursor">Cursor</MenuItem>
               <MenuItem value="claude">Claude Desktop</MenuItem>
-              <MenuItem value="vscode">VS Code (MCP extension)</MenuItem>
+              <MenuItem value="vscode">VS Code MCP extension</MenuItem>
               <MenuItem value="other">Other MCP client</MenuItem>
             </TextField>
-            <Typography variant="caption" color="text.disabled">
-              MERIDIAN works with any client that supports Model Context Protocol over HTTP.
-            </Typography>
-            <PremiumButton onClick={() => setStep(1)} icon="mdi:arrow-right">
-              Continue
-            </PremiumButton>
-          </Stack>
-        )}
-
-        {step === 1 && (
-          <Stack gap={2}>
             <AgentInstaller defaultClient={client === 'vscode' || client === 'other' ? 'cursor' : client} />
-            <PremiumButton onClick={() => setStep(2)} icon="mdi:arrow-right">
-              MCP config copied
+            <PremiumButton onClick={() => setStep(3)} icon="mdi:arrow-right">
+              MCP installed
             </PremiumButton>
           </Stack>
         )}
 
-        {step === 2 && (
+        {step === 3 && (
           <Stack gap={2}>
             <Typography variant="body2" color="text.secondary">
-              Install the MERIDIAN skill so your {client} assistant understands yield, compliance, and wallet approval flows.
+              Install the Meridian skill so your {client} assistant understands yield, compliance,
+              and wallet approval flows.
             </Typography>
             <PremiumButton
               onClick={() => window.open('/meridian-skill.md', '_blank')}
@@ -194,7 +238,7 @@ export default function SetupWizard(): ReactElement {
             <PremiumButton
               onClick={() => {
                 updateAgentProfile({ installedSkills: ['meridian'] })
-                setStep(3)
+                setStep(4)
               }}
               icon="mdi:check"
             >
@@ -203,7 +247,7 @@ export default function SetupWizard(): ReactElement {
           </Stack>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <Stack gap={2}>
             {checking ? (
               <Typography color="text.secondary">Verifying MCP connection…</Typography>
@@ -220,31 +264,8 @@ export default function SetupWizard(): ReactElement {
                 </PremiumButton>
               </Stack>
             )}
-            <PremiumButton onClick={() => setStep(4)} disabled={!mcpOk && !checking} icon="mdi:arrow-right">
+            <PremiumButton onClick={() => setStep(5)} disabled={!mcpOk && !checking} icon="mdi:arrow-right">
               Continue
-            </PremiumButton>
-          </Stack>
-        )}
-
-        {step === 4 && (
-          <Stack gap={2}>
-            {wallet.connected ? (
-              <Stack direction="row" alignItems="center" gap={1}>
-                <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={20} />
-                <Typography color="success.light">Wallet connected · {wallet.accountLabel}</Typography>
-              </Stack>
-            ) : (
-              <>
-                <Typography variant="body2" color="text.secondary">
-                  Connect Casper Wallet for staking and transfers. Read-only missions work without a wallet.
-                </Typography>
-                <PremiumButton onClick={() => void connectCasperWallet(clickRef)} icon="mdi:wallet-outline">
-                  Connect wallet
-                </PremiumButton>
-              </>
-            )}
-            <PremiumButton onClick={() => setStep(5)} icon="mdi:arrow-right">
-              {wallet.connected ? 'Continue' : 'Skip wallet for now'}
             </PremiumButton>
           </Stack>
         )}
@@ -262,27 +283,61 @@ export default function SetupWizard(): ReactElement {
               href={`/agent?objective=${encodeURIComponent(FIRST_MISSION)}`}
               icon="mdi:play"
             >
-              Run first mission
+              Run first read
             </PremiumButton>
             <PremiumButton variant="text" onClick={() => setStep(6)} sx={{ color: 'text.secondary' }}>
-              Skip to finish
+              Continue to first transaction
             </PremiumButton>
           </Stack>
         )}
 
         {step === 6 && (
           <Stack gap={2}>
-            <Stack direction="row" alignItems="center" gap={1}>
-              <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={24} />
-              <Typography variant="h6" color="success.light">
-                Everything ready
-              </Typography>
-            </Stack>
             <Typography variant="body2" color="text.secondary">
-              {profile.installedSkills.includes('meridian')
-                ? 'MCP, skill, and briefing are configured. Assign tasks from the command bar anytime.'
-                : 'Finish skill installation from Setup when you are ready.'}
+              This builds an unsigned native Casper delegation. Success is recorded only after wallet
+              signature, RPC broadcast, finality, and backend refresh.
             </Typography>
+            <Typography variant="body1" color="common.white" sx={{ fontFamily: 'var(--font-geist-mono, monospace)' }}>
+              {FIRST_WRITE_MISSION}
+            </Typography>
+            <PremiumButton
+              component={Link}
+              href={`/agent?objective=${encodeURIComponent(FIRST_WRITE_MISSION)}`}
+              icon="mdi:pen"
+            >
+              Run first transaction
+            </PremiumButton>
+            <PremiumButton variant="text" onClick={() => setStep(7)} sx={{ color: 'text.secondary' }}>
+              Check setup success
+            </PremiumButton>
+          </Stack>
+        )}
+
+        {step === 7 && (
+          <Stack gap={2}>
+            {profile.missionsCompleted > 0 ? (
+              <>
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={24} />
+                  <Typography variant="h6" color="success.light">
+                    On-chain setup verified
+                  </Typography>
+                </Stack>
+                <Typography variant="body2" color="text.secondary">
+                  Wallet, MCP, skill, read command, and finalized transaction are recorded.
+                </Typography>
+              </>
+            ) : (
+              <>
+                <Typography variant="h6" color="warning.light">
+                  Finalized transaction not recorded yet
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Run the first transaction and return after finality. MERIDIAN will not mark setup
+                  successful without that evidence.
+                </Typography>
+              </>
+            )}
             <PremiumButton component={Link} href="/agent" icon="mdi:view-dashboard-outline">
               Open briefing
             </PremiumButton>

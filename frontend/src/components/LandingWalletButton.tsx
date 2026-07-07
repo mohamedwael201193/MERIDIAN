@@ -56,11 +56,7 @@ export default function LandingWalletButton() {
     )
   }
 
-  const label = !ready
-    ? 'Loading wallet…'
-    : connecting
-      ? 'Connecting…'
-      : 'Connect Wallet'
+  const label = !ready ? 'Loading wallet…' : connecting ? 'Connecting…' : 'Connect Wallet'
 
   return (
     <div className="flex flex-col items-end gap-1">

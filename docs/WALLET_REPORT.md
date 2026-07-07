@@ -20,6 +20,17 @@ LandingWalletButton / useWalletActions.connect()
 
 Connected wallet in screenshot: `020257c5a3…59d969fd` — matches audit test key.
 
+## Wallet visibility
+
+`WalletExecutionPanel.tsx` now surfaces:
+
+- Connected/not connected state
+- Casper network (`casper-test`)
+- CSPR balance from provider or `/api/accounts/[publicKey]/balance`
+- Permission state
+- Pending signature / waiting approval / submitted / finalized status
+- Account explorer and transaction explorer links only when their hashes exist
+
 ## Sign + submit flow
 
 ```typescript
@@ -39,6 +50,17 @@ signAndSubmit(unsigned) {
 | deploy() vs sign()    | sign()   | Uses TransactionV1 JSON via Casper Wallet sign API              |
 | broadcast() in wallet | NOT USED | App broadcasts via RPC after sign (correct pattern)             |
 
+## Balance verification
+
+The direct wallet path previously depended on provider balance availability. The frontend now falls back to Casper RPC:
+
+```
+GET /api/accounts/:publicKey/balance
+  → RpcClient.queryLatestBalance(PurseIdentifier.fromPublicKey(publicKey))
+```
+
+Verified against test wallet: `4347200000000` motes.
+
 ## Account hash derivation
 
 ```typescript
@@ -52,13 +74,13 @@ Passed to planner as `callerAccountHash` for register/compliance flows.
 
 ## Why wallet popup may not appear
 
-| Cause                       | Symptom                        | Fix                                       |
-| --------------------------- | ------------------------------ | ----------------------------------------- |
-| Read-only mission           | No unsigned tx                 | Expected — pipeline shows "Read complete" |
-| Planner failed before write | Error phase                    | Fix planner (register/transfer)           |
-| Wallet not connected        | `getPublicKey()` null          | Connect wallet first                      |
-| No TransactionReviewCard    | User didn't reach wallet phase | Execute write mission                     |
-| Unsigned tx missing         | Backend 422                    | Deploy tx-builder + planner fixes         |
+| Cause                       | Symptom                        | Fix                                                                |
+| --------------------------- | ------------------------------ | ------------------------------------------------------------------ |
+| Read-only mission           | No unsigned tx                 | Expected: UI shows live read data only, with no transaction stages |
+| Planner failed before write | Error phase                    | Fix planner (register/transfer)                                    |
+| Wallet not connected        | `getPublicKey()` null          | Connect wallet first                                               |
+| No TransactionReviewCard    | User didn't reach wallet phase | Execute write mission                                              |
+| Unsigned tx missing         | Backend 422                    | Deploy tx-builder + planner fixes                                  |
 
 ## Verification checklist (manual)
 

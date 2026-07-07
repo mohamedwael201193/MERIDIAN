@@ -63,12 +63,14 @@ Success
 
 ## deposit_to_vault
 
-| Stage            | Status   | Evidence                                     |
-| ---------------- | -------- | -------------------------------------------- |
-| Planner          | PASS     | Parses CSPR → motes                          |
-| Tx builder       | VERIFIED | StakingVault `deposit`, `attachedValueMotes` |
-| Unsigned tx      | PASS     | audit JSON                                   |
-| Wallet → Success | PENDING  | Must attach payable CSPR when signing        |
+| Stage            | Status           | Evidence                                                                                                             |
+| ---------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Planner          | PASS             | Parses CSPR → motes and routes to `deposit_to_vault`                                                                 |
+| Tx builder       | BLOCKED honestly | StakingVault `deposit` requires Odra payable `__cargo_purse`; current browser TransactionV1 builder cannot attach it |
+| Unsigned tx      | N/A              | No invalid deploy is returned                                                                                        |
+| Wallet → Success | N/A              | Wallet is not invoked until payable wiring is real                                                                   |
+
+**Fix:** Implement a real payable/cargo-purse TransactionV1 template for Odra `#[odra(payable)]` calls.
 
 ---
 
@@ -91,7 +93,7 @@ Success
 | Planner          | PASS local | register before compliance matcher    |
 | Tx builder       | VERIFIED   | ComplianceRegistry `register_holder`  |
 | Unsigned tx      | PASS local | test-write-tools                      |
-| Wallet → Success | PENDING    | After deploy                          |
+| Wallet → Success | PENDING    | Requires contract owner signer        |
 
 ---
 
@@ -103,6 +105,17 @@ Success
 | Tx builder       | VERIFIED               | ComplianceRegistry `revoke` |
 | Unsigned tx      | PASS local             | test-write-tools            |
 | Wallet → Success | PENDING                | COMPLIANCE_OFFICER role     |
+
+---
+
+## distribute_rewards
+
+| Stage            | Status           | Evidence                                                                 |
+| ---------------- | ---------------- | ------------------------------------------------------------------------ |
+| Planner          | PASS             | Routes reward distribution objectives                                    |
+| Tx builder       | BLOCKED honestly | StakingVault requires YieldDistributor contract as caller                |
+| Unsigned tx      | N/A              | No user-wallet deploy is returned                                        |
+| Wallet → Success | N/A              | Requires contract/agent execution path, not Casper Wallet user signature |
 
 ---
 

@@ -19,9 +19,9 @@ Explorer base: `https://testnet.cspr.live/contract/<hash>`
 
 ### ComplianceRegistry.register_holder
 
-- **Args:** `addr` (Key), `attestation` (ByteArray)
+- **Args:** `addr` (Key), `attestation` (Odra `Attestation` bytesrepr via `CLAny`)
 - **Gas:** 5 CSPR payment amount (`5_000_000_000` motes)
-- **Role:** Issuer attestation required on-chain
+- **Role:** ComplianceRegistry contract owner
 - **State change:** Holder registered in registry
 - **Build status:** PASS (local)
 
@@ -41,10 +41,18 @@ Explorer base: `https://testnet.cspr.live/contract/<hash>`
 
 ### StakingVault.deposit
 
-- **Args:** none (payable)
+- **Args:** `__cargo_purse` (Odra payable cargo purse)
 - **Gas:** 50 CSPR + attached `amount` motes
 - **State change:** CSPR in vault
-- **Build status:** PASS (prod)
+- **Build status:** BLOCKED before wallet — current browser TransactionV1 builder does not attach `__cargo_purse`
+
+### StakingVault.distribute_rewards
+
+- **Args:** none
+- **Gas:** 50 CSPR
+- **Role:** YieldDistributor contract caller
+- **State change:** Vault reward distribution
+- **Build status:** BLOCKED before wallet — user wallets cannot satisfy caller constraint
 
 ### StakingVault.restake
 
@@ -72,11 +80,11 @@ From `addresses.json` `transaction_hashes`:
 
 ## State change investigation
 
-| Symptom                               | Cause                                                                               |
-| ------------------------------------- | ----------------------------------------------------------------------------------- |
-| Yield shows 0% APY, 0 staked          | No vault deposits / distributions on testnet yet — read data is real, not simulated |
-| Compliance unchanged after "register" | Prod planner never built `register_holder` tx                                       |
-| UI showed Confirmed without tx        | UI bug (fixed) — not a contract issue                                               |
+| Symptom                               | Cause                                                                                 |
+| ------------------------------------- | ------------------------------------------------------------------------------------- |
+| Yield shows 0% APY, 0 staked          | No wallet-executable vault deposit exists yet; read data is real, not simulated       |
+| Compliance unchanged after "register" | Prod planner never built `register_holder` tx; local path still requires owner signer |
+| UI showed Confirmed without tx        | UI bug (fixed) — not a contract issue                                                 |
 
 ## RPC
 
@@ -86,13 +94,14 @@ From `addresses.json` `transaction_hashes`:
 
 ## Gas summary
 
-| Operation        | Payment (motes)                 |
-| ---------------- | ------------------------------- |
-| register_holder  | 5,000,000,000                   |
-| transfer_token   | 5,000,000,000                   |
-| revoke_holder    | 50,000,000,000                  |
-| deposit_to_vault | 50,000,000,000 + attached value |
-| restake          | 50,000,000,000                  |
-| delegate_stake   | 5,000,000,000                   |
+| Operation          | Payment (motes)                               |
+| ------------------ | --------------------------------------------- |
+| register_holder    | 5,000,000,000                                 |
+| transfer_token     | 5,000,000,000                                 |
+| revoke_holder      | 50,000,000,000                                |
+| deposit_to_vault   | BLOCKED until payable `__cargo_purse` support |
+| restake            | 50,000,000,000                                |
+| distribute_rewards | BLOCKED for user-wallet caller                |
+| delegate_stake     | 5,000,000,000                                 |
 
 See `docs/GAS_ANALYSIS.md` for full breakdown.

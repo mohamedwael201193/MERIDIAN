@@ -39,6 +39,30 @@ function hexToBytes(value: string): Uint8Array {
   return new Uint8Array(bytes)
 }
 
+function encodeDefaultAttestation(): Uint8Array {
+  const bytes = new Uint8Array(14)
+  const view = new DataView(bytes.buffer)
+  view.setUint32(0, 840, true)
+  bytes[4] = 1
+  view.setBigUint64(5, BigInt(Date.now() + 365 * 24 * 60 * 60 * 1000), true)
+  bytes[13] = 1
+  return bytes
+}
+
+function encodeAttestation(value: string): Uint8Array {
+  const normalized = value.trim().replace(/^0x/, '')
+  if (!normalized || normalized === '00' || normalized === 'default') {
+    return encodeDefaultAttestation()
+  }
+  const bytes = hexToBytes(normalized)
+  if (bytes.length !== 14) {
+    throw new Error(
+      'attestationBytes must encode Attestation as country:u32, accredited:bool, expires_at:u64, sanctions_cleared:bool',
+    )
+  }
+  return bytes
+}
+
 export class TransactionBuilder {
   constructor(
     private readonly chainName: string,
@@ -88,18 +112,19 @@ export class TransactionBuilder {
   ): UnsignedTransaction {
     const registry = this.addresses.contracts.ComplianceRegistry
     if (!registry) throw new Error('ComplianceRegistry not deployed')
-    return this.contractCall(
+    const tx = this.contractCall(
       callerPublicKeyHex,
       registry.package_hash,
       'register_holder',
       {
         addr: CLValue.newCLKey(keyFromAccountHash(holderAccountHash)),
-        attestation: CLValue.newCLByteArray(hexToBytes(attestationBytes)),
+        attestation: CLValue.newCLAny(encodeAttestation(attestationBytes)),
       },
       5_000_000_000,
       'register_holder',
       'Sign locally with CSPR.click or casper-client, then submit to RPC',
     )
+    return { ...tx, requiredRole: 'CONTRACT_OWNER' }
   }
 
   buildTransferToken(
@@ -175,39 +200,23 @@ export class TransactionBuilder {
   }
 
   buildDepositToVault(callerPublicKeyHex: string, amountMotes: string): UnsignedTransaction {
+    void callerPublicKeyHex
     const vault = this.addresses.contracts.StakingVault
     if (!vault) throw new Error('StakingVault not deployed')
     if (BigInt(amountMotes) <= 0n) throw new Error('deposit amount must be positive')
-    const tx = this.contractCall(
-      callerPublicKeyHex,
-      vault.package_hash,
-      'deposit',
-      {},
-      50_000_000_000,
-      'deposit_to_vault',
-      `MERIDIAN vault deposit of ${amountMotes} motes. Wallet must attach ${amountMotes} motes as payable value when signing.`,
+    throw new Error(
+      'deposit_to_vault requires Odra payable cargo purse wiring (__cargo_purse). Browser wallet TransactionV1 builder does not attach that value yet, so no unsigned deploy was created.',
     )
-    return {
-      ...tx,
-      attachedValueMotes: amountMotes,
-      expectedResult: 'CSPR deposited into StakingVault; vault delegates on your behalf',
-      explorerHint: 'https://testnet.cspr.live',
-    }
   }
 
   buildDistributeRewards(callerPublicKeyHex: string, eraId: number): UnsignedTransaction {
+    void callerPublicKeyHex
+    void eraId
     const vault = this.addresses.contracts.StakingVault
     if (!vault) throw new Error('StakingVault not deployed')
-    const tx = this.contractCall(
-      callerPublicKeyHex,
-      vault.package_hash,
-      'distribute_rewards',
-      {},
-      50_000_000_000,
-      'distribute_rewards',
-      `Vault distribute_rewards for era ${String(eraId)} — unsigned tx for local signing`,
+    throw new Error(
+      'distribute_rewards cannot be signed by a user wallet. StakingVault requires the YieldDistributor contract as caller, so no unsigned deploy was created.',
     )
-    return tx
   }
 
   buildRevokeHolder(

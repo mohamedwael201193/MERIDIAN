@@ -9,32 +9,32 @@ Five contracts are deployed and verified on Casper testnet. Static review, 28 un
 
 ## Findings
 
-| ID | Severity | Area | Finding | Status |
-| --- | --- | --- | --- | --- |
-| SEC-001 | **High** | Operations | Deployer unfunded — no live deployment | **Closed** — deployed Phase 4; 5 contracts live |
-| SEC-002 | Medium | Infrastructure | Odra `get_validator(0)` → 401 on CSPR.cloud auction RPC | **Mitigated** — `MERIDIAN_VALIDATOR_PUBLIC_KEY` env override |
-| SEC-003 | Low | Build | WASM 257–359 KB (exceeds 200 KB plan target) | **Mitigated** — −20% via wasm-opt; deploy succeeds |
-| SEC-004 | Info | Access control | `ComplianceRegistry::revoke` requires officer role + 24h timelock | By design — unit + live duplicate test |
-| SEC-005 | Info | Token | `revoke_holder` callable only by registry contract | Unit tested |
-| SEC-006 | Info | Vault | `deposit` mints via vault-only `accrue_yield` | Unit tested; 500 CSPR delegated live |
-| SEC-007 | Info | Distributor | `distribute` vault-only; 250 bps default fee | Unit + live non-vault revert |
-| SEC-008 | Info | Upgrade | `schedule_upgrade` + timelock before `execute_upgrade` | Unit tested; not live-executed |
-| SEC-009 | Low | Testing | Empty purse → adversarial txs fail before contract logic | **Accepted** — unit tests cover revert codes |
+| ID      | Severity | Area           | Finding                                                           | Status                                                       |
+| ------- | -------- | -------------- | ----------------------------------------------------------------- | ------------------------------------------------------------ |
+| SEC-001 | **High** | Operations     | Deployer unfunded — no live deployment                            | **Closed** — deployed Phase 4; 5 contracts live              |
+| SEC-002 | Medium   | Infrastructure | Odra `get_validator(0)` → 401 on CSPR.cloud auction RPC           | **Mitigated** — `MERIDIAN_VALIDATOR_PUBLIC_KEY` env override |
+| SEC-003 | Low      | Build          | WASM 257–359 KB (exceeds 200 KB plan target)                      | **Mitigated** — −20% via wasm-opt; deploy succeeds           |
+| SEC-004 | Info     | Access control | `ComplianceRegistry::revoke` requires officer role + 24h timelock | By design — unit + live duplicate test                       |
+| SEC-005 | Info     | Token          | `revoke_holder` callable only by registry contract                | Unit tested                                                  |
+| SEC-006 | Info     | Vault          | `deposit` mints via vault-only `accrue_yield`                     | Unit tested; 500 CSPR delegated live                         |
+| SEC-007 | Info     | Distributor    | `distribute` vault-only; 250 bps default fee                      | Unit + live non-vault revert                                 |
+| SEC-008 | Info     | Upgrade        | `schedule_upgrade` + timelock before `execute_upgrade`            | Unit tested; not live-executed                               |
+| SEC-009 | Low      | Testing        | Empty purse → adversarial txs fail before contract logic          | **Accepted** — unit tests cover revert codes                 |
 
 ## Review checklist (Phase 4.5)
 
-| Check | Result |
-| --- | --- |
-| Access control | Pass |
-| Permission escalation | Pass |
-| Overflow / underflow | Pass (saturating arithmetic) |
-| Replay | Chain-handled |
-| Upgrade safety | Pass (VM); live upgrade not executed |
-| Storage integrity | Pass |
-| Role management | Pass |
-| Unexpected state changes | Pass (unit) |
-| Event integrity | Pass (VM); livenet read disabled |
-| Authorization paths | Pass |
+| Check                    | Result                               |
+| ------------------------ | ------------------------------------ |
+| Access control           | Pass                                 |
+| Permission escalation    | Pass                                 |
+| Overflow / underflow     | Pass (saturating arithmetic)         |
+| Replay                   | Chain-handled                        |
+| Upgrade safety           | Pass (VM); live upgrade not executed |
+| Storage integrity        | Pass                                 |
+| Role management          | Pass                                 |
+| Unexpected state changes | Pass (unit)                          |
+| Event integrity          | Pass (VM); livenet read disabled     |
+| Authorization paths      | Pass                                 |
 
 ## Recommendations
 

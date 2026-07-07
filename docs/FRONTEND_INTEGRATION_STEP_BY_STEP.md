@@ -1006,15 +1006,15 @@ Changes:
 
 ### 24.2 Section content updates
 
-| File | Before | After |
-| ---- | ------ | ----- |
-| `frontend/src/components/Features.tsx` | Generic SaaS features | Production stack: live contracts, compliance, AI decisions, MCP/x402 |
-| `frontend/src/components/UseCases.tsx` | Generic use cases | `How MERIDIAN Works` — six numbered live workflow steps |
-| `frontend/src/components/Pricing.tsx` | Pricing tiers | `Testnet Evidence & Readiness` — operational status and next steps |
-| `frontend/src/components/Testimonials.tsx` | Fake testimonials | `Verified Integration Signals` — technical evidence cards |
-| `frontend/src/components/FAQ.tsx` | Generic FAQ | MERIDIAN-specific questions about data sources, transactions, and verification |
-| `frontend/src/components/CtaBanner.tsx` | Generic CTA | Encourages testing the live dApp and reviewing workflows |
-| `frontend/src/components/Footer.tsx` | Placeholder links | Updated product/resource links to dashboard routes and landing sections |
+| File                                       | Before                | After                                                                          |
+| ------------------------------------------ | --------------------- | ------------------------------------------------------------------------------ |
+| `frontend/src/components/Features.tsx`     | Generic SaaS features | Production stack: live contracts, compliance, AI decisions, MCP/x402           |
+| `frontend/src/components/UseCases.tsx`     | Generic use cases     | `How MERIDIAN Works` — six numbered live workflow steps                        |
+| `frontend/src/components/Pricing.tsx`      | Pricing tiers         | `Testnet Evidence & Readiness` — operational status and next steps             |
+| `frontend/src/components/Testimonials.tsx` | Fake testimonials     | `Verified Integration Signals` — technical evidence cards                      |
+| `frontend/src/components/FAQ.tsx`          | Generic FAQ           | MERIDIAN-specific questions about data sources, transactions, and verification |
+| `frontend/src/components/CtaBanner.tsx`    | Generic CTA           | Encourages testing the live dApp and reviewing workflows                       |
+| `frontend/src/components/Footer.tsx`       | Placeholder links     | Updated product/resource links to dashboard routes and landing sections        |
 
 ### 24.3 Workflow card styling
 
@@ -1184,14 +1184,14 @@ Direct requests to routes such as `/issue`, `/mcp`, `/staking`, and `/x402` retu
 Example:
 
 ```tsx
-'use client';
+'use client'
 
-import dynamic from 'next/dynamic';
+import dynamic from 'next/dynamic'
 
-const IssuePage = dynamic(() => import('@/dashboard/pages/IssuePage'), { ssr: false });
+const IssuePage = dynamic(() => import('@/dashboard/pages/IssuePage'), { ssr: false })
 
 export default function IssueRoute() {
-  return <IssuePage />;
+  return <IssuePage />
 }
 ```
 
@@ -1299,12 +1299,12 @@ Section 18 covers the core wallet checklist. The full end-to-end manual scenario
 
 ### 30.1 Prerequisites
 
-| Item | Requirement |
-| ---- | ----------- |
+| Item     | Requirement                                                        |
+| -------- | ------------------------------------------------------------------ |
 | Frontend | `http://localhost:3000` via `pnpm --filter @meridian/frontend dev` |
-| Backend | `BACKEND_URL=https://meridian-backend-ikx8.onrender.com` |
-| Wallet | Casper Wallet on Casper Testnet, funded with testnet CSPR |
-| Browser | Chrome or Brave |
+| Backend  | `BACKEND_URL=https://meridian-backend-ikx8.onrender.com`           |
+| Wallet   | Casper Wallet on Casper Testnet, funded with testnet CSPR          |
+| Browser  | Chrome or Brave                                                    |
 
 ### 30.2 Terminal smoke checks
 
@@ -1331,17 +1331,17 @@ Expected:
 
 ### 30.3 Route-by-route browser checklist
 
-| # | Route | What to verify |
-| - | ----- | -------------- |
-| 1 | `/` | Hero, live stats, wallet connect/disconnect, updated sections |
-| 2 | `/dashboard` | KPIs, charts, active tokens, wallet status in topbar |
-| 3 | `/audit` | Audit summaries, events, yield chart |
-| 4 | `/agents` | Agent decision feed with readable cards |
-| 5 | `/compliance` | Holder lookup and compliance badge |
-| 6 | `/issue` | MCP build → transaction review card → sign/submit → explorer |
-| 7 | `/mcp` | Read tools via structured cards; write tools via sign flow |
-| 8 | `/staking` | Vault KPIs, validators, restake transaction flow |
-| 9 | `/x402` | 402 terms → pay/verify/settle/access for all three resources |
+| #   | Route         | What to verify                                                |
+| --- | ------------- | ------------------------------------------------------------- |
+| 1   | `/`           | Hero, live stats, wallet connect/disconnect, updated sections |
+| 2   | `/dashboard`  | KPIs, charts, active tokens, wallet status in topbar          |
+| 3   | `/audit`      | Audit summaries, events, yield chart                          |
+| 4   | `/agents`     | Agent decision feed with readable cards                       |
+| 5   | `/compliance` | Holder lookup and compliance badge                            |
+| 6   | `/issue`      | MCP build → transaction review card → sign/submit → explorer  |
+| 7   | `/mcp`        | Read tools via structured cards; write tools via sign flow    |
+| 8   | `/staking`    | Vault KPIs, validators, restake transaction flow              |
+| 9   | `/x402`       | 402 terms → pay/verify/settle/access for all three resources  |
 
 x402 resources to test:
 
@@ -1361,12 +1361,12 @@ restake
 
 ### 30.4 Error-handling checks
 
-| Scenario | Expected UI |
-| -------- | ----------- |
-| Reject wallet signature | Clear rejection message, no crash |
-| Render backend cold start | Loading state, then data or backend unavailable alert |
-| Stale `.next` cache | Restart dev server; `/api/*` returns 200 again |
-| Wallet disconnected on write page | Prompt to connect before sign/submit |
+| Scenario                          | Expected UI                                           |
+| --------------------------------- | ----------------------------------------------------- |
+| Reject wallet signature           | Clear rejection message, no crash                     |
+| Render backend cold start         | Loading state, then data or backend unavailable alert |
+| Stale `.next` cache               | Restart dev server; `/api/*` returns 200 again        |
+| Wallet disconnected on write page | Prompt to connect before sign/submit                  |
 
 ### 30.5 Sign-off matrix
 

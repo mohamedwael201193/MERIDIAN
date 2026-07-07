@@ -10,6 +10,13 @@ import type { Logger } from '../utils/logger.js'
 import type { ContractLevelEventMessage } from './stream-listener.js'
 import { eraFromBlockHeight } from './era-detector.js'
 
+function stringField(value: unknown, fallback = '0'): string {
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'bigint') {
+    return String(value)
+  }
+  return fallback
+}
+
 export class EventProcessor {
   private readonly nameByPackage: Map<string, string>
 
@@ -28,13 +35,18 @@ export class EventProcessor {
 
   async seedTokens(): Promise<void> {
     for (const [name, entry] of Object.entries(this.addresses.contracts)) {
-      await this.tokens.upsertFromDeployment(entry.package_hash, name, name === 'MeridianToken' ? 'MRWA' : undefined)
+      await this.tokens.upsertFromDeployment(
+        entry.package_hash,
+        name,
+        name === 'MeridianToken' ? 'MRWA' : undefined,
+      )
     }
   }
 
   async processStreamEvent(message: ContractLevelEventMessage): Promise<void> {
     const pkg = message.data.contract_package_hash
-    const contractName = this.nameByPackage.get(pkg) ?? this.nameByPackage.get(`contract-package-${pkg}`) ?? 'Unknown'
+    const contractName =
+      this.nameByPackage.get(pkg) ?? this.nameByPackage.get(`contract-package-${pkg}`) ?? 'Unknown'
     const inserted = await this.events.insertEvent({
       contractName,
       contractPackageHash: pkg,
@@ -88,7 +100,7 @@ export class EventProcessor {
     }
 
     if (contractName === 'StakingVault') {
-      if (eventName === 'Deposited' && typeof data.amount === 'string') {
+      if (eventName === 'Staked' && typeof data.amount === 'string') {
         const token = this.addresses.contracts.MeridianToken
         if (token) {
           const current = await this.tokens.findByPackageHash(token.package_hash)
@@ -114,16 +126,17 @@ export class EventProcessor {
         eraId,
         blockHeight: message.extra.block_height,
         transactionHash: message.extra.deploy_hash,
-        totalRewards: String(data.total_rewards ?? data.amount ?? '0'),
-        protocolFee: String(data.protocol_fee ?? '0'),
+        totalRewards: stringField(data.total_rewards ?? data.amount),
+        protocolFee: stringField(data.protocol_fee),
       })
     }
 
-    if (contractName === 'MeridianAudit' && eventName === 'AuditRecorded') {
+    if (contractName === 'MeridianAudit' && eventName === 'AuditSummarySubmitted') {
       await this.audit.insert({
         periodStart: new Date(Date.now() - 3_600_000),
         periodEnd: new Date(),
-        summary: typeof data.summary === 'string' ? data.summary : JSON.stringify(data),
+        summary:
+          typeof data.summary_payload === 'string' ? data.summary_payload : JSON.stringify(data),
         decisionHash: message.extra.deploy_hash,
         transactionHash: message.extra.deploy_hash,
         eventCount: 1,
@@ -163,7 +176,6 @@ export class EventProcessor {
     let indexed = 0
 
     if (label === 'wire_register_holder') {
-      const deployer = this.addresses.transaction_hashes.find((t) => t.label === 'wire_register_holder')
       const registry = this.addresses.contracts.ComplianceRegistry
       if (registry) {
         const inserted = await this.events.insertEvent({
@@ -238,8 +250,15 @@ export class EventProcessor {
       const parsed = clValue.parsed as Record<string, unknown> | undefined
       if (!parsed || parsed.event_type === undefined) continue
 
-      const eventName = String(parsed.event_type ?? parsed.name ?? 'Unknown')
-      const contractPackage = stripHashPrefix(String(parsed.contract_package_hash ?? ''))
+      const eventName =
+        typeof parsed.event_type === 'string'
+          ? parsed.event_type
+          : typeof parsed.name === 'string'
+            ? parsed.name
+            : 'Unknown'
+      const packageHash =
+        typeof parsed.contract_package_hash === 'string' ? parsed.contract_package_hash : ''
+      const contractPackage = stripHashPrefix(packageHash)
       if (!contractPackage) continue
 
       const contractName =

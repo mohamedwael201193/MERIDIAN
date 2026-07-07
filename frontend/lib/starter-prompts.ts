@@ -1,7 +1,7 @@
 export const SPECIALIST_AGENTS = [
   {
     id: 'yield',
-    name: 'Yield Analyst',
+    name: 'Yield Agent',
     role: 'Staking and APY optimization',
     icon: 'mdi:chart-line',
     greeting: 'Tracks APY, distributions, and delegation strategies',
@@ -10,7 +10,7 @@ export const SPECIALIST_AGENTS = [
   },
   {
     id: 'compliance',
-    name: 'Compliance Officer',
+    name: 'Compliance Agent',
     role: 'ERC-3643 registry and sanctions',
     icon: 'mdi:shield-check-outline',
     greeting: 'Verifies holder status before transfers and investments',
@@ -19,7 +19,7 @@ export const SPECIALIST_AGENTS = [
   },
   {
     id: 'treasury',
-    name: 'Treasury Manager',
+    name: 'Treasury Agent',
     role: 'Portfolio and vault operations',
     icon: 'mdi:bank-outline',
     greeting: 'Aggregates token, yield, and validator positions',
@@ -28,7 +28,7 @@ export const SPECIALIST_AGENTS = [
   },
   {
     id: 'audit',
-    name: 'Audit Investigator',
+    name: 'Audit Agent',
     role: 'On-chain events and premium reports',
     icon: 'mdi:file-search-outline',
     greeting: 'Reviews CEP-88 events and x402 audit summaries',

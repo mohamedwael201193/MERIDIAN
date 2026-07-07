@@ -32,8 +32,6 @@ export default function TransactionReviewCard({
   txHash = null,
   onSignAndSubmit,
 }: TransactionReviewCardProps): ReactElement {
-  const explorerBase = transaction.explorerHint ?? 'https://testnet.cspr.live'
-
   return (
     <Paper
       variant="outlined"
@@ -77,7 +75,11 @@ export default function TransactionReviewCard({
           <Chip size="small" label={transaction.transactionType || 'TransactionV1'} />
           <Chip size="small" variant="outlined" label={`Network ${transaction.network}`} />
           <Chip size="small" variant="outlined" label={`Chain ${transaction.chainName}`} />
-          <Chip size="small" variant="outlined" label={`Payload ${transactionSize(transaction.transaction)}`} />
+          <Chip
+            size="small"
+            variant="outlined"
+            label={`Payload ${transactionSize(transaction.transaction)}`}
+          />
           {transaction.requiredRole ? (
             <Chip size="small" color="warning" label={`Role: ${transaction.requiredRole}`} />
           ) : null}
@@ -90,10 +92,15 @@ export default function TransactionReviewCard({
           ) : null}
         </Stack>
 
-        <Typography variant="caption" color="text.secondary">
-          Explorer: {explorerBase}
-          {txHash ? ` · ${explorerTxUrl(txHash)}` : ' · hash appears after broadcast'}
-        </Typography>
+        {txHash ? (
+          <Typography variant="caption" color="text.secondary">
+            Explorer: {explorerTxUrl(txHash)}
+          </Typography>
+        ) : (
+          <Typography variant="caption" color="text.secondary">
+            Transaction hash and explorer link appear only after wallet signature and RPC broadcast.
+          </Typography>
+        )}
 
         <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5} alignItems={{ sm: 'center' }}>
           <Button

@@ -57,12 +57,12 @@ export const PLANNER_TOOL_CATALOG: ToolDefinition[] = [
   {
     name: 'register_holder',
     kind: 'write',
-    description: 'Register a compliant holder. Issuer attestation required.',
-    requiredRole: 'issuer or compliance officer',
+    description: 'Register a compliant holder. Deployed contract requires owner signer.',
+    requiredRole: 'CONTRACT_OWNER',
     exampleArgs: {
       callerPublicKey: '01...',
       holderAccountHash: 'account-hash-...',
-      attestationBytes: '00',
+      attestationBytes: 'default',
     },
   },
   {
@@ -90,7 +90,8 @@ export const PLANNER_TOOL_CATALOG: ToolDefinition[] = [
   {
     name: 'deposit_to_vault',
     kind: 'write',
-    description: 'Deposit CSPR into MERIDIAN StakingVault (separate from native delegation).',
+    description:
+      'Deposit CSPR into MERIDIAN StakingVault. Blocked until TransactionV1 builder supports Odra payable __cargo_purse wiring.',
     minAmountMotes: '1000000000',
     exampleArgs: {
       callerPublicKey: '01...',
@@ -112,8 +113,9 @@ export const PLANNER_TOOL_CATALOG: ToolDefinition[] = [
   {
     name: 'distribute_rewards',
     kind: 'write',
-    description: 'Trigger vault reward distribution for an era.',
-    requiredRole: 'vault operator',
+    description:
+      'Trigger vault reward distribution. Blocked for user wallets because StakingVault requires YieldDistributor contract caller.',
+    requiredRole: 'YieldDistributor contract caller',
     exampleArgs: { callerPublicKey: '01...', eraId: 0 },
   },
 ]

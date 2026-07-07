@@ -1,18 +1,19 @@
 # MERIDIAN Execution Audit
 
-**Date:** 2026-07-07  
+**Date:** 2026-07-08  
 **Backend tested:** `https://meridian-backend-ikx8.onrender.com`  
 **Evidence:** `docs/reports/execution-audit-prod-2026-07-07.json`, `scripts/execution-audit.mjs`
 
 ## Executive summary
 
-| Category                                           | Status                                                                                      |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| Read flows (yield, compliance)                     | **PASS** — real indexer/RPC data, no fake write stages                                      |
-| Write tx construction (delegate, vault, restake)   | **PASS** on production                                                                      |
-| Write tx construction (register, transfer, revoke) | **FAIL** on production — planner routing / placeholder args (fixed locally, pending deploy) |
-| UI pipeline (Broadcast/Explorer/Confirmed)         | **FIXED locally** — read-only missions no longer show fake write stages                     |
-| Wallet sign + broadcast + finality                 | **Requires browser** — cannot be fully automated without Casper Wallet popup                |
+| Category                                           | Status                                                                                                                     |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Read flows (yield, compliance)                     | **PASS** — real indexer/RPC data, no fake write stages                                                                     |
+| Write tx construction (delegate, restake)          | **PASS** — unsigned tx generation works; role-gated writes still require the right signer                                  |
+| Write tx construction (vault deposit)              | **BLOCKED honestly** — no unsigned deploy is created until Odra payable `__cargo_purse` wiring exists                      |
+| Write tx construction (register, transfer, revoke) | **PASS locally** — planner routing, account hash args, and register attestation encoding fixed; on-chain roles still apply |
+| UI pipeline (Broadcast/Explorer/Confirmed)         | **FIXED locally** — read-only missions never show transaction stages                                                       |
+| Wallet sign + broadcast + finality                 | **Requires browser** — cannot be fully automated without Casper Wallet popup                                               |
 
 ## Per-command audit (12 checks)
 
@@ -73,27 +74,30 @@ Legend: **PASS** / **FAIL** / **N/A** (read-only step)
 
 ### Vault Deposit — `Vault deposit 10 CSPR`
 
-| #    | Stage                 | Result  | Reason             |
-| ---- | --------------------- | ------- | ------------------ |
-| 1–5  | Planner → unsigned tx | PASS    | `deposit_to_vault` |
-| 6–12 | Wallet → chain        | PENDING | Browser step       |
+| #    | Stage                | Result            | Reason                                                                                                                                        |
+| ---- | -------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Planner executes     | PASS              | Routes to `deposit_to_vault`                                                                                                                  |
+| 2–3  | Write tool executes  | PASS              | Invokes tx-builder                                                                                                                            |
+| 4    | Transaction builder  | **FAIL honestly** | StakingVault `deposit` is Odra payable and requires `__cargo_purse`; current browser TransactionV1 builder only supports payment/runtime args |
+| 5    | Unsigned transaction | **N/A**           | No invalid deploy is returned                                                                                                                 |
+| 6–12 | Wallet → chain       | **N/A**           | Wallet is not invoked for a transaction that would revert `ZeroDeposit`                                                                       |
 
-**Required fix:** None for tx construction.
+**Required fix:** Implement a real payable/cargo-purse transaction template for Odra `#[odra(payable)]` entrypoints, then re-enable wallet signing.
 
 ---
 
 ### Register Holder — `Register holder for compliance`
 
-| #    | Stage                | Result   | Reason                                                                 |
-| ---- | -------------------- | -------- | ---------------------------------------------------------------------- |
-| 1    | Planner executes     | PASS     | HTTP 200                                                               |
-| 2    | Write tool selected  | **FAIL** | Production matches generic `compliance` read pattern before `register` |
-| 3    | Write tool executes  | **FAIL** | `register_holder` never invoked on prod                                |
-| 4    | Transaction builder  | **FAIL** |                                                                        |
-| 5    | Unsigned transaction | **FAIL** |                                                                        |
-| 6–12 | Wallet → chain       | **FAIL** | Blocked upstream                                                       |
+| #    | Stage                | Result  | Reason                                                                  |
+| ---- | -------------------- | ------- | ----------------------------------------------------------------------- |
+| 1    | Planner executes     | PASS    | Local planner selects `register_holder` before generic compliance reads |
+| 2    | Write tool selected  | PASS    |                                                                         |
+| 3    | Write tool executes  | PASS    | `register_holder` invokes tx-builder                                    |
+| 4    | Transaction builder  | PASS    | Encodes Odra `Attestation` bytesrepr as `CLAny`                         |
+| 5    | Unsigned transaction | PASS    |                                                                         |
+| 6–12 | Wallet → chain       | PENDING | Requires contract owner wallet signing and broadcast                    |
 
-**Required fix:** Reorder planner patterns — `register` before generic compliance (fixed in `planner-service.ts`). Use `callerAccountHash` when objective has no explicit hash. **Deploy backend.**
+**Required fix:** Deploy backend/MCP build containing planner precedence and Attestation encoder. Demo wallet must be the ComplianceRegistry owner.
 
 **Local verification:** `node scripts/test-write-tools.mjs` → `register_holder: PASS`
 
@@ -101,12 +105,13 @@ Legend: **PASS** / **FAIL** / **N/A** (read-only step)
 
 ### Transfer Token — `Transfer 1 MRWA to account-hash-…`
 
-| #    | Stage            | Result   | Reason                                                    |
-| ---- | ---------------- | -------- | --------------------------------------------------------- |
-| 1    | Planner executes | **FAIL** | HTTP 422 `Invalid string length, expected 64 characters`  |
-| 2–12 |                  | **FAIL** | Production still uses placeholder `account-hash-required` |
+| #    | Stage            | Result  | Reason                                                                 |
+| ---- | ---------------- | ------- | ---------------------------------------------------------------------- |
+| 1    | Planner executes | PASS    | Local planner parses explicit recipient and rejects missing hash early |
+| 2–5  | Write tx build   | PASS    | `transfer_token` unsigned TransactionV1 builds locally                 |
+| 6–12 | Wallet → chain   | PENDING | Requires browser wallet signing and compliant recipient state          |
 
-**Required fix:** Parse recipient from objective; reject early if missing (fixed locally). **Deploy backend.**
+**Required fix:** Deploy backend. Demo objective must include a real recipient account hash.
 
 **Local verification:** `transfer_token: PASS`
 
@@ -119,19 +124,19 @@ Legend: **PASS** / **FAIL** / **N/A** (read-only step)
 | 1–5  | Planner → unsigned tx | PASS    | Validator placeholders resolved via `list_validators` |
 | 6–12 | Wallet → chain        | PENDING | Requires VALIDATOR_CURATOR on-chain                   |
 
-**Required fix:** None for tx construction.
+**Required fix:** Demo wallet must hold `VALIDATOR_CURATOR`, otherwise the transaction is expected to revert.
 
 ---
 
 ### Revoke Holder — `Revoke holder account-hash-…`
 
-| #    | Stage            | Result   | Reason                                  |
-| ---- | ---------------- | -------- | --------------------------------------- |
-| 1    | Planner executes | PASS     | HTTP 200                                |
-| 2    | Write tool       | **FAIL** | No `revoke` planner route on production |
-| 3–12 |                  | **FAIL** | Falls through to read-only default      |
+| #    | Stage            | Result  | Reason                                                       |
+| ---- | ---------------- | ------- | ------------------------------------------------------------ |
+| 1    | Planner executes | PASS    | Local planner selects `revoke_holder` route                  |
+| 2–5  | Write tx build   | PASS    | `revoke` entrypoint targeted on ComplianceRegistry           |
+| 6–12 | Wallet → chain   | PENDING | Requires compliance officer role and browser wallet approval |
 
-**Required fix:** Add `revoke_holder` planner route (fixed locally). **Deploy backend.**
+**Required fix:** Deploy backend. Demo wallet must hold the compliance officer role.
 
 **Local verification:** `revoke_holder: PASS`
 
@@ -151,22 +156,23 @@ Legend: **PASS** / **FAIL** / **N/A** (read-only step)
 
 ### Token Issue — `Issue new MRWA tokens`
 
-| #   | Stage            | Result              | Reason                              |
-| --- | ---------------- | ------------------- | ----------------------------------- |
-| 1   | Planner executes | PASS                | Falls back to read default          |
-| 2   | issue_token tool | **NOT IMPLEMENTED** | Not in `WRITE_TOOLS` or MCP catalog |
+| #   | Stage            | Result        | Reason                                                     |
+| --- | ---------------- | ------------- | ---------------------------------------------------------- |
+| 1   | Planner executes | FAIL honestly | Planner rejects issue/mint objective                       |
+| 2   | issue_token tool | **BLOCKED**   | Deployed MeridianToken has no public issue/mint entrypoint |
 
-**Required fix:** Implement `issue_token` entrypoint in tx-builder + planner if product requires minting.
+**Required fix:** Contract upgrade/redeploy with a real owner-gated issue/mint entrypoint before exposing this as a runnable write.
 
 ---
 
 ## Phase 2 — Fake execution removal
 
-| Component                   | Before                                                                           | After                                                                       |
-| --------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `AgentPipeline.tsx`         | `phase === 'complete'` marked Broadcast/Explorer/Confirmed done without `txHash` | Write chain stages skipped unless `isWriteFlow`; explorer requires `txHash` |
-| `useAgentRuntime.ts`        | Read flows set `phase: 'complete'`                                               | Read flows set `phase: 'read_complete'`                                     |
-| `AgentExecutionConsole.tsx` | Phase index advanced all stages as done                                          | Write stages hidden for read flows                                          |
+| Component                   | Before                                                                           | After                                                                              |
+| --------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `AgentPipeline.tsx`         | `phase === 'complete'` marked Broadcast/Explorer/Confirmed done without `txHash` | Write chain stages skipped unless `isWriteFlow`; explorer requires `txHash`        |
+| `useAgentRuntime.ts`        | Read flows set `phase: 'complete'`                                               | Read flows set `phase: 'read_result'`; `complete` is reserved for finalized writes |
+| `AgentExecutionConsole.tsx` | Phase index advanced all stages as done                                          | Write stages hidden for read flows                                                 |
+| `TransactionReviewCard.tsx` | Printed Explorer text before tx hash                                             | Explorer URL appears only after tx hash                                            |
 
 ## Critical bugs fixed (local, pending deploy)
 
@@ -174,6 +180,10 @@ Legend: **PASS** / **FAIL** / **N/A** (read-only step)
 2. `transfer_token` / `register_holder` used `account-hash-required` placeholder
 3. Missing `revoke_holder` planner route
 4. UI showed green Broadcast/Explorer/Confirmed on read-only missions
+5. Mixed objectives with "stake" + "compliance audit" downgraded to read-only audit
+6. `register_holder` encoded `Attestation` as placeholder byte array
+7. `deposit_to_vault` returned an unsigned tx without payable `__cargo_purse`; now blocked before wallet signing
+8. Indexer listened for `Deposited` / `AuditRecorded` while contracts emit `DepositReceived` / `Staked` / `AuditSummarySubmitted`
 
 ## Re-run audit
 

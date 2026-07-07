@@ -16,7 +16,7 @@ import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
 import { useReady } from '@lib/hooks/useMeridianData'
 
 const QUICK_ACTIONS = [
-  { href: '/issue', label: 'Issue Token', icon: 'mdi:token' },
+  { href: '/issue', label: 'Token Contract', icon: 'mdi:token' },
   { href: '/compliance', label: 'Check Compliance', icon: 'mdi:shield-check-outline' },
   { href: '/staking', label: 'Stake & Earn', icon: 'mdi:chart-line' },
   { href: '/agents', label: 'View AI Agents', icon: 'mdi:robot-outline' },

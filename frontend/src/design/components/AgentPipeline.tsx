@@ -22,14 +22,27 @@ import { explorerTxUrl } from '@lib/contracts'
 
 type StageStatus = 'pending' | 'active' | 'done' | 'error' | 'skipped'
 
-const WRITE_CHAIN_STAGES = new Set([
+const TRANSACTION_ONLY_STAGES = new Set([
+  'wallet',
+  'building',
+  'simulation',
   'approval',
   'broadcast',
   'explorer',
   'confirmed',
-  'simulation',
-  'wallet',
 ])
+
+function stageIsRelevant(
+  stageId: string,
+  isWriteFlow: boolean,
+  steps: Array<{ tool: string; kind: string }>,
+): boolean {
+  if (isWriteFlow) return true
+  if (TRANSACTION_ONLY_STAGES.has(stageId)) return false
+  if (stageId === 'compliance') return steps.some((step) => step.tool.includes('compliance'))
+  if (stageId === 'validators') return steps.some((step) => step.tool === 'list_validators')
+  return stageId === 'planning' || stageId === 'contracts'
+}
 
 function hasTrace(traces: AgentTraceRow[], types: string[]): boolean {
   return types.some((t) => traces.some((tr) => tr.step_type === t))
@@ -44,7 +57,7 @@ function resolveStageStatus(
   isWriteFlow: boolean,
   steps: Array<{ tool: string; kind: string }>,
 ): StageStatus {
-  if (!isWriteFlow && WRITE_CHAIN_STAGES.has(stageId)) {
+  if (!stageIsRelevant(stageId, isWriteFlow, steps)) {
     return 'skipped'
   }
 
@@ -89,7 +102,7 @@ function resolveStageStatus(
 
     case 'building':
       if (hasUnsignedTx || steps.some((s) => s.kind === 'write')) return 'done'
-      if (phase === 'complete' || phase === 'read_complete') return isWriteFlow ? 'pending' : 'done'
+      if (phase === 'complete' || phase === 'read_result') return isWriteFlow ? 'pending' : 'done'
       return phase === 'analyzing' ? 'active' : 'pending'
 
     case 'simulation':
@@ -223,9 +236,8 @@ export default function AgentPipeline({
   )
 
   const visibleStages = useMemo(() => {
-    if (isWriteFlow) return PIPELINE_STAGES
-    return PIPELINE_STAGES.filter((s) => !WRITE_CHAIN_STAGES.has(s.id))
-  }, [isWriteFlow])
+    return PIPELINE_STAGES.filter((stage) => stageIsRelevant(stage.id, isWriteFlow, steps))
+  }, [isWriteFlow, steps])
 
   const progress = useMemo(() => {
     if (phase === 'idle') return 0
@@ -254,7 +266,7 @@ export default function AgentPipeline({
           steps,
         ) === 'done',
     ).length
-    if (phase === 'complete' || phase === 'read_complete') return 100
+    if (phase === 'complete' || phase === 'read_result') return 100
     return Math.min(95, Math.round((done / applicable.length) * 100))
   }, [phase, sessionTraces, txHash, unsignedTx, isWriteFlow, steps, visibleStages])
 
@@ -264,7 +276,7 @@ export default function AgentPipeline({
     <GlassCard padding={2.5} sx={{ mb: 3 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography sx={{ ...meridianTokens.typography.title, color: 'common.white' }}>
-          {isWriteFlow ? 'Write pipeline' : 'Read pipeline'}
+          {isWriteFlow ? 'On-chain execution' : 'Live read execution'}
         </Typography>
         {sessionId ? (
           <Typography
@@ -277,9 +289,9 @@ export default function AgentPipeline({
         ) : null}
       </Stack>
 
-      {!isWriteFlow && (phase === 'complete' || phase === 'read_complete') ? (
-        <Typography variant="body2" color="success.light" mb={2}>
-          Read complete. No wallet signature required.
+      {!isWriteFlow && phase === 'read_result' ? (
+        <Typography variant="body2" color="text.secondary" mb={2}>
+          Live data returned from read tools and indexed Casper state. No transaction was requested.
         </Typography>
       ) : null}
 
