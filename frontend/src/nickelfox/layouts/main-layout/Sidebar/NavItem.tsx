@@ -19,7 +19,8 @@ const NavItem = ({
   const isActive =
     navItem.path === '/dashboard'
       ? pathname === '/dashboard'
-      : pathname === navItem.path || (navItem.path !== '/' && pathname.startsWith(navItem.path))
+      : pathname === navItem.path ||
+        (navItem.path !== '/' && pathname.startsWith(`${navItem.path}/`))
 
   const tooltipTitle = open ? '' : `${groupLabel} · ${navItem.title}`
 
