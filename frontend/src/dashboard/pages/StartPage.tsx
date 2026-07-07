@@ -2,13 +2,11 @@
 
 import { useState, ReactElement } from 'react'
 import { Box, Button, Paper, Stack, Step, StepLabel, Stepper, Typography } from '@mui/material'
-import McpConnectionPanel from '@/components/McpConnectionPanel'
-import CopyButton from '@/components/CopyButton'
-import { MASTER_AGENT_PROMPT } from '@lib/mcp-catalog'
+import AgentInstaller from '@/components/AgentInstaller'
 import PageHeader from '@/components/PageHeader'
 import Link from 'next/link'
 
-const STEPS = ['Install MCP', 'Connect Wallet', 'Discover Tools', 'Copy Master Prompt', 'Done']
+const STEPS = ['Install MERIDIAN', 'Connect Wallet', 'Agent Ready', 'First Mission']
 
 export default function StartPage(): ReactElement {
   const [activeStep, setActiveStep] = useState(0)
@@ -17,9 +15,9 @@ export default function StartPage(): ReactElement {
     <Box>
       <PageHeader
         icon="mdi:rocket-launch-outline"
-        eyebrow="Zero-Friction Onboarding"
-        title="Start with MERIDIAN"
-        description="Install MCP in Claude or Cursor, connect your wallet, discover 13 tools, and run your first agent workflow in minutes."
+        eyebrow="Zero Friction"
+        title="Install MERIDIAN"
+        description="Open MERIDIAN → Install → Connect Wallet → Agent Ready → Ask in natural language. No manual exploration required."
       />
 
       <Paper sx={{ p: 3, mb: 3 }}>
@@ -47,80 +45,56 @@ export default function StartPage(): ReactElement {
         {activeStep === 0 && (
           <Stack gap={2}>
             <Typography color="text.secondary">
-              Copy the MCP config below into Cursor or Claude Desktop settings. MERIDIAN uses
-              Streamable HTTP — no local build required for judges.
+              Install MCP in Cursor or Claude Desktop, verify connectivity, and add the MERIDIAN
+              Skill. Automatic file writes are blocked by OS security — we guide you through it.
             </Typography>
-            <McpConnectionPanel />
+            <AgentInstaller />
           </Stack>
         )}
 
         {activeStep === 1 && (
           <Stack gap={2}>
             <Typography color="text.secondary">
-              Connect Casper Wallet on testnet. You need CSPR for gas and staking (min 500 CSPR for
-              native delegation).
+              Connect Casper Wallet on testnet. Write missions require approval only when necessary
+              (delegate, transfer, register).
             </Typography>
-            <Button component={Link} href="/staking" variant="contained">
-              Open Staking Page
+            <Button component={Link} href="/agent" variant="contained">
+              Open Agent Console
             </Button>
           </Stack>
         )}
 
         {activeStep === 2 && (
           <Stack gap={2}>
-            <Typography color="text.secondary">
-              Ask your agent: &quot;List every MERIDIAN MCP tool and categorize read vs write.&quot;
+            <Typography color="success.main" fontWeight={700}>
+              ✓ Agent Ready — planner, MCP, and skill are configured.
             </Typography>
-            <Button component={Link} href="/mcp" variant="contained">
-              Open MCP Tools
-            </Button>
-            <Button component={Link} href="/playground" variant="outlined">
-              Open AI Playground
-            </Button>
+            <Typography color="text.secondary">
+              Install a template from the marketplace or run a mission from the library.
+            </Typography>
+            <Stack direction="row" gap={1} flexWrap="wrap">
+              <Button component={Link} href="/marketplace" variant="contained">
+                Marketplace
+              </Button>
+              <Button component={Link} href="/missions" variant="outlined">
+                Mission Library
+              </Button>
+            </Stack>
           </Stack>
         )}
 
         {activeStep === 3 && (
           <Stack gap={2}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="subtitle1" color="common.white">
-                Master Agent Prompt
-              </Typography>
-              <CopyButton text={MASTER_AGENT_PROMPT} label="Copy Master Prompt" />
-            </Stack>
-            <Box
-              component="pre"
-              sx={{
-                p: 2,
-                bgcolor: '#0a0a0a',
-                borderRadius: 1,
-                fontSize: 13,
-                whiteSpace: 'pre-wrap',
-                border: '1px solid',
-                borderColor: 'divider',
-              }}
-            >
-              {MASTER_AGENT_PROMPT}
-            </Box>
-          </Stack>
-        )}
-
-        {activeStep === 4 && (
-          <Stack gap={2}>
-            <Typography color="success.main" fontWeight={700}>
-              ✓ You are ready. Try: &quot;What is the current MRWA yield APY?&quot;
+            <Typography color="text.secondary">
+              Try: &quot;What is the current MRWA yield APY?&quot; — read-only, no wallet. Then:
+              &quot;Delegate 500 CSPR to the best validator&quot; — wallet approval when needed.
             </Typography>
-            <Stack direction="row" gap={1} flexWrap="wrap">
-              <Button component={Link} href="/prompts" variant="contained">
-                Prompt Library
-              </Button>
-              <Button component={Link} href="/agents" variant="outlined">
-                Agent Activity Center
-              </Button>
-              <Button component={Link} href="/playground" variant="outlined">
-                Playground
-              </Button>
-            </Stack>
+            <Button component={Link} href="/agent" variant="contained" size="large">
+              Run First Mission
+            </Button>
+            <Button component={Link} href="/agents" variant="text">
+              Watch timeline visualization
+            </Button>
           </Stack>
         )}
       </Paper>

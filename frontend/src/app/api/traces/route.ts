@@ -18,3 +18,19 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const body: unknown = await request.json()
+    const data = await backendFetch<{ data: AgentTraceRow }>('/api/v1/traces', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+    return NextResponse.json(data, { status: 201 })
+  } catch (error) {
+    return NextResponse.json(
+      { error: { message: error instanceof Error ? error.message : 'Failed to emit trace' } },
+      { status: 503 },
+    )
+  }
+}

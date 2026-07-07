@@ -13,23 +13,22 @@ export interface NavGroup {
 
 export const navGroups: NavGroup[] = [
   {
-    id: 'start',
-    label: 'Get Started',
+    id: 'agent-os',
+    label: 'Agent OS',
     items: [
-      { id: 0, path: '/start', title: 'Start with MERIDIAN', icon: 'mdi:rocket-launch-outline' },
-      { id: 10, path: '/playground', title: 'AI Playground', icon: 'mdi:flask-outline' },
-      { id: 11, path: '/prompts', title: 'Prompt Library', icon: 'mdi:text-box-multiple-outline' },
+      { id: 20, path: '/agent', title: 'Agent Console', icon: 'mdi:robot-outline' },
+      { id: 21, path: '/missions', title: 'Mission Library', icon: 'mdi:target' },
+      { id: 0, path: '/start', title: 'Install MERIDIAN', icon: 'mdi:rocket-launch-outline' },
+      { id: 22, path: '/marketplace', title: 'Marketplace', icon: 'mdi:store-outline' },
     ],
   },
   {
-    id: 'overview',
-    label: 'Overview',
-    items: [{ id: 1, path: '/dashboard', title: 'Dashboard', icon: 'mdi:view-dashboard-outline' }],
-  },
-  {
-    id: 'assets',
-    label: 'Assets',
-    items: [{ id: 2, path: '/issue', title: 'Issue Token', icon: 'mdi:token' }],
+    id: 'visualization',
+    label: 'Visualization',
+    items: [
+      { id: 5, path: '/agents', title: 'Agent Timeline', icon: 'mdi:timeline-clock-outline' },
+      { id: 1, path: '/dashboard', title: 'Dashboard', icon: 'mdi:view-dashboard-outline' },
+    ],
   },
   {
     id: 'operations',
@@ -37,13 +36,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { id: 3, path: '/compliance', title: 'Compliance', icon: 'mdi:shield-check-outline' },
       { id: 4, path: '/staking', title: 'Staking', icon: 'mdi:chart-line' },
-    ],
-  },
-  {
-    id: 'intelligence',
-    label: 'Intelligence',
-    items: [
-      { id: 5, path: '/agents', title: 'AI Agents', icon: 'mdi:robot-outline' },
+      { id: 2, path: '/issue', title: 'Issue Token', icon: 'mdi:token' },
       { id: 6, path: '/audit', title: 'Audit', icon: 'mdi:history' },
     ],
   },
@@ -53,6 +46,14 @@ export const navGroups: NavGroup[] = [
     items: [
       { id: 7, path: '/mcp', title: 'MCP Tools', icon: 'mdi:wrench-outline' },
       { id: 8, path: '/x402', title: 'x402 Payments', icon: 'mdi:cash-lock' },
+    ],
+  },
+  {
+    id: 'legacy',
+    label: 'Legacy',
+    items: [
+      { id: 10, path: '/playground', title: 'AI Playground', icon: 'mdi:flask-outline' },
+      { id: 11, path: '/prompts', title: 'Prompt Library', icon: 'mdi:text-box-multiple-outline' },
     ],
   },
   {

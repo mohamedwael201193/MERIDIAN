@@ -32,6 +32,7 @@ const planSchema = z.object({
 export interface PlannerExecuteInput {
   objective: string
   callerPublicKey?: string
+  callerAccountHash?: string
   sessionId?: string
 }
 
@@ -80,7 +81,7 @@ export class PlannerService {
       })),
     })
 
-    const plan = this.buildPlan(input.objective, input.callerPublicKey)
+    const plan = this.buildPlan(input.objective, input.callerPublicKey, input.callerAccountHash)
 
     await this.trace(sessionId, 'reasoning', plan.reasoning, { steps: plan.steps.length })
 
@@ -138,8 +139,174 @@ export class PlannerService {
     return { sessionId, reasoning: plan.reasoning, steps: executed }
   }
 
-  private buildPlan(objective: string, callerPublicKey?: string) {
+  private buildPlan(objective: string, callerPublicKey?: string, callerAccountHash?: string) {
     const lower = objective.toLowerCase()
+
+    if (/\b(apy|yield|rate)\b/.test(lower) && /\b(history|distribution)\b/.test(lower)) {
+      return {
+        reasoning:
+          'Yield report requires current metrics and distribution history — both are read-only.',
+        steps: [
+          {
+            tool: 'get_yield_rate',
+            kind: 'read' as const,
+            args: {},
+            rationale: 'Current APY and staking totals',
+          },
+          {
+            tool: 'get_holder_yield',
+            kind: 'read' as const,
+            args: { limit: 10 },
+            rationale: 'Recent distribution history',
+          },
+        ],
+      }
+    }
+
+    if (
+      /\b(portfolio|snapshot|exposure|kpi)\b/.test(lower) &&
+      !/\b(delegate|stake|transfer|register)\b/.test(lower)
+    ) {
+      return {
+        reasoning:
+          'Portfolio review aggregates read tools: token info, yield metrics, and validator landscape.',
+        steps: [
+          {
+            tool: 'get_token_info',
+            kind: 'read' as const,
+            args: {},
+            rationale: 'MRWA metadata and contract addresses',
+          },
+          {
+            tool: 'get_yield_rate',
+            kind: 'read' as const,
+            args: {},
+            rationale: 'Current yield and staking ratio',
+          },
+          {
+            tool: 'list_validators',
+            kind: 'read' as const,
+            args: { limit: 5 },
+            rationale: 'Validator landscape for staking context',
+          },
+        ],
+      }
+    }
+
+    if (/\b(audit|subscribe)\b/.test(lower) && /\b(premium|x402|payment|subscribe)\b/.test(lower)) {
+      return {
+        reasoning:
+          'Premium audit requires subscribe_audit. Without x402 payment header, tool returns PAYMENT_REQUIRED — user must pay then retry.',
+        steps: [
+          {
+            tool: 'subscribe_audit',
+            kind: 'read' as const,
+            args: { limit: 10 },
+            rationale: 'Attempt premium audit feed (surfaces x402 gate)',
+          },
+        ],
+      }
+    }
+
+    if (/\b(audit|summaries)\b/.test(lower)) {
+      return {
+        reasoning: 'Audit summaries are available from indexed backend via subscribe_audit flow.',
+        steps: [
+          {
+            tool: 'subscribe_audit',
+            kind: 'read' as const,
+            args: { limit: 10 },
+            rationale: 'Fetch audit summaries (x402 if gated)',
+          },
+        ],
+      }
+    }
+
+    if (/\b(deposit.*vault|vault deposit)\b/.test(lower) && callerPublicKey) {
+      const amountMatch = objective.match(/(\d+)\s*cspr/i)
+      const motes = amountMatch?.[1]
+        ? String(BigInt(amountMatch[1]) * 1_000_000_000n)
+        : String(10_000_000_000n)
+      return {
+        reasoning:
+          'Vault deposit is a write action. Read yield context first, then build deposit_to_vault.',
+        steps: [
+          {
+            tool: 'get_yield_rate',
+            kind: 'read' as const,
+            args: {},
+            rationale: 'Yield context before vault deposit',
+          },
+          {
+            tool: 'deposit_to_vault',
+            kind: 'write' as const,
+            args: { callerPublicKey, amount: motes },
+            rationale: 'Build unsigned vault deposit transaction',
+          },
+        ],
+      }
+    }
+
+    if (/\brestake\b/.test(lower) && callerPublicKey) {
+      return {
+        reasoning: 'Restake requires curator role. Build unsigned restake between validators.',
+        steps: [
+          {
+            tool: 'list_validators',
+            kind: 'read' as const,
+            args: { limit: 5 },
+            rationale: 'Discover validators for restake',
+          },
+          {
+            tool: 'restake',
+            kind: 'write' as const,
+            args: {
+              callerPublicKey,
+              fromValidator: 'select-from-list_validators-result',
+              toValidator: 'select-second-validator',
+              amount: String(MIN_DELEGATION_MOTES),
+            },
+            rationale: 'Build unsigned restake transaction',
+          },
+        ],
+      }
+    }
+
+    if (/\b(distribute.*reward|rewards)\b/.test(lower) && callerPublicKey) {
+      return {
+        reasoning: 'Reward distribution is a curator write action after reading yield history.',
+        steps: [
+          {
+            tool: 'get_holder_yield',
+            kind: 'read' as const,
+            args: { limit: 5 },
+            rationale: 'Recent eras for distribution context',
+          },
+          {
+            tool: 'distribute_rewards',
+            kind: 'write' as const,
+            args: { callerPublicKey, eraId: '0' },
+            rationale: 'Build unsigned distribute_rewards transaction',
+          },
+        ],
+      }
+    }
+
+    if (/\b(compliance audit|holder status|my wallet)\b/.test(lower)) {
+      const accountHash = callerAccountHash ?? 'account-hash-required'
+      return {
+        reasoning:
+          'Compliance audit reads indexed registry status for the connected wallet account hash.',
+        steps: [
+          {
+            tool: 'get_compliance_status',
+            kind: 'read' as const,
+            args: { accountHash },
+            rationale: 'Read compliance registry for connected wallet',
+          },
+        ],
+      }
+    }
 
     if (
       /\b(apy|yield|rate)\b/.test(lower) &&
@@ -330,6 +497,22 @@ export class PlannerService {
             (validators as { validators?: Array<{ public_key: string }> }).validators ?? []
           if (!list[0]?.public_key) throw new Error('no_validators_available')
           args = { ...args, validator: list[0].public_key }
+        }
+      }
+      if (tool === 'restake') {
+        if (
+          args.fromValidator === 'select-from-list_validators-result' ||
+          args.toValidator === 'select-second-validator'
+        ) {
+          const validators = await this.invokeReadTool('list_validators', { limit: 5 })
+          const list =
+            (validators as { validators?: Array<{ public_key: string }> }).validators ?? []
+          if (!list[0]?.public_key) throw new Error('no_validators_available')
+          args = {
+            ...args,
+            fromValidator: list[0].public_key,
+            toValidator: list[1]?.public_key ?? list[0].public_key,
+          }
         }
       }
       return this.invokeWriteTool(tool, args)

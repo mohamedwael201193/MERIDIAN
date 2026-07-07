@@ -6,6 +6,7 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as {
       objective: string
       callerPublicKey?: string
+      callerAccountHash?: string
       sessionId?: string
     }
     const data = await backendFetch<{ data: unknown }>('/api/v1/planner/execute', {

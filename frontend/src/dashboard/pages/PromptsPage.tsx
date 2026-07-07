@@ -1,9 +1,10 @@
 'use client'
 
 import { useMemo, useState, ReactElement } from 'react'
-import { Box, Chip, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Box, Chip, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material'
 import PageHeader from '@/components/PageHeader'
 import CopyButton from '@/components/CopyButton'
+import Link from 'next/link'
 import {
   MASTER_AGENT_PROMPT,
   PROMPT_CATEGORIES,
@@ -26,6 +27,14 @@ export default function PromptsPage(): ReactElement {
 
   return (
     <Box>
+      <Alert severity="info" sx={{ mb: 3 }}>
+        Prompt Library is legacy. Use{' '}
+        <Link href="/missions" style={{ color: 'inherit' }}>
+          Mission Library
+        </Link>{' '}
+        to execute objectives immediately through the Planner.
+      </Alert>
+
       <PageHeader
         icon="mdi:text-box-multiple-outline"
         eyebrow="Prompt Generator"

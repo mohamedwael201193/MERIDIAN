@@ -189,26 +189,31 @@ export function registerApiRoutes(
     }
   })
 
-  app.post<{ Body: { objective: string; callerPublicKey?: string; sessionId?: string } }>(
-    '/api/v1/planner/execute',
-    async (request, reply) => {
-      const body = request.body
-      if (!body.objective.trim()) {
-        return reply.code(400).send({
-          error: { code: 'INVALID_BODY', message: 'objective is required' },
-        })
-      }
-      try {
-        const result = await services.planner.execute({
-          objective: body.objective,
-          ...(body.callerPublicKey ? { callerPublicKey: body.callerPublicKey } : {}),
-          ...(body.sessionId ? { sessionId: body.sessionId } : {}),
-        })
-        return { data: result }
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'planner_failed'
-        return reply.code(422).send({ error: { code: 'PLANNER_FAILED', message } })
-      }
-    },
-  )
+  app.post<{
+    Body: {
+      objective: string
+      callerPublicKey?: string
+      callerAccountHash?: string
+      sessionId?: string
+    }
+  }>('/api/v1/planner/execute', async (request, reply) => {
+    const body = request.body
+    if (!body.objective.trim()) {
+      return reply.code(400).send({
+        error: { code: 'INVALID_BODY', message: 'objective is required' },
+      })
+    }
+    try {
+      const result = await services.planner.execute({
+        objective: body.objective,
+        ...(body.callerPublicKey ? { callerPublicKey: body.callerPublicKey } : {}),
+        ...(body.callerAccountHash ? { callerAccountHash: body.callerAccountHash } : {}),
+        ...(body.sessionId ? { sessionId: body.sessionId } : {}),
+      })
+      return { data: result }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'planner_failed'
+      return reply.code(422).send({ error: { code: 'PLANNER_FAILED', message } })
+    }
+  })
 }

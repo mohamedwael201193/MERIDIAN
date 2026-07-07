@@ -20,6 +20,7 @@ import { meridianApi } from '@lib/api'
 import type { AgentTraceRow } from '@lib/types'
 import AgentDecisionFeed from '@/dashboard/components/AgentDecisionFeed'
 import X402PaymentFlow from '@/dashboard/components/X402PaymentFlow'
+import Link from 'next/link'
 
 function formatTime(value: string): string {
   return new Intl.DateTimeFormat(undefined, {
@@ -120,11 +121,11 @@ export default function AgentActivityCenter(): ReactElement {
         >
           <Box>
             <Typography variant="h4" color="common.white">
-              Agent Activity Center
+              Agent Timeline
             </Typography>
             <Typography variant="body2" color="text.secondary" mt={0.75}>
-              Live visualization for Claude, Cursor, and Planner Agent workflows. The product is MCP
-              — this page only shows what agents do.
+              Visualization layer only — traces from Planner, MCP clients, and wallet approvals stream
+              here via SSE. Execute missions in the Agent Console.
             </Typography>
           </Box>
           <Chip
@@ -144,6 +145,9 @@ export default function AgentActivityCenter(): ReactElement {
           />
           <Button variant="contained" onClick={() => void runPlanner()} disabled={loading}>
             {loading ? <CircularProgress size={22} color="inherit" /> : 'Run Planner'}
+          </Button>
+          <Button component={Link} href="/agent" variant="outlined">
+            Agent Console
           </Button>
         </Stack>
 

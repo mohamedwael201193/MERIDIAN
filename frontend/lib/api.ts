@@ -93,7 +93,24 @@ export const meridianApi = {
       `/api/traces?limit=${String(limit)}${sessionId ? `&sessionId=${encodeURIComponent(sessionId)}` : ''}`,
     ),
 
-  plannerExecute: (input: { objective: string; callerPublicKey?: string; sessionId?: string }) =>
+  traceEmit: (input: {
+    sessionId: string
+    stepType: string
+    message: string
+    agentName?: string
+    payload?: Record<string, unknown>
+  }) =>
+    clientFetch<{ data: AgentTraceRow }>('/api/traces', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  plannerExecute: (input: {
+    objective: string
+    callerPublicKey?: string
+    callerAccountHash?: string
+    sessionId?: string
+  }) =>
     clientFetch<{ data: unknown }>('/api/planner/execute', {
       method: 'POST',
       body: JSON.stringify(input),
