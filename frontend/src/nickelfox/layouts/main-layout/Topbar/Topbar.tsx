@@ -66,8 +66,8 @@ const Topbar = ({
                   ? 'warning'
                   : 'default'
             }
-            label={`Backend ${backendStatus}`}
-            sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+            label={backendStatus === 'ok' ? 'Online' : backendStatus}
+            sx={{ display: 'none' }}
           />
         </Stack>
         <Stack direction="row" gap={1.5} alignItems="center" justifyContent="flex-end" mr={3}>

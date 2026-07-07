@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import { createRequire } from 'node:module'
+import { resolveContractsPath } from '../config/contracts.js'
 
 const require = createRequire(import.meta.url)
 
@@ -19,9 +19,10 @@ let builderPromise: Promise<TxBuilder> | null = null
 async function getBuilder(): Promise<TxBuilder> {
   if (!builderPromise) {
     builderPromise = (async () => {
-      const addresses = JSON.parse(
-        await readFile(join(process.cwd(), '../deployed/addresses.json'), 'utf8'),
-      ) as { chain_name: string }
+      const path = resolveContractsPath(
+        process.env.MERIDIAN_CONTRACTS_PATH ?? 'deployed/addresses.json',
+      )
+      const addresses = JSON.parse(await readFile(path, 'utf8')) as { chain_name: string }
       const { TransactionBuilder } = require('../../../mcp-server/dist/casper/tx-builder.js') as {
         TransactionBuilder: new (chain: string, addresses: unknown) => TxBuilder
       }

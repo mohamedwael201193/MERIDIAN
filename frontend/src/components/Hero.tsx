@@ -33,7 +33,7 @@ export default function Hero() {
 
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/dashboard"
+            href="/agent"
             className="inline-flex min-w-[170px] items-center justify-center rounded-md bg-red-600 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-red-950/30 transition hover:bg-red-500"
           >
             Open live dashboard

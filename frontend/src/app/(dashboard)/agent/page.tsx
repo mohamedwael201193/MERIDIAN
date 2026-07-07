@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
-import AgentConsolePage from '@/dashboard/pages/AgentConsolePage'
+import AgentHomePage from '@/dashboard/pages/AgentHomePage'
 
 export default function Page() {
   return (
     <Suspense fallback={null}>
-      <AgentConsolePage />
+      <AgentHomePage />
     </Suspense>
   )
 }

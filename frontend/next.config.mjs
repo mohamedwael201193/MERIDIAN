@@ -43,10 +43,12 @@ const nextConfig = {
       { source: '/dashboard/playground', destination: '/playground', permanent: false },
       { source: '/dashboard/prompts', destination: '/prompts', permanent: false },
       { source: '/playground', destination: '/agent', permanent: false },
-      { source: '/prompts', destination: '/missions', permanent: false },
+      { source: '/prompts', destination: '/agent', permanent: false },
+      { source: '/missions', destination: '/agent', permanent: false },
+      { source: '/marketplace', destination: '/agent', permanent: false },
+      { source: '/agents', destination: '/activity', permanent: false },
       { source: '/dashboard/agent', destination: '/agent', permanent: false },
-      { source: '/dashboard/missions', destination: '/missions', permanent: false },
-      { source: '/dashboard/marketplace', destination: '/marketplace', permanent: false },
+      { source: '/dashboard/activity', destination: '/activity', permanent: false },
     ]
   },
   async headers() {

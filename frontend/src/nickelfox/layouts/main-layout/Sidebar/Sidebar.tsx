@@ -24,7 +24,7 @@ const Sidebar = ({ open }: { open: boolean }): ReactElement => {
       >
         <Box
           component={Link}
-          href="/dashboard"
+          href="/agent"
           sx={{
             display: 'flex',
             alignItems: 'center',

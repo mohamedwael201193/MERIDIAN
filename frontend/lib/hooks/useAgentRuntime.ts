@@ -76,7 +76,10 @@ export function useAgentRuntime() {
   }, [])
 
   const execute = useCallback(
-    async (objective: string, existingSessionId?: string) => {
+    async (
+      objective: string,
+      existingSessionId?: string,
+    ): Promise<{ ok: true; result: PlannerResult } | { ok: false; error: string }> => {
       setError(null)
       setLoading(true)
       setLastObjective(objective)
@@ -107,10 +110,12 @@ export function useAgentRuntime() {
           setPhase('complete')
           recordMissionComplete(objective, result.sessionId, publicKey)
         }
+        return { ok: true, result }
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Runtime execution failed'
         setError(message)
         setPhase('error')
+        return { ok: false, error: message }
       } finally {
         setLoading(false)
       }
