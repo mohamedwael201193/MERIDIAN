@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { meridianApi } from '@lib/api'
 import { useWalletActions } from '@lib/hooks/useWalletActions'
 import { parseUnsignedTransaction } from '@lib/transactions'
@@ -65,6 +65,7 @@ export function useAgentRuntime() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [lastObjective, setLastObjective] = useState<string | null>(null)
+  const finalizedTxRef = useRef<string | null>(null)
 
   const reset = useCallback(() => {
     setPhase('idle')
@@ -75,6 +76,7 @@ export function useAgentRuntime() {
     setTxHash(null)
     setError(null)
     setLastObjective(null)
+    finalizedTxRef.current = null
   }, [])
 
   const execute = useCallback(
@@ -87,6 +89,7 @@ export function useAgentRuntime() {
       setLastObjective(objective)
       setUnsignedTx(null)
       setTxHash(null)
+      finalizedTxRef.current = null
       setPhase('thinking')
 
       try {
@@ -165,6 +168,8 @@ export function useAgentRuntime() {
 
   const onTxFinalized = useCallback(async () => {
     if (!sessionId || !txHash) return
+    if (finalizedTxRef.current === txHash) return
+    finalizedTxRef.current = txHash
     setPhase('finalized')
 
     await emitTrace(sessionId, 'finality', `Transaction finalized on Casper testnet`, {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Alert,
   Box,
@@ -27,9 +27,15 @@ export default function TransactionStatus({
 }: TransactionStatusProps) {
   const [status, setStatus] = useState<TxPollStatus>('pending')
   const [detail, setDetail] = useState<string | undefined>()
+  const notifiedHashRef = useRef<string | null>(null)
+  const onFinalizedRef = useRef(onFinalized)
+  const onStatusChangeRef = useRef(onStatusChange)
+  onFinalizedRef.current = onFinalized
+  onStatusChangeRef.current = onStatusChange
 
   useEffect(() => {
     if (!transactionHash) return
+    if (notifiedHashRef.current === transactionHash) return
 
     let cancelled = false
     setStatus('pending')
@@ -40,16 +46,18 @@ export default function TransactionStatus({
       if (cancelled) return
       setStatus(result.status)
       setDetail(result.detail)
-      onStatusChange?.(result.status, result.detail)
+      onStatusChangeRef.current?.(result.status, result.detail)
       if (result.status === 'finalized' || result.status === 'processed') {
-        onFinalized?.()
+        if (notifiedHashRef.current === transactionHash) return
+        notifiedHashRef.current = transactionHash
+        onFinalizedRef.current?.()
       }
     })()
 
     return () => {
       cancelled = true
     }
-  }, [transactionHash, onFinalized, onStatusChange])
+  }, [transactionHash])
 
   if (!transactionHash) return null
 

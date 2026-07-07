@@ -42,6 +42,7 @@ export default function AgentHomePage(): ReactElement {
   const [installed, setInstalled] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const queryHandled = useRef(false)
+  const successHashRef = useRef<string | null>(null)
 
   const showPipeline = runtime.phase !== 'idle'
   const hasConversation = messages.length > 0 || showPipeline
@@ -77,6 +78,7 @@ export default function AgentHomePage(): ReactElement {
       if (!trimmed || runtime.loading) return
 
       setInput('')
+      successHashRef.current = null
       setMessages((m) => [...m, { id: crypto.randomUUID(), type: 'user', text: trimmed }])
 
       const outcome = await runtime.execute(trimmed)
@@ -100,20 +102,28 @@ export default function AgentHomePage(): ReactElement {
     [runtime],
   )
 
+  const { txHash, onTxFinalized, phase } = runtime
+
   const onFinalized = useCallback(async () => {
-    const hash = runtime.txHash
-    if (!hash) return
-    await runtime.onTxFinalized()
-    setMessages((m) => [
-      ...m,
-      {
-        id: crypto.randomUUID(),
-        type: 'success',
-        subtitle: 'Transaction finalized on Casper testnet. Backend reads have been refreshed.',
-        explorerHref: explorerTxUrl(hash),
-      },
-    ])
-  }, [runtime])
+    if (!txHash || successHashRef.current === txHash) return
+    successHashRef.current = txHash
+    await onTxFinalized()
+    const explorerHref = explorerTxUrl(txHash)
+    setMessages((m) => {
+      if (m.some((item) => item.type === 'success' && item.explorerHref === explorerHref)) {
+        return m
+      }
+      return [
+        ...m,
+        {
+          id: crypto.randomUUID(),
+          type: 'success',
+          subtitle: 'Transaction finalized on Casper testnet. Backend reads have been refreshed.',
+          explorerHref,
+        },
+      ]
+    })
+  }, [txHash, onTxFinalized])
 
   const agentStatus = (id: string): 'active' | 'idle' | 'attention' => {
     const related = decisions.data?.filter((d) => d.agent_name.toLowerCase().includes(id))
@@ -231,11 +241,8 @@ export default function AgentHomePage(): ReactElement {
               />
             ) : null}
 
-            {runtime.txHash ? (
-              <TransactionStatus
-                transactionHash={runtime.txHash}
-                onFinalized={() => void onFinalized()}
-              />
+            {txHash && phase === 'broadcast' ? (
+              <TransactionStatus transactionHash={txHash} onFinalized={() => void onFinalized()} />
             ) : null}
           </Box>
         </Grid>
