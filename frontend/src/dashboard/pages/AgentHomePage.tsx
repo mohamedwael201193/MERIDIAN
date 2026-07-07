@@ -10,7 +10,6 @@ import { loadAgentProfile, updateAgentProfile } from '@lib/agent-profile'
 import { formatPlannerStep } from '@lib/human-results'
 import { explorerTxUrl } from '@lib/contracts'
 import { meridianTokens } from '@/design/tokens'
-import StatusRibbon from '@/design/components/StatusRibbon'
 import BriefingHeader from '@/design/components/BriefingHeader'
 import BriefingGrid from '@/design/components/BriefingGrid'
 import AgentPipeline from '@/design/components/AgentPipeline'
@@ -146,7 +145,6 @@ export default function AgentHomePage(): ReactElement {
         gap: meridianTokens.spacing.sectionGap,
       }}
     >
-      <StatusRibbon />
       <BriefingHeader />
       <BriefingGrid
         unsignedTxPending={Boolean(runtime.unsignedTx)}

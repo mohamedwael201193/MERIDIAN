@@ -1,107 +1,136 @@
 'use client'
 
 import { ReactElement } from 'react'
-import { Box, Button, Stack, Typography, keyframes } from '@mui/material'
+import { Box, Button, Stack, Typography } from '@mui/material'
+import { motion, useReducedMotion } from 'motion/react'
 import TransactionReviewCard from '@/components/TransactionReviewCard'
 import type { UnsignedTransaction } from '@lib/types'
-
-const glow = keyframes`
-  0%, 100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.3); }
-  50% { box-shadow: 0 0 24px 4px rgba(229, 57, 53, 0.15); }
-`
+import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
+import { meridianTokens } from '@/design/tokens'
+import { panelSurfaceSx } from '@/design/surface'
 
 interface ApprovalPromptProps {
-  title?: string
-  description?: string
   transaction: UnsignedTransaction
   loading: boolean
   onApprove: () => void
 }
 
 export default function ApprovalPrompt({
-  title = 'Your wallet approval is needed',
-  description = 'Review the transaction below. Nothing happens until you approve in Casper Wallet.',
   transaction,
   loading,
   onApprove,
 }: ApprovalPromptProps): ReactElement {
+  const reduceMotion = useReducedMotion()
+
   return (
-    <Box
-      sx={{
-        mb: 2,
-        p: 3,
-        borderRadius: 4,
-        bgcolor: 'rgba(255,255,255,0.04)',
-        border: '1px solid',
-        borderColor: 'primary.dark',
-        animation: `${glow} 2.5s ease-in-out infinite`,
-      }}
+    <motion.div
+      initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.32, ease: meridianTokens.motion.ease }}
     >
-      <Typography variant="h6" color="common.white" mb={0.5}>
-        {title}
-      </Typography>
-      <Typography variant="body2" color="text.secondary" mb={2}>
-        {description}
-      </Typography>
       <TransactionReviewCard
+        variant="approval"
         transaction={transaction}
         loading={loading}
         txHash={null}
         onSignAndSubmit={onApprove}
       />
-    </Box>
+    </motion.div>
   )
+}
+
+interface SuccessBannerProps {
+  title?: string
+  subtitle?: string
+  explorerHref?: string
 }
 
 export function SuccessBanner({
   title = 'Finality verified',
   subtitle,
   explorerHref,
-}: {
-  title?: string
-  subtitle?: string
-  explorerHref?: string
-}): ReactElement {
+}: SuccessBannerProps): ReactElement {
+  const reduceMotion = useReducedMotion()
+
   return (
-    <Box
-      sx={{
-        mb: 2,
-        p: 3,
-        borderRadius: 4,
-        bgcolor: 'rgba(46, 125, 50, 0.12)',
-        border: '1px solid',
-        borderColor: 'success.dark',
-        animation: 'fadeUp 0.5s ease-out',
-        '@keyframes fadeUp': {
-          from: { opacity: 0, transform: 'scale(0.98)' },
-          to: { opacity: 1, transform: 'scale(1)' },
-        },
-      }}
+    <motion.div
+      initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: meridianTokens.motion.ease }}
     >
-      <Stack direction="row" gap={1.5} alignItems="center" mb={subtitle ? 1 : 0}>
-        <Typography fontSize={28}>✓</Typography>
-        <Typography variant="h6" color="success.light">
-          {title}
-        </Typography>
-      </Stack>
-      {subtitle ? (
-        <Typography variant="body2" color="text.secondary" mb={explorerHref ? 1.5 : 0}>
-          {subtitle}
-        </Typography>
-      ) : null}
-      {explorerHref ? (
-        <Button
-          href={explorerHref}
-          target="_blank"
-          rel="noreferrer"
-          variant="outlined"
-          color="success"
-          size="small"
-          sx={{ borderRadius: 3, textTransform: 'none' }}
-        >
-          View on explorer
-        </Button>
-      ) : null}
-    </Box>
+      <Box
+        sx={{
+          ...panelSurfaceSx({ spark: false }),
+          borderRadius: `${meridianTokens.radius.lg}px`,
+          px: 2.5,
+          py: 2,
+          borderColor: 'rgba(34, 197, 94, 0.28)',
+          bgcolor: 'rgba(34, 197, 94, 0.06)',
+        }}
+      >
+        <Stack direction="row" spacing={1.25} alignItems="center" mb={subtitle ? 1 : 0}>
+          <Box
+            sx={{
+              width: 32,
+              height: 32,
+              borderRadius: `${meridianTokens.radius.sm}px`,
+              bgcolor: 'rgba(34, 197, 94, 0.14)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <IconifyIcon icon="mdi:check-circle-outline" width={18} color={meridianTokens.color.success} />
+          </Box>
+          <Typography
+            sx={{
+              fontSize: '0.9375rem',
+              fontWeight: 600,
+              color: meridianTokens.color.success,
+            }}
+          >
+            {title}
+          </Typography>
+        </Stack>
+        {subtitle ? (
+          <Typography
+            sx={{
+              fontSize: '0.8125rem',
+              lineHeight: 1.45,
+              color: meridianTokens.color.textSecondary,
+              mb: explorerHref ? 1.5 : 0,
+              pl: 0.25,
+            }}
+          >
+            {subtitle}
+          </Typography>
+        ) : null}
+        {explorerHref ? (
+          <Button
+            href={explorerHref}
+            target="_blank"
+            rel="noreferrer"
+            variant="outlined"
+            size="small"
+            startIcon={<IconifyIcon icon="mdi:open-in-new" width={14} />}
+            sx={{
+              textTransform: 'none',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              borderRadius: `${meridianTokens.radius.sm}px`,
+              borderColor: 'rgba(34, 197, 94, 0.35)',
+              color: meridianTokens.color.success,
+              '&:hover': {
+                borderColor: meridianTokens.color.success,
+                bgcolor: 'rgba(34, 197, 94, 0.08)',
+              },
+            }}
+          >
+            View on explorer
+          </Button>
+        ) : null}
+      </Box>
+    </motion.div>
   )
 }
