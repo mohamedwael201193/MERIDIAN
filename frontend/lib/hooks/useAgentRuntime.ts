@@ -19,6 +19,7 @@ export type RuntimePhase =
   | 'waiting'
   | 'broadcast'
   | 'finalized'
+  | 'read_complete'
   | 'complete'
   | 'error'
 
@@ -107,7 +108,7 @@ export function useAgentRuntime() {
           setPhase('wallet')
           setUnsignedTx(parseUnsignedTransaction(writeStep.unsignedTransaction, writeStep.tool))
         } else {
-          setPhase('complete')
+          setPhase('read_complete')
           recordMissionComplete(objective, result.sessionId, publicKey)
         }
         return { ok: true, result }

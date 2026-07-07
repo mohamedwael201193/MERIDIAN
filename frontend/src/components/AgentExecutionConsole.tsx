@@ -1,16 +1,7 @@
 'use client'
 
 import { useMemo, ReactElement } from 'react'
-import {
-  Alert,
-  Box,
-  Chip,
-  LinearProgress,
-  Link,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material'
+import { Alert, Box, Chip, LinearProgress, Link, Paper, Stack, Typography } from '@mui/material'
 import type { AgentTraceRow } from '@lib/types'
 import type { RuntimePhase } from '@lib/hooks/useAgentRuntime'
 import { explorerTxUrl } from '@lib/contracts'
@@ -46,12 +37,26 @@ const PHASE_ORDER: RuntimePhase[] = [
   'complete',
 ]
 
+const WRITE_CONSOLE_STAGES = new Set(['wallet', 'waiting', 'broadcast', 'finalized', 'explorer'])
+
 function stageStatus(
   stageId: string,
   phase: RuntimePhase,
   traces: AgentTraceRow[],
   txHash: string | null,
-): 'pending' | 'active' | 'done' | 'error' {
+  isWriteFlow: boolean,
+): 'pending' | 'active' | 'done' | 'error' | 'skipped' {
+  if (!isWriteFlow && WRITE_CONSOLE_STAGES.has(stageId)) {
+    return 'skipped'
+  }
+
+  if (phase === 'read_complete') {
+    if (['thinking', 'selecting', 'calling', 'analyzing', 'complete'].includes(stageId))
+      return 'done'
+    if (WRITE_CONSOLE_STAGES.has(stageId)) return 'skipped'
+    return 'pending'
+  }
+
   if (phase === 'error') {
     const hasError = traces.some((t) => t.step_type === 'error')
     if (hasError && stageId === 'calling') return 'error'
@@ -61,14 +66,16 @@ function stageStatus(
   const stage = CONSOLE_STAGES.find((s) => s.id === stageId)
   if (!stage) return 'pending'
 
+  if (stage.traceTypes.some((t) => traces.some((tr) => tr.step_type === t))) return 'done'
+  if (stageId === 'explorer' && txHash) return 'done'
+  if (stageId === 'explorer' && !txHash) return 'pending'
+  if (stageId === 'analyzing' && traces.some((t) => t.step_type === 'tool_invoked')) return 'done'
+
   const phaseIdx = PHASE_ORDER.indexOf(phase)
   const stageIdx = CONSOLE_STAGES.findIndex((s) => s.id === stageId)
 
-  if (stage.traceTypes.some((t) => traces.some((tr) => tr.step_type === t))) return 'done'
-  if (stageId === 'explorer' && txHash) return 'done'
-  if (stageId === 'analyzing' && traces.some((t) => t.step_type === 'tool_invoked')) return 'done'
   if (phaseIdx >= 0 && stageIdx === phaseIdx) return 'active'
-  if (phaseIdx > stageIdx) return 'done'
+  if (isWriteFlow && phaseIdx > stageIdx) return 'done'
 
   return 'pending'
 }
@@ -80,6 +87,7 @@ interface AgentExecutionConsoleProps {
   sessionId: string | null
   txHash: string | null
   error: string | null
+  isWriteFlow?: boolean
 }
 
 export default function AgentExecutionConsole({
@@ -89,19 +97,24 @@ export default function AgentExecutionConsole({
   sessionId,
   txHash,
   error,
+  isWriteFlow = false,
 }: AgentExecutionConsoleProps): ReactElement {
   const sessionTraces = useMemo(
-    () =>
-      sessionId ? traces.filter((t) => t.session_id === sessionId) : traces.slice(-30),
+    () => (sessionId ? traces.filter((t) => t.session_id === sessionId) : traces.slice(-30)),
     [traces, sessionId],
   )
 
   const activeProgress = useMemo(() => {
     if (phase === 'idle') return 0
-    if (phase === 'complete') return 100
-    const idx = PHASE_ORDER.indexOf(phase)
-    return idx >= 0 ? Math.round(((idx + 1) / PHASE_ORDER.length) * 100) : 10
-  }, [phase])
+    if (phase === 'complete' || phase === 'read_complete') return 100
+    const visible = CONSOLE_STAGES.filter(
+      (s) => stageStatus(s.id, phase, sessionTraces, txHash, isWriteFlow) !== 'skipped',
+    )
+    const done = visible.filter(
+      (s) => stageStatus(s.id, phase, sessionTraces, txHash, isWriteFlow) === 'done',
+    ).length
+    return visible.length ? Math.round((done / visible.length) * 100) : 10
+  }, [phase, sessionTraces, txHash, isWriteFlow])
 
   if (phase === 'idle') {
     return (
@@ -131,7 +144,8 @@ export default function AgentExecutionConsole({
 
       <Stack gap={0}>
         {CONSOLE_STAGES.map((stage, index) => {
-          const status = stageStatus(stage.id, phase, sessionTraces, txHash)
+          const status = stageStatus(stage.id, phase, sessionTraces, txHash, isWriteFlow)
+          if (status === 'skipped') return null
           const isLast = index === CONSOLE_STAGES.length - 1
 
           return (
@@ -195,7 +209,9 @@ export default function AgentExecutionConsole({
                 </Box>
               </Stack>
               {!isLast ? (
-                <Box sx={{ ml: 1.75, borderLeft: '2px dashed', borderColor: 'divider', height: 8 }} />
+                <Box
+                  sx={{ ml: 1.75, borderLeft: '2px dashed', borderColor: 'divider', height: 8 }}
+                />
               ) : null}
             </Box>
           )
@@ -208,9 +224,11 @@ export default function AgentExecutionConsole({
         </Alert>
       ) : null}
 
-      {phase === 'complete' ? (
+      {phase === 'complete' || phase === 'read_complete' ? (
         <Alert severity="success" sx={{ mt: 2 }}>
-          Mission complete. Check the timeline below for full trace history.
+          {isWriteFlow
+            ? 'Mission complete. Check the timeline below for full trace history.'
+            : 'Read complete. No wallet signature was required.'}
         </Alert>
       ) : null}
     </Paper>

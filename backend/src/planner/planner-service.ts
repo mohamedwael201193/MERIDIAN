@@ -292,6 +292,68 @@ export class PlannerService {
       }
     }
 
+    if (/\b(register)\b/.test(lower) && callerPublicKey) {
+      const hashMatch = objective.match(/account-hash-[0-9a-f]+/i)
+      const holderHash = hashMatch?.[0] ?? callerAccountHash
+      if (!holderHash || holderHash === 'account-hash-required') {
+        throw new Error('Connect wallet so MERIDIAN can derive your account hash for registration.')
+      }
+      return {
+        reasoning:
+          'Registration is a write action. I read compliance status first, then build register_holder unsigned transaction for wallet signing.',
+        steps: [
+          {
+            tool: 'get_compliance_status',
+            kind: 'read' as const,
+            args: { accountHash: holderHash },
+            rationale: 'Confirm holder is not already registered',
+          },
+          {
+            tool: 'register_holder',
+            kind: 'write' as const,
+            args: {
+              callerPublicKey,
+              holderAccountHash: holderHash,
+              attestationBytes: '00',
+            },
+            rationale: 'Build unsigned compliance registration transaction',
+          },
+        ],
+      }
+    }
+
+    if (/\b(revoke)\b/.test(lower) && callerPublicKey) {
+      const hashMatch = objective.match(/account-hash-[0-9a-f]+/i)
+      const holderHash = hashMatch?.[0] ?? callerAccountHash
+      if (!holderHash || holderHash === 'account-hash-required') {
+        throw new Error(
+          'Revoke requires a holder account hash in the objective or connected wallet.',
+        )
+      }
+      return {
+        reasoning:
+          'Revocation is a compliance officer write action. Build revoke_holder unsigned transaction for wallet signing.',
+        steps: [
+          {
+            tool: 'get_compliance_status',
+            kind: 'read' as const,
+            args: { accountHash: holderHash },
+            rationale: 'Read holder status before revocation',
+          },
+          {
+            tool: 'revoke_holder',
+            kind: 'write' as const,
+            args: {
+              callerPublicKey,
+              holderAccountHash: holderHash,
+              reason: 'policy violation',
+            },
+            rationale: 'Build unsigned revoke_holder transaction',
+          },
+        ],
+      }
+    }
+
     if (/\b(compliance audit|holder status|my wallet)\b/.test(lower)) {
       const accountHash = callerAccountHash ?? 'account-hash-required'
       return {
@@ -341,7 +403,10 @@ export class PlannerService {
       }
     }
 
-    if (/\b(compliance|registered|holder status)\b/.test(lower)) {
+    if (
+      /\b(compliance|registered|holder status)\b/.test(lower) &&
+      !/\b(register|revoke)\b/.test(lower)
+    ) {
       const hashMatch =
         objective.match(/account-hash-[0-9a-f]+/i) ?? objective.match(/[0-9a-f]{64}/i)
       const accountHash = hashMatch?.[0] ?? ''
@@ -354,36 +419,6 @@ export class PlannerService {
             kind: 'read' as const,
             args: { accountHash: accountHash || 'account-hash-required' },
             rationale: 'Read indexed compliance registry status',
-          },
-        ],
-      }
-    }
-
-    if (/\b(register)\b/.test(lower) && callerPublicKey) {
-      const hashMatch = objective.match(/account-hash-[0-9a-f]+/i)
-      return {
-        reasoning:
-          'Registration is a write action. I read compliance status first, then build register_holder unsigned transaction for wallet signing.',
-        steps: [
-          ...(hashMatch
-            ? [
-                {
-                  tool: 'get_compliance_status',
-                  kind: 'read' as const,
-                  args: { accountHash: hashMatch[0] },
-                  rationale: 'Confirm holder is not already registered',
-                },
-              ]
-            : []),
-          {
-            tool: 'register_holder',
-            kind: 'write' as const,
-            args: {
-              callerPublicKey,
-              holderAccountHash: hashMatch?.[0] ?? 'account-hash-required',
-              attestationBytes: '00',
-            },
-            rationale: 'Build unsigned compliance registration transaction',
           },
         ],
       }
@@ -426,6 +461,14 @@ export class PlannerService {
     }
 
     if (/\b(transfer|send)\b/.test(lower) && callerPublicKey) {
+      const recipientMatch = objective.match(/account-hash-[0-9a-f]+/i)
+      const amountMatch = objective.match(/(\d+)\s*(mrwa|token|cspr)?/i)
+      const amount = amountMatch?.[1] ?? '1'
+      if (!recipientMatch?.[0]) {
+        throw new Error(
+          'Transfer requires a recipient account hash in the objective (e.g. account-hash-abc...).',
+        )
+      }
       return {
         reasoning:
           'Token transfer is a write action requiring wallet signature via transfer_token.',
@@ -435,8 +478,8 @@ export class PlannerService {
             kind: 'write' as const,
             args: {
               callerPublicKey,
-              recipientAccountHash: 'account-hash-required',
-              amount: '1000',
+              recipientAccountHash: recipientMatch[0],
+              amount,
             },
             rationale: 'Build unsigned MRWA transfer',
           },

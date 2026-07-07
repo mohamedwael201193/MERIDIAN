@@ -125,6 +125,9 @@ export default function AgentConsolePage(): ReactElement {
             sessionId={runtime.sessionId}
             txHash={runtime.txHash}
             error={runtime.error}
+            isWriteFlow={Boolean(
+              runtime.unsignedTx || runtime.txHash || runtime.steps.some((s) => s.kind === 'write'),
+            )}
           />
 
           {runtime.unsignedTx ? (
@@ -157,7 +160,11 @@ export default function AgentConsolePage(): ReactElement {
                     <Typography variant="caption" color="primary.main">
                       {s.tool}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ whiteSpace: 'pre-wrap' }}
+                    >
                       {JSON.stringify(s.result, null, 2).slice(0, 1200)}
                       {JSON.stringify(s.result).length > 1200 ? '…' : ''}
                     </Typography>

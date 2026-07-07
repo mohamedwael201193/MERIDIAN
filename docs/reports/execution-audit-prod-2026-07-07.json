@@ -1,0 +1,127 @@
+{
+  "backend": "https://meridian-backend-ikx8.onrender.com",
+  "testedAt": "2026-07-07T21:34:30.945Z",
+  "results": [
+    {
+      "command": "Check Yield",
+      "objective": "What is the current MRWA yield APY?",
+      "checks": {
+        "planner": "PASS",
+        "readTools": "PASS",
+        "noFakeWrite": "PASS"
+      },
+      "httpStatus": 200,
+      "overall": "PASS"
+    },
+    {
+      "command": "Compliance audit",
+      "objective": "Run compliance audit on my wallet",
+      "checks": {
+        "planner": "PASS",
+        "readTools": "PASS",
+        "noFakeWrite": "PASS"
+      },
+      "httpStatus": 200,
+      "overall": "PASS"
+    },
+    {
+      "command": "Delegate 500 CSPR",
+      "objective": "Delegate stake 500 CSPR",
+      "checks": {
+        "planner": "PASS",
+        "unsignedTx": "PASS",
+        "writeTool": "PASS",
+        "txBuilder": "PASS"
+      },
+      "httpStatus": 200,
+      "overall": "PASS"
+    },
+    {
+      "command": "Vault Deposit",
+      "objective": "Vault deposit 10 CSPR",
+      "checks": {
+        "planner": "PASS",
+        "unsignedTx": "PASS",
+        "writeTool": "PASS",
+        "txBuilder": "PASS"
+      },
+      "httpStatus": 200,
+      "overall": "PASS"
+    },
+    {
+      "command": "Register Holder",
+      "objective": "Register holder for compliance",
+      "checks": {
+        "planner": "PASS",
+        "unsignedTx": "FAIL",
+        "writeTool": "FAIL",
+        "txBuilder": "FAIL"
+      },
+      "httpStatus": 200,
+      "overall": "FAIL",
+      "reason": "No unsignedTransaction in planner response",
+      "requiredFix": "Ensure write tool invokes tx-builder and returns unsignedTransaction"
+    },
+    {
+      "command": "Transfer Token",
+      "objective": "Transfer 1 MRWA to account-hash-d73864646338c6fef8649847103f8c7c6fd877433866bc059acd95a0548cc216",
+      "checks": {
+        "planner": "FAIL"
+      },
+      "httpStatus": 422,
+      "reason": "Invalid string length, expected 64 characters.",
+      "requiredFix": "Fix planner route or backend error"
+    },
+    {
+      "command": "Restake",
+      "objective": "Restake between validators",
+      "checks": {
+        "planner": "PASS",
+        "unsignedTx": "PASS",
+        "writeTool": "PASS",
+        "txBuilder": "PASS"
+      },
+      "httpStatus": 200,
+      "overall": "PASS"
+    },
+    {
+      "command": "Revoke Holder",
+      "objective": "Revoke holder account-hash-d73864646338c6fef8649847103f8c7c6fd877433866bc059acd95a0548cc216",
+      "checks": {
+        "planner": "PASS",
+        "unsignedTx": "FAIL",
+        "writeTool": "FAIL",
+        "txBuilder": "FAIL"
+      },
+      "httpStatus": 200,
+      "overall": "FAIL",
+      "reason": "No unsignedTransaction in planner response",
+      "requiredFix": "Ensure write tool invokes tx-builder and returns unsignedTransaction"
+    },
+    {
+      "command": "Audit Subscription",
+      "objective": "Subscribe to premium x402 audit feed",
+      "checks": {
+        "planner": "PASS",
+        "unsignedTx": "PASS (x402 gate)",
+        "writeTool": "PASS (read gate)"
+      },
+      "httpStatus": 200,
+      "overall": "PASS"
+    },
+    {
+      "command": "Token Issue",
+      "objective": "Issue new MRWA tokens",
+      "checks": {
+        "planner": "PASS",
+        "unsignedTx": "FAIL",
+        "writeTool": "FAIL",
+        "txBuilder": "FAIL"
+      },
+      "httpStatus": 200,
+      "overall": "NOT_IMPLEMENTED",
+      "reason": "No unsignedTransaction in planner response",
+      "requiredFix": "issue_token not in write-tool-invoker WRITE_TOOLS set"
+    }
+  ]
+}
