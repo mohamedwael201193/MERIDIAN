@@ -5,29 +5,29 @@ const phases = [
     name: 'Live Testnet Stack',
     status: 'Operational',
     description:
-      'The current frontend points at live Render services and Casper testnet contracts.',
+      'Unified dashboard UI, live Render services, and Casper testnet contracts wired end-to-end.',
     features: [
       '5 deployed contract packages',
-      'Backend proxy returns tokens/events/decisions',
-      'MCP read flow verified',
+      'Briefing, agents, MCP, templates, marketplace',
+      '13 MCP tools (6 read · 7 write)',
       'x402 unpaid 402 flow verified',
     ],
-    cta: 'Open Dashboard',
-    href: '/dashboard',
+    cta: 'Open Briefing',
+    href: '/agent',
     highlighted: false,
   },
   {
-    name: 'Manual Wallet Gate',
-    status: 'Required',
+    name: 'MCP & Wallet Flow',
+    status: 'Ready',
     description:
-      'Full production sign-off requires funded Casper Wallet transactions from the browser.',
+      'MCP Tool Explorer with search, grouped read/write tools, and transaction review for writes.',
     features: [
-      'Connect/disconnect/reconnect',
-      'MCP write transaction signing',
-      'x402 settlement hash on explorer',
-      'Post-transaction data refresh',
+      'Searchable tool sidebar',
+      'Instant read tool invocation',
+      'Unsigned TransactionV1 for writes',
+      'CSPR.click wallet signing path',
     ],
-    cta: 'Review Flows',
+    cta: 'Explore MCP',
     href: '/mcp',
     highlighted: true,
   },
@@ -35,15 +35,15 @@ const phases = [
     name: 'Production Readiness',
     status: 'Next',
     description:
-      'After manual wallet proof, the app is ready for deployment hardening and final sign-off.',
+      'After funded-wallet proof from the browser, the app is ready for deployment hardening.',
     features: [
       'Register production CSPR.click appId',
-      'Resolve or document indexer lag',
       'Capture explorer hashes in report',
+      'Resolve or document indexer lag',
       'Run Lighthouse before deploy',
     ],
-    cta: 'Read Report',
-    href: '/audit',
+    cta: 'View History',
+    href: '/activity',
     highlighted: false,
   },
 ]
@@ -56,8 +56,8 @@ export default function Pricing() {
           Testnet Evidence &amp; Readiness
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base">
-          MERIDIAN is not a static landing page. It is wired to real contract addresses, backend
-          indexes, MCP tools, and x402 services. These are the current production gates.
+          MERIDIAN is wired to real contract addresses, backend indexes, the MCP explorer, and
+          x402 services. These are the current integration gates.
         </p>
       </div>
 
@@ -76,7 +76,7 @@ export default function Pricing() {
                   <div className="absolute bottom-0 right-0 h-full w-full bg-[radial-gradient(circle_at_88%_92%,rgba(248,113,113,0.28)_0%,rgba(220,38,38,0.12)_38%,transparent_72%)]" />
                 </div>
                 <span className="relative z-10 mb-6 inline-flex w-fit rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 text-xs font-medium text-red-300">
-                  Critical Gate
+                  Core workflow
                 </span>
               </>
             )}

@@ -6,28 +6,52 @@ import { AgentIcon, ComplianceIcon, McpIcon, StakingIcon } from './FeatureIcons'
 
 const features = [
   {
-    title: 'Live Casper Contracts',
+    title: 'Briefing',
     description:
-      'Five Odra contracts are deployed on casper-test and surfaced through live backend APIs.',
+      'Live protocol metrics, status ribbon, and yield overview inside a unified command shell.',
     icon: <StakingIcon />,
+    cta: 'Open Briefing',
+    ctaHref: '/agent',
   },
   {
-    title: 'Compliance-first Holders',
+    title: 'Agents & History',
     description:
-      'Holder registration, compliance status, revocation logic, and audit events are indexed from the MERIDIAN contract stack.',
-    icon: <ComplianceIcon />,
-  },
-  {
-    title: 'AI Decision Feed',
-    description:
-      'Yield, compliance, and audit agents publish structured decisions that the frontend displays as live operational evidence.',
+      'AI decision feed, agent profiles, and indexed on-chain activity across the workspace.',
     icon: <AgentIcon />,
+    cta: 'View agents',
+    ctaHref: '/agents',
   },
   {
-    title: 'MCP + x402 Workflows',
+    title: 'MCP Tool Explorer',
     description:
-      'MCP builds unsigned TransactionV1 payloads for wallet signing, while x402 gates paid resources with Casper payments.',
+      'Search 13 tools, filter read vs write, run instant reads, and build unsigned transactions.',
     icon: <McpIcon />,
+    cta: 'Explore tools',
+    ctaHref: '/mcp',
+  },
+  {
+    title: 'Templates & Missions',
+    description:
+      'Pre-built agent missions for compliance, yield, and audit workflows with one-click run.',
+    icon: <ComplianceIcon />,
+    cta: 'Browse templates',
+    ctaHref: '/templates',
+  },
+  {
+    title: 'Marketplace',
+    description:
+      'Discover installable agents, run defaults, and extend your autonomous operations stack.',
+    icon: <AgentIcon />,
+    cta: 'Open marketplace',
+    ctaHref: '/marketplace',
+  },
+  {
+    title: 'Operations',
+    description:
+      'Treasury charts, validator insights, and day-to-day protocol operations in one view.',
+    icon: <StakingIcon />,
+    cta: 'View operations',
+    ctaHref: '/dashboard',
   },
 ]
 
@@ -46,11 +70,11 @@ export default function Features() {
       <div className="flex flex-col gap-8 border-b border-white/10 px-6 py-12 sm:flex-row sm:items-end sm:justify-between sm:px-10 lg:px-14 lg:py-16">
         <div className="max-w-xl">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Production Stack
+            Inside the App
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-zinc-500 sm:text-base">
-            The frontend connects a real Casper testnet deployment to indexed backend data, wallet
-            signing, MCP tool execution, and x402 resource access.
+            Workspace, Discover, and More — every page shares the same elevated panels, status
+            ribbon, and wallet-aware flows across Briefing, agents, MCP, templates, and marketplace.
           </p>
         </div>
         <CarouselControls onPrev={() => scroll('prev')} onNext={() => scroll('next')} />
@@ -66,8 +90,8 @@ export default function Features() {
             title={feature.title}
             description={feature.description}
             icon={feature.icon}
-            cta="Open dashboard"
-            ctaHref="/dashboard"
+            cta={feature.cta}
+            ctaHref={feature.ctaHref}
           />
         ))}
       </div>

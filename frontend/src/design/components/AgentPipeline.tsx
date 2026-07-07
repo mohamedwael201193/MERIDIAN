@@ -162,37 +162,39 @@ function StatusIcon({ status, index }: { status: StageStatus; index: number }) {
     >
       <Box
         sx={{
-          width: 28,
-          height: 28,
+          width: 36,
+          height: 36,
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          flexShrink: 0,
           bgcolor:
             status === 'pending' || status === 'skipped'
-              ? 'rgba(255,255,255,0.06)'
+              ? 'rgba(255,255,255,0.05)'
               : `${colors[status]}22`,
-          border: '1px solid',
+          border: '2px solid',
           borderColor: colors[status],
           color: colors[status],
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: 700,
+          zIndex: 1,
           opacity: status === 'skipped' ? 0.35 : 1,
         }}
       >
         {status === 'done' ? (
-          <IconifyIcon icon="mdi:check" width={14} />
+          <IconifyIcon icon="mdi:check" width={16} />
         ) : status === 'error' ? (
-          <IconifyIcon icon="mdi:alert" width={14} />
+          <IconifyIcon icon="mdi:alert" width={16} />
         ) : status === 'skipped' ? (
-          <IconifyIcon icon="mdi:minus" width={14} />
+          <IconifyIcon icon="mdi:minus" width={16} />
         ) : status === 'active' ? (
           <Box
             component={motion.div}
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
           >
-            <IconifyIcon icon="mdi:loading" width={14} />
+            <IconifyIcon icon="mdi:loading" width={16} />
           </Box>
         ) : (
           index + 1
@@ -273,19 +275,44 @@ export default function AgentPipeline({
   if (phase === 'idle') return <></>
 
   return (
-    <GlassCard padding={2.5} sx={{ mb: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography sx={{ ...meridianTokens.typography.title, color: 'common.white' }}>
-          {isWriteFlow ? 'On-chain execution' : 'Live read execution'}
-        </Typography>
-        {sessionId ? (
-          <Typography
-            variant="caption"
-            color="text.disabled"
-            sx={{ fontFamily: 'var(--font-geist-mono, monospace)' }}
-          >
-            {sessionId.slice(0, 8)}
+    <GlassCard
+      padding={3}
+      sx={{
+        mb: 3,
+        position: { lg: 'sticky' },
+        top: { lg: 88 },
+        maxHeight: { lg: 'calc(100vh - 140px)' },
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
+        <Box>
+          <Typography sx={{ ...meridianTokens.typography.label, color: 'primary.main', mb: 0.5 }}>
+            Live execution
           </Typography>
+          <Typography sx={{ ...meridianTokens.typography.title, color: 'common.white' }}>
+            {isWriteFlow ? 'On-chain execution' : 'Live read execution'}
+          </Typography>
+        </Box>
+        {sessionId ? (
+          <Box
+            sx={{
+              px: 1.5,
+              py: 0.75,
+              borderRadius: 2,
+              bgcolor: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            <Typography
+              variant="caption"
+              color="text.disabled"
+              sx={{ fontFamily: meridianTokens.typography.fontFamilyMono }}
+            >
+              {sessionId.slice(0, 8)}
+            </Typography>
+          </Box>
         ) : null}
       </Stack>
 

@@ -2,7 +2,7 @@ import { TypographyOptions } from '@mui/material/styles/createTypography'
 import pxToRem from './functions/px-to-rem'
 
 const typography: TypographyOptions = {
-  fontFamily: ['Geist', 'system-ui', 'sans-serif'].join(', '),
+  fontFamily: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'].join(', '),
   h1: {
     fontSize: pxToRem(48), // 3rem
     fontWeight: 700,

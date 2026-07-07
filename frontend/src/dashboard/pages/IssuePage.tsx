@@ -4,10 +4,11 @@ import { ReactElement } from 'react'
 import { Box, Paper } from '@mui/material'
 import TokenIssueForm from '@/dashboard/components/TokenIssueForm'
 import PageHeader from '@/components/PageHeader'
+import { meridianTokens } from '@/design/tokens'
 
 export default function IssuePage(): ReactElement {
   return (
-    <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={3.5}>
+    <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={meridianTokens.spacing.sectionGap}>
       <Box gridColumn={{ xs: 'span 12' }}>
         <PageHeader
           icon="mdi:token"

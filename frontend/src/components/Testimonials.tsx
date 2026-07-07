@@ -8,32 +8,32 @@ const evidence = [
       'ComplianceRegistry, MeridianToken, StakingVault, YieldDistributor, and MeridianAudit are live on casper-test.',
   },
   {
+    label: 'Dashboard UI',
+    value: 'Unified',
+    detail:
+      'Briefing, agents, history, templates, marketplace, operations, and MCP share elevated panels and a status ribbon.',
+  },
+  {
+    label: 'MCP tools',
+    value: '13 tools',
+    detail:
+      '6 read tools for instant data and 7 write tools that return unsigned TransactionV1 payloads for wallet signing.',
+  },
+  {
+    label: 'Workspace routes',
+    value: '9 pages',
+    detail:
+      'Briefing, Agents, History, Templates, Examples, Marketplace, Setup, Operations, and MCP Tools.',
+  },
+  {
     label: 'x402 validation',
     value: '100/100',
     detail: 'Phase 8.5 recorded one hundred successful x402 settlements with transaction hashes.',
   },
   {
-    label: 'MCP tools',
-    value: '12 tools',
-    detail:
-      'Read tools return live data and write tools return unsigned TransactionV1 payloads for local signing.',
-  },
-  {
-    label: 'Frontend routes',
-    value: '9/9',
-    detail:
-      'Landing, dashboard, issue, audit, agents, compliance, staking, MCP, and x402 routes return 200.',
-  },
-  {
     label: 'Automated checks',
     value: 'Green',
     detail: 'Build, Vitest, Playwright smoke, secret scans, and backend proxy checks pass.',
-  },
-  {
-    label: 'Open blocker',
-    value: 'Manual wallet',
-    detail:
-      'Final sign-off requires funded-wallet MCP writes and x402 settlement from the browser.',
   },
 ]
 

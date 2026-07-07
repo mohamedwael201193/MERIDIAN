@@ -1,55 +1,83 @@
 import { ReactElement } from 'react'
-import { List, Toolbar, Box, Typography, Divider } from '@mui/material'
+import {
+  List,
+  Box,
+  Typography,
+  Divider,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material'
 import Link from 'next/link'
 import { navGroups } from '@/nickelfox/data/nav-items'
 import SimpleBar from 'simplebar-react'
 import NavItem from './NavItem'
-import { drawerCloseWidth, drawerOpenWidth } from '..'
+
+const SIDEBAR_HEADER_HEIGHT = 88
 
 const Sidebar = ({ open }: { open: boolean }): ReactElement => {
   return (
-    <>
-      <Toolbar
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '100vh' }}>
+      <Box
+        component="header"
         sx={{
-          position: 'fixed',
-          height: 88,
-          zIndex: 1,
-          bgcolor: 'transparent',
-          p: 0,
+          flexShrink: 0,
+          height: SIDEBAR_HEADER_HEIGHT,
+          display: 'flex',
+          alignItems: 'center',
           justifyContent: 'center',
-          width: open ? drawerOpenWidth - 1 : drawerCloseWidth - 1,
-          borderRight: '1px solid',
+          borderBottom: '1px solid',
           borderColor: 'divider',
+          px: open ? 1.5 : 1,
+          position: 'relative',
+          zIndex: 2,
         }}
       >
-        <Box
+        <ListItemButton
           component={Link}
-          href="/agent"
+          href="/"
+          aria-label="MERIDIAN home"
           sx={{
-            display: 'flex',
-            alignItems: 'center',
+            borderRadius: 2,
+            justifyContent: open ? 'flex-start' : 'center',
             gap: open ? 1.5 : 0,
-            mt: 2,
-            textDecoration: 'none',
+            px: open ? 1.5 : 1,
+            py: 1,
+            minHeight: 56,
+            width: '100%',
+            '&:hover': { bgcolor: 'rgba(255,255,255,0.06)' },
           }}
         >
-          <Box component="img" src="/logo.svg" alt="MERIDIAN" sx={{ width: 40, height: 40 }} />
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              width: 40,
+              height: 40,
+              mr: open ? 0.5 : 0,
+              justifyContent: 'center',
+            }}
+          >
+            <Box component="img" src="/logo.svg" alt="" aria-hidden sx={{ width: 40, height: 40 }} />
+          </ListItemIcon>
           {open ? (
-            <Box
-              component="span"
-              sx={{ fontWeight: 700, fontSize: 18, color: 'common.white', letterSpacing: 1 }}
-            >
-              MERIDIAN
-            </Box>
+            <ListItemText
+              primary="MERIDIAN"
+              primaryTypographyProps={{
+                fontWeight: 700,
+                fontSize: 18,
+                letterSpacing: 1,
+                color: 'common.white',
+              }}
+            />
           ) : null}
-        </Box>
-      </Toolbar>
-      <SimpleBar style={{ maxHeight: '100vh' }}>
+        </ListItemButton>
+      </Box>
+
+      <SimpleBar style={{ flex: 1, maxHeight: `calc(100vh - ${SIDEBAR_HEADER_HEIGHT}px)` }}>
         <List
           component="nav"
           aria-label="MERIDIAN dashboard navigation"
           sx={{
-            mt: 20,
             py: 2,
             px: 0,
           }}
@@ -82,7 +110,7 @@ const Sidebar = ({ open }: { open: boolean }): ReactElement => {
           ))}
         </List>
       </SimpleBar>
-    </>
+    </Box>
   )
 }
 

@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import { useAuditSummaries, useEvents } from '@lib/hooks/useMeridianData'
 import { explorerTxUrl, truncateHash } from '@lib/contracts'
+import { meridianTokens } from '@/design/tokens'
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat(undefined, {
@@ -52,8 +53,8 @@ export default function AuditTrail(): ReactElement {
   }
 
   return (
-    <Paper sx={{ p: { xs: 3, sm: 4 }, height: 1, border: '1px solid', borderColor: 'divider' }}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={2} mb={3}>
+    <Paper sx={{ p: meridianTokens.spacing.panelPadding, height: 1 }}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={meridianTokens.spacing.panelGap} mb={meridianTokens.spacing.panelGap}>
         <Box>
           <Typography variant="h4" color="common.white">
             Audit Trail
@@ -68,7 +69,7 @@ export default function AuditTrail(): ReactElement {
         </Stack>
       </Stack>
 
-      <Stack gap={3}>
+      <Stack gap={meridianTokens.spacing.panelGap}>
         <Box>
           <Typography variant="overline" color="text.secondary">
             Agent Summaries

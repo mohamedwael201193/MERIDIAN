@@ -5,22 +5,22 @@ const faqs = [
   {
     question: 'What is MERIDIAN?',
     answer:
-      'MERIDIAN is a Casper-native frontend and service stack for compliant RWA operations. It connects live testnet contracts, backend-indexed data, CSPR.click wallet signing, MCP tools, x402 paid resources, and AI agent decisions.',
+      'MERIDIAN is a Casper-native frontend for compliant RWA operations. It connects live testnet contracts, backend-indexed data, a unified dashboard workspace, CSPR.click wallet signing, the MCP Tool Explorer, x402 paid resources, and AI agent decisions.',
+  },
+  {
+    question: 'What pages are in the dashboard?',
+    answer:
+      'Workspace covers Briefing, Agents, and History. Discover includes Templates, Examples, and Marketplace. More holds Setup, Operations, and MCP Tools — all wrapped in the same status ribbon and elevated panel design.',
+  },
+  {
+    question: 'How does the MCP Tool Explorer work?',
+    answer:
+      'Browse 13 tools with search and read/write filters. Read tools return live data instantly. Write tools build unsigned TransactionV1 payloads that you review and sign through Casper Wallet via CSPR.click.',
   },
   {
     question: 'Is the frontend using real data?',
     answer:
-      'Yes. The browser calls local Next.js /api routes. Those routes proxy to the Render backend, MCP server, and x402 service. Tokens, events, holders, decisions, and yield data come from backend-indexed Casper testnet state.',
-  },
-  {
-    question: 'How are transactions made?',
-    answer:
-      'Write flows call MCP tools to build unsigned TransactionV1 payloads. The frontend shows a transaction review card, CSPR.click asks Casper Wallet to sign, and the signed transaction is submitted to Casper testnet.',
-  },
-  {
-    question: 'What still needs manual verification?',
-    answer:
-      'The remaining production gate is funded-wallet testing from the browser: wallet reconnect, MCP write transactions, x402 settlement, explorer links, and post-transaction data refresh.',
+      'Yes. The browser calls local Next.js /api routes that proxy to the Render backend, MCP server, and x402 service. Tokens, events, holders, decisions, and yield data come from backend-indexed Casper testnet state.',
   },
   {
     question: 'Are private keys or API keys exposed?',
@@ -39,8 +39,7 @@ export default function FAQ() {
           Frequently Asked Questions
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base">
-          Practical answers for the current live testnet frontend and the remaining production
-          verification gates.
+          Practical answers for the current dashboard, MCP explorer, and live testnet integration.
         </p>
       </div>
 

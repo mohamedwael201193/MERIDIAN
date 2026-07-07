@@ -12,7 +12,7 @@ interface PanelProps {
 export default function Panel({ title, description, action, children, className }: PanelProps) {
   return (
     <div
-      className={cn('rounded-2xl border border-white/10 bg-dashboard-card shadow-card', className)}
+      className={cn('meridian-glass-panel shadow-panel', className)}
     >
       <div className="flex items-start justify-between border-b border-white/10 px-6 py-4">
         <div>

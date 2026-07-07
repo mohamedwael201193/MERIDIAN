@@ -15,6 +15,7 @@ import BriefingHeader from '@/design/components/BriefingHeader'
 import BriefingGrid from '@/design/components/BriefingGrid'
 import AgentPipeline from '@/design/components/AgentPipeline'
 import CommandBar from '@/design/components/CommandBar'
+import ChatScrollHint from '@/design/components/ChatScrollHint'
 import WalletExecutionPanel from '@/design/components/WalletExecutionPanel'
 import { ChatBubble, ResultBubble } from '@/components/agent/ChatBubble'
 import SuggestionChips from '@/components/agent/SuggestionChips'
@@ -41,6 +42,7 @@ export default function AgentHomePage(): ReactElement {
   const [messages, setMessages] = useState<ChatItem[]>([])
   const [installed, setInstalled] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const chatRef = useRef<HTMLDivElement>(null)
   const queryHandled = useRef(false)
   const successHashRef = useRef<string | null>(null)
 
@@ -141,6 +143,7 @@ export default function AgentHomePage(): ReactElement {
         minHeight: 'calc(100vh - 120px)',
         display: 'flex',
         flexDirection: 'column',
+        gap: meridianTokens.spacing.sectionGap,
       }}
     >
       <StatusRibbon />
@@ -156,7 +159,7 @@ export default function AgentHomePage(): ReactElement {
       />
 
       {!installed ? (
-        <Box textAlign="center" py={2} mb={2}>
+        <Box textAlign="center" py={3}>
           <Typography variant="body2" color="text.secondary" mb={1}>
             Complete setup to unlock the full agent operating system.
           </Typography>
@@ -172,28 +175,41 @@ export default function AgentHomePage(): ReactElement {
         </Box>
       ) : null}
 
-      <Grid container spacing={3} flex={1}>
+      <Grid container spacing={meridianTokens.spacing.sectionGap} flex={1}>
         <Grid item xs={12} lg={showPipeline ? 7 : 12}>
-          <Box ref={scrollRef} sx={{ maxHeight: hasConversation ? '50vh' : 'auto', overflow: 'auto', pb: 2 }}>
+          <Box
+            ref={scrollRef}
+            sx={{
+              maxHeight: hasConversation ? (showPipeline ? '62vh' : '50vh') : 'auto',
+              overflow: 'auto',
+              pb: 2,
+              pr: 0.5,
+            }}
+          >
             {!hasConversation && installed ? (
               <>
                 <Typography variant="subtitle2" color="text.secondary" mb={2}>
                   Specialist agents
                 </Typography>
-                <Grid container spacing={2} mb={3}>
+                <Box
+                  display="grid"
+                  gridTemplateColumns={{ xs: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' }}
+                  gap={meridianTokens.spacing.panelGap}
+                  mb={meridianTokens.spacing.sectionGap}
+                >
                   {SPECIALIST_AGENTS.slice(0, 4).map((agent) => (
-                    <Grid item xs={12} md={6} xl={3} key={agent.id}>
-                      <AgentEmployeeCard
-                        agent={{
-                          ...agent,
-                          capabilities: [...agent.capabilities],
-                          status: agentStatus(agent.id),
-                        }}
-                        onAssign={(o) => void send(o)}
-                      />
-                    </Grid>
+                    <AgentEmployeeCard
+                      key={agent.id}
+                      variant="compact"
+                      agent={{
+                        ...agent,
+                        capabilities: [...agent.capabilities],
+                        status: agentStatus(agent.id),
+                      }}
+                      onAssign={(o) => void send(o)}
+                    />
                   ))}
-                </Grid>
+                </Box>
                 <SuggestionChips onSelect={(o) => void send(o)} />
               </>
             ) : null}
@@ -263,12 +279,16 @@ export default function AgentHomePage(): ReactElement {
         ) : null}
       </Grid>
 
+      <ChatScrollHint targetRef={chatRef} />
+
       <CommandBar
+        ref={chatRef}
         value={input}
         onChange={setInput}
         onSubmit={() => void send(input)}
         loading={runtime.loading}
         disabled={!installed}
+        onBlockedSubmit={() => router.push('/start')}
       />
     </Box>
   )

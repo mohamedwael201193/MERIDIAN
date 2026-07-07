@@ -21,7 +21,7 @@ export default function StatCard({
   return (
     <div
       className={cn(
-        'rounded-2xl border border-white/10 bg-dashboard-card p-5 shadow-card transition hover:border-red-500/30',
+        'meridian-glass-panel p-5 shadow-panel transition hover:border-red-500/30',
         className,
       )}
     >

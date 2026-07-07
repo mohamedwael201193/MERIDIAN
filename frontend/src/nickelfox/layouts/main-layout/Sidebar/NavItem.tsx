@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
 import { NavItem as NavItemProps } from '@/nickelfox/data/nav-items'
+import { meridianTokens } from '@/design/tokens'
 
 const NavItem = ({
   navItem,
@@ -35,15 +36,15 @@ const NavItem = ({
         px: open ? 2 : 1.25,
         borderRadius: 2,
         justifyContent: open ? 'flex-start' : 'center',
-        bgcolor: isActive ? (open ? 'primary.main' : 'rgba(220,38,38,0.12)') : 'transparent',
-        boxShadow: isActive && open ? '0 12px 28px rgba(220, 38, 38, 0.2)' : 'none',
+        bgcolor: isActive ? (open ? 'primary.dark' : `rgba(${meridianTokens.brand.rgb}, 0.12)`) : 'transparent',
+        boxShadow: isActive && open ? '0 12px 28px rgba(153, 27, 27, 0.22)' : 'none',
         borderLeft: !open && isActive ? '2px solid' : '2px solid transparent',
-        borderColor: !open && isActive ? 'primary.main' : 'transparent',
+        borderColor: !open && isActive ? 'primary.dark' : 'transparent',
         '&:hover': {
           bgcolor: isActive
             ? open
-              ? 'primary.dark'
-              : 'rgba(220,38,38,0.18)'
+              ? meridianTokens.brand.main
+              : `rgba(${meridianTokens.brand.rgb}, 0.18)`
             : 'rgba(255,255,255,0.05)',
         },
         transition: 'background-color 160ms ease, box-shadow 160ms ease',
@@ -56,7 +57,7 @@ const NavItem = ({
           height: 22,
           mr: open ? 1.25 : 0,
           justifyContent: 'center',
-          color: isActive ? (open ? 'background.default' : 'primary.main') : 'text.secondary',
+          color: isActive ? (open ? 'background.default' : 'primary.dark') : 'text.secondary',
         }}
       >
         <IconifyIcon icon={navItem.icon} width={22} height={22} />

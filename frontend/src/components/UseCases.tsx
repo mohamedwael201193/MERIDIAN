@@ -3,39 +3,39 @@ import SectionShell from './SectionShell'
 const useCases = [
   {
     step: '01',
-    title: 'Read live protocol state',
+    title: 'Start at Briefing',
     description:
-      'Landing, dashboard, audit, and agents pages read tokens, holders, events, yields, and decisions through backend proxies.',
+      'Open the command shell with live status ribbon, yield metrics, and protocol health from indexed testnet data.',
   },
   {
     step: '02',
-    title: 'Connect a wallet',
+    title: 'Discover workflows',
     description:
-      'CSPR.click initializes Casper Wallet on testnet and keeps account state available across landing and dashboard routes.',
+      'Browse Templates, Examples, and Marketplace to install agents or run pre-built compliance and yield missions.',
   },
   {
     step: '03',
-    title: 'Build unsigned transactions',
+    title: 'Explore MCP tools',
     description:
-      'MCP write tools create TransactionV1 payloads for issue, transfer, holder registration, revoke, restake, and rewards.',
+      'Search 13 tools, filter read vs write, load example args, and invoke reads instantly from the MCP explorer.',
   },
   {
     step: '04',
-    title: 'Sign and submit',
+    title: 'Connect your wallet',
     description:
-      'Users review a transaction card, sign in Casper Wallet, submit through casper-js-sdk, and track finality.',
+      'CSPR.click initializes Casper Wallet on testnet so write tools can attach your public key and request signatures.',
   },
   {
     step: '05',
-    title: 'Unlock paid resources',
+    title: 'Review and sign',
     description:
-      'x402 requests return payment terms, verify wallet-signed proof, and unlock resource data after settlement.',
+      'Write tools return unsigned TransactionV1 payloads. Review the transaction card, sign in Casper Wallet, and track finality.',
   },
   {
     step: '06',
     title: 'Audit every action',
     description:
-      'Agent decisions, indexed contract events, and explorer links give operators a readable trail of real activity.',
+      'History, agent decisions, and explorer links give operators a readable trail of real on-chain activity.',
   },
 ]
 
@@ -47,8 +47,8 @@ export default function UseCases() {
           How MERIDIAN Works
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base">
-          A practical path from live data to wallet-signed transactions, with no custodial keys and
-          no fabricated blockchain state.
+          From the Briefing dashboard through MCP tool execution to wallet-signed writes — a
+          practical path with no custodial keys and no fabricated blockchain state.
         </p>
       </div>
 

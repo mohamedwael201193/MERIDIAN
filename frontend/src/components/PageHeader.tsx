@@ -5,6 +5,8 @@ import { Box, Breadcrumbs, Chip, Stack, Typography, Link as MuiLink } from '@mui
 import Link from 'next/link'
 import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
 
+import { meridianTokens } from '@/design/tokens'
+
 export interface PageHeaderProps {
   icon: string
   eyebrow: string
@@ -24,14 +26,14 @@ export default function PageHeader({
   actions,
 }: PageHeaderProps): ReactElement {
   return (
-    <Box mb={3.5}>
+    <Box mb={meridianTokens.spacing.sectionGap}>
       <Breadcrumbs
         separator={<IconifyIcon icon="mdi:chevron-right" width={14} height={14} />}
         sx={{ mb: 1.5, '& .MuiBreadcrumbs-li': { display: 'flex', alignItems: 'center' } }}
       >
         <MuiLink
           component={Link}
-          href="/dashboard"
+          href="/"
           underline="hover"
           color="text.secondary"
           variant="caption"
@@ -42,7 +44,7 @@ export default function PageHeader({
         <Typography
           variant="caption"
           color="primary.light"
-          sx={{ letterSpacing: '0.06em', textTransform: 'uppercase' }}
+          sx={{ ...meridianTokens.typography.label, color: 'primary.light' }}
         >
           {eyebrow}
         </Typography>
@@ -72,7 +74,7 @@ export default function PageHeader({
           </Box>
           <Box>
             <Stack direction="row" gap={1.5} alignItems="center" flexWrap="wrap">
-              <Typography variant="h3" color="common.white">
+              <Typography sx={{ ...meridianTokens.typography.title, color: 'common.white', fontSize: '1.75rem' }}>
                 {title}
               </Typography>
               {stepLabel ? (

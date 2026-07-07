@@ -4,46 +4,43 @@ import { ReactElement, ReactNode } from 'react'
 import { Box, BoxProps } from '@mui/material'
 import { motion } from 'motion/react'
 import { meridianTokens } from '@/design/tokens'
+import { panelSurfaceSx } from '@/design/surface'
 
 interface GlassCardProps extends Omit<BoxProps, 'children'> {
   children: ReactNode
   hover?: boolean
   glow?: boolean
+  elevated?: boolean
   animate?: boolean
   padding?: number | string
+  /** Disable animated spark line (static glass only) */
+  spark?: boolean
 }
 
 export default function GlassCard({
   children,
   hover = false,
   glow = false,
+  elevated = true,
   animate = false,
-  padding = 3,
+  spark = true,
+  padding = meridianTokens.spacing.panelPadding,
   sx,
   ...rest
 }: GlassCardProps): ReactElement {
+  const surface = panelSurfaceSx({
+    spark,
+    hover,
+    nested: !elevated,
+  })
+
   const base = (
     <Box
       sx={{
         borderRadius: `${meridianTokens.radius.lg}px`,
-        bgcolor: meridianTokens.color.glass,
-        border: '1px solid',
-        borderColor: meridianTokens.color.glassBorder,
-        boxShadow: glow ? meridianTokens.shadow.glow : meridianTokens.shadow.card,
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
         p: padding,
-        transition: 'box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease',
-        ...(hover
-          ? {
-              cursor: 'pointer',
-              '&:hover': {
-                borderColor: 'rgba(220,38,38,0.35)',
-                boxShadow: meridianTokens.shadow.cardHover,
-                transform: 'translateY(-2px)',
-              },
-            }
-          : {}),
+        ...surface,
+        ...(glow ? { boxShadow: meridianTokens.shadow.glow } : {}),
         ...sx,
       }}
       {...rest}

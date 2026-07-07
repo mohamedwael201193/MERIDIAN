@@ -11,25 +11,25 @@ export default function CtaBanner() {
         />
         <div className="relative z-10">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Ready to test the live dApp?
+            Ready to explore the live dApp?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-zinc-500 sm:text-base">
-            Connect Casper Wallet on testnet, review live indexed data, invoke MCP tools, and
-            complete the remaining funded-wallet transaction checks.
+            Start at Briefing for live protocol metrics, browse templates and marketplace agents, then
+            invoke MCP tools with your Casper wallet on testnet.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              href="/dashboard"
+              href="/agent"
               className="inline-flex min-w-[160px] items-center justify-center rounded-md border border-white/20 bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-red-50"
             >
-              Open Dashboard
+              Open Briefing
             </Link>
-            <a
-              href="#workflows"
+            <Link
+              href="/mcp"
               className="inline-flex min-w-[160px] items-center justify-center rounded-md border border-white/20 px-6 py-3 text-sm font-medium text-white transition hover:border-red-500/60 hover:bg-red-500/10"
             >
-              Review workflows
-            </a>
+              MCP Tool Explorer
+            </Link>
           </div>
         </div>
       </div>
