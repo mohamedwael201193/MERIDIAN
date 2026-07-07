@@ -78,7 +78,8 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }): R
     { id: 'nav-history', label: 'History', icon: 'mdi:history', group: 'Navigate', action: () => router.push('/activity'), description: 'Completed missions' },
     { id: 'nav-templates', label: 'Templates', icon: 'mdi:file-document-outline', group: 'Navigate', action: () => router.push('/templates'), description: 'Mission templates' },
     { id: 'nav-examples', label: 'Examples', icon: 'mdi:text-box-outline', group: 'Navigate', action: () => router.push('/examples'), description: 'Sample prompts' },
-    { id: 'nav-setup', label: 'Setup', icon: 'mdi:cog-outline', group: 'Navigate', action: () => router.push('/start'), description: 'Install skill and MCP' },
+    { id: 'nav-marketplace', label: 'Marketplace', icon: 'mdi:store-outline', group: 'Navigate', action: () => router.push('/marketplace'), description: 'Agent templates' },
+    { id: 'nav-x402', label: 'x402 Payments', icon: 'mdi:cash-multiple', group: 'Navigate', action: () => router.push('/x402'), description: 'Micropayment audit unlock' },
   ]
 
   return (

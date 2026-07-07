@@ -50,8 +50,14 @@ function MetricCard({ title, value, subtitle, icon, status = 'neutral', loading,
   )
 }
 
-export default function BriefingGrid(): ReactElement {
-  const briefing = useBriefingData()
+export default function BriefingGrid({
+  unsignedTxPending = false,
+  runtimePhase = 'idle',
+}: {
+  unsignedTxPending?: boolean
+  runtimePhase?: import('@lib/hooks/useAgentRuntime').RuntimePhase
+}): ReactElement {
+  const briefing = useBriefingData(unsignedTxPending, runtimePhase)
 
   const cards = useMemo(
     () => [

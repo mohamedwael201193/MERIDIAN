@@ -1,36 +1,6 @@
 import { readFile } from 'node:fs/promises'
-import { createRequire } from 'node:module'
 import { resolveContractsPath } from '../config/contracts.js'
-
-const require = createRequire(import.meta.url)
-
-type TxBuilder = {
-  buildTransferToken(c: string, r: string, a: string): unknown
-  buildRegisterHolder(c: string, h: string, a: string): unknown
-  buildRevokeHolder(c: string, h: string, r: string): unknown
-  buildDelegateStake(c: string, v: string, a: string): unknown
-  buildDepositToVault(c: string, a: string): unknown
-  buildRestake(c: string, f: string, t: string, a: string): unknown
-  buildDistributeRewards(c: string, e: number): unknown
-}
-
-let builderPromise: Promise<TxBuilder> | null = null
-
-async function getBuilder(): Promise<TxBuilder> {
-  if (!builderPromise) {
-    builderPromise = (async () => {
-      const path = resolveContractsPath(
-        process.env.MERIDIAN_CONTRACTS_PATH ?? 'deployed/addresses.json',
-      )
-      const addresses = JSON.parse(await readFile(path, 'utf8')) as { chain_name: string }
-      const { TransactionBuilder } = require('../../../mcp-server/dist/casper/tx-builder.js') as {
-        TransactionBuilder: new (chain: string, addresses: unknown) => TxBuilder
-      }
-      return new TransactionBuilder(addresses.chain_name, addresses)
-    })()
-  }
-  return builderPromise
-}
+import { loadTxBuilder } from './resolve-tx-builder.js'
 
 function argString(args: Record<string, unknown>, key: string, fallback = ''): string {
   const value = args[key]
@@ -57,7 +27,11 @@ export async function invokeWriteTool(
     throw new Error(`unsupported_write_tool:${tool}`)
   }
 
-  const builder = await getBuilder()
+  const path = resolveContractsPath(
+    process.env.MERIDIAN_CONTRACTS_PATH ?? 'deployed/addresses.json',
+  )
+  const addresses = JSON.parse(await readFile(path, 'utf8')) as { chain_name: string }
+  const builder = await loadTxBuilder(addresses.chain_name, addresses)
   const callerPublicKey = argString(args, 'callerPublicKey')
 
   switch (tool) {

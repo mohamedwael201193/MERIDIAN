@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, ReactElement } from 'react'
-import { Box, LinearProgress, Stack, Typography, keyframes } from '@mui/material'
+import { Box, LinearProgress, MenuItem, Stack, TextField, Typography, keyframes } from '@mui/material'
 import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
 import GlassCard from '@/design/components/GlassCard'
 import PremiumButton from '@/design/components/PremiumButton'
@@ -18,41 +18,58 @@ const fadeIn = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `
 
+type AiClient = 'cursor' | 'claude' | 'vscode' | 'other'
+
 const STEPS = [
   {
-    id: 'skill',
-    title: 'Install MERIDIAN Skill',
-    subtitle: 'Connect your AI assistant to Casper-native tools and policies',
-    icon: 'mdi:brain',
+    id: 'client',
+    title: 'Choose your AI client',
+    subtitle: 'Cursor, Claude Desktop, Claude Code, VS Code, or any MCP-compatible agent',
+    icon: 'mdi:application-outline',
   },
   {
     id: 'mcp',
-    title: 'Install MCP',
-    subtitle: 'Add the Model Context Protocol server for tool execution',
+    title: 'Install MCP configuration',
+    subtitle: 'Copy the connection JSON into your client settings',
     icon: 'mdi:connection',
   },
   {
+    id: 'skill',
+    title: 'Install MERIDIAN Skill',
+    subtitle: 'Give your assistant Casper RWA policies and tool usage guidance',
+    icon: 'mdi:brain',
+  },
+  {
     id: 'verify',
-    title: 'Verify installation',
-    subtitle: 'Confirm MCP health and tool availability',
+    title: 'Verify MCP connection',
+    subtitle: 'Confirm the server is online and tools are available',
     icon: 'mdi:shield-check-outline',
   },
   {
     id: 'wallet',
-    title: 'Connect wallet',
-    subtitle: 'Required only for staking, transfers, and on-chain writes',
+    title: 'Connect Casper Wallet',
+    subtitle: 'Required for staking, transfers, and on-chain writes',
     icon: 'mdi:wallet-outline',
   },
   {
-    id: 'ready',
-    title: 'Everything ready',
-    subtitle: 'Your agent operating system is configured',
+    id: 'mission',
+    title: 'Run your first mission',
+    subtitle: 'Execute a read-only yield check to confirm the pipeline works',
+    icon: 'mdi:play-circle-outline',
+  },
+  {
+    id: 'done',
+    title: 'Setup complete',
+    subtitle: 'Your agent operating system is ready',
     icon: 'mdi:check-circle-outline',
   },
 ] as const
 
+const FIRST_MISSION = 'What is the current MRWA yield APY?'
+
 export default function SetupWizard(): ReactElement {
   const [step, setStep] = useState(0)
+  const [client, setClient] = useState<AiClient>('cursor')
   const [mcpOk, setMcpOk] = useState<boolean | null>(null)
   const [checking, setChecking] = useState(false)
   const wallet = useWalletSession()
@@ -74,7 +91,7 @@ export default function SetupWizard(): ReactElement {
   }
 
   useEffect(() => {
-    if (step === 2) void verifyMcp()
+    if (step === 3) void verifyMcp()
   }, [step])
 
   const current = STEPS[step]
@@ -91,7 +108,7 @@ export default function SetupWizard(): ReactElement {
         Setup
       </Typography>
       <Typography variant="body1" color="text.secondary" mb={4}>
-        Configure MERIDIAN in five steps
+        Connect MERIDIAN to your AI client in {STEPS.length} steps
       </Typography>
 
       <LinearProgress
@@ -131,28 +148,62 @@ export default function SetupWizard(): ReactElement {
 
         {step === 0 && (
           <Stack gap={2}>
-            <Typography variant="body2" color="text.secondary">
-              Copy the MERIDIAN skill into Claude or Cursor so your assistant understands Casper RWA operations.
+            <TextField
+              select
+              label="AI client"
+              value={client}
+              onChange={(e) => setClient(e.target.value as AiClient)}
+              fullWidth
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
+            >
+              <MenuItem value="cursor">Cursor</MenuItem>
+              <MenuItem value="claude">Claude Desktop</MenuItem>
+              <MenuItem value="vscode">VS Code (MCP extension)</MenuItem>
+              <MenuItem value="other">Other MCP client</MenuItem>
+            </TextField>
+            <Typography variant="caption" color="text.disabled">
+              MERIDIAN works with any client that supports Model Context Protocol over HTTP.
             </Typography>
-            <PremiumButton onClick={() => { updateAgentProfile({ installedSkills: ['meridian'] }); setStep(1) }} icon="mdi:check">
-              Skill installed
-            </PremiumButton>
-            <PremiumButton variant="text" onClick={() => setStep(1)} sx={{ color: 'text.secondary' }}>
-              Skip for now
+            <PremiumButton onClick={() => setStep(1)} icon="mdi:arrow-right">
+              Continue
             </PremiumButton>
           </Stack>
         )}
 
         {step === 1 && (
           <Stack gap={2}>
-            <AgentInstaller />
+            <AgentInstaller defaultClient={client === 'vscode' || client === 'other' ? 'cursor' : client} />
             <PremiumButton onClick={() => setStep(2)} icon="mdi:arrow-right">
-              Continue
+              MCP config copied
             </PremiumButton>
           </Stack>
         )}
 
         {step === 2 && (
+          <Stack gap={2}>
+            <Typography variant="body2" color="text.secondary">
+              Install the MERIDIAN skill so your {client} assistant understands yield, compliance, and wallet approval flows.
+            </Typography>
+            <PremiumButton
+              onClick={() => window.open('/meridian-skill.md', '_blank')}
+              variant="outlined"
+              icon="mdi:open-in-new"
+            >
+              Open skill file
+            </PremiumButton>
+            <PremiumButton
+              onClick={() => {
+                updateAgentProfile({ installedSkills: ['meridian'] })
+                setStep(3)
+              }}
+              icon="mdi:check"
+            >
+              Skill installed
+            </PremiumButton>
+          </Stack>
+        )}
+
+        {step === 3 && (
           <Stack gap={2}>
             {checking ? (
               <Typography color="text.secondary">Verifying MCP connection…</Typography>
@@ -169,13 +220,13 @@ export default function SetupWizard(): ReactElement {
                 </PremiumButton>
               </Stack>
             )}
-            <PremiumButton onClick={() => setStep(3)} disabled={!mcpOk && !checking} icon="mdi:arrow-right">
+            <PremiumButton onClick={() => setStep(4)} disabled={!mcpOk && !checking} icon="mdi:arrow-right">
               Continue
             </PremiumButton>
           </Stack>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <Stack gap={2}>
             {wallet.connected ? (
               <Stack direction="row" alignItems="center" gap={1}>
@@ -185,31 +236,52 @@ export default function SetupWizard(): ReactElement {
             ) : (
               <>
                 <Typography variant="body2" color="text.secondary">
-                  Connect Casper Wallet to enable staking and transfers. Read-only queries work without a wallet.
+                  Connect Casper Wallet for staking and transfers. Read-only missions work without a wallet.
                 </Typography>
                 <PremiumButton onClick={() => void connectCasperWallet(clickRef)} icon="mdi:wallet-outline">
                   Connect wallet
                 </PremiumButton>
               </>
             )}
-            <PremiumButton onClick={() => setStep(4)} icon="mdi:arrow-right">
-              {wallet.connected ? 'Continue' : 'Skip wallet'}
+            <PremiumButton onClick={() => setStep(5)} icon="mdi:arrow-right">
+              {wallet.connected ? 'Continue' : 'Skip wallet for now'}
             </PremiumButton>
           </Stack>
         )}
 
-        {step === 4 && (
+        {step === 5 && (
+          <Stack gap={2}>
+            <Typography variant="body2" color="text.secondary">
+              Run a read-only yield check. No wallet signature required.
+            </Typography>
+            <Typography variant="body1" color="common.white" sx={{ fontFamily: 'var(--font-geist-mono, monospace)' }}>
+              {FIRST_MISSION}
+            </Typography>
+            <PremiumButton
+              component={Link}
+              href={`/agent?objective=${encodeURIComponent(FIRST_MISSION)}`}
+              icon="mdi:play"
+            >
+              Run first mission
+            </PremiumButton>
+            <PremiumButton variant="text" onClick={() => setStep(6)} sx={{ color: 'text.secondary' }}>
+              Skip to finish
+            </PremiumButton>
+          </Stack>
+        )}
+
+        {step === 6 && (
           <Stack gap={2}>
             <Stack direction="row" alignItems="center" gap={1}>
               <IconifyIcon icon="mdi:check-circle" color={meridianTokens.color.success} width={24} />
               <Typography variant="h6" color="success.light">
-                Setup complete
+                Everything ready
               </Typography>
             </Stack>
             <Typography variant="body2" color="text.secondary">
               {profile.installedSkills.includes('meridian')
-                ? 'Skill and MCP configured. Open the briefing to assign your first task.'
-                : 'You can finish skill installation anytime from Setup.'}
+                ? 'MCP, skill, and briefing are configured. Assign tasks from the command bar anytime.'
+                : 'Finish skill installation from Setup when you are ready.'}
             </Typography>
             <PremiumButton component={Link} href="/agent" icon="mdi:view-dashboard-outline">
               Open briefing

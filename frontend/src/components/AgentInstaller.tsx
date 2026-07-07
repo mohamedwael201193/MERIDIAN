@@ -32,8 +32,12 @@ function buildMcpConfig(client: McpClient, mcpUrl: string): string {
   return JSON.stringify({ mcpServers: { meridian: { url: `${mcpUrl}/mcp` } } }, null, 2)
 }
 
-export default function AgentInstaller(): ReactElement {
-  const [client, setClient] = useState<McpClient>('cursor')
+export default function AgentInstaller({
+  defaultClient = 'cursor',
+}: {
+  defaultClient?: McpClient
+}): ReactElement {
+  const [client, setClient] = useState<McpClient>(defaultClient)
   const [mcpUrl, setMcpUrl] = useState(MCP_SERVER_URL)
   const [toolCount, setToolCount] = useState<number | null>(null)
   const [checking, setChecking] = useState(false)

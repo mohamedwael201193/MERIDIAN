@@ -45,6 +45,7 @@ Build, then start (migrations run idempotently at startup on the free plan):
 pnpm install --frozen-lockfile
 pnpm --filter @meridian/env run build
 pnpm --filter @meridian/casper-sdk run build
+pnpm --filter @meridian/mcp-server run build
 pnpm --filter @meridian/agents-shared run build
 pnpm --filter @meridian/yield-agent run build
 pnpm --filter @meridian/compliance-agent run build

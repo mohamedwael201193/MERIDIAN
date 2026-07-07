@@ -6,7 +6,6 @@ import {
   useProtocolKpis,
   useHealth,
   useReady,
-  useDecisions,
   useHolderCompliance,
 } from '@lib/hooks/useMeridianData'
 import { accountHashFromPublicKey } from '@lib/wallet/accountHash'
@@ -42,7 +41,6 @@ export function useBriefingData(
   const kpis = useProtocolKpis()
   const health = useHealth()
   const ready = useReady()
-  const decisions = useDecisions(20)
   const accountHash = wallet.publicKey ? accountHashFromPublicKey(wallet.publicKey) : null
   const compliance = useHolderCompliance(accountHash)
 
@@ -63,7 +61,7 @@ export function useBriefingData(
         complianceStatus = 'ok'
       } else {
         complianceValue = 'Action needed'
-        complianceSubtitle = compliance.data.status
+        complianceSubtitle = compliance.data.status || 'Not registered in compliance registry'
         complianceStatus = 'warn'
       }
     } else if (wallet.connected && compliance.isLoading) {
@@ -72,8 +70,7 @@ export function useBriefingData(
     }
 
     const pendingCount =
-      (unsignedTxPending || runtimePhase === 'wallet' || runtimePhase === 'waiting' ? 1 : 0) +
-      (decisions.data?.filter((d) => d.approved === null).length ?? 0)
+      unsignedTxPending || runtimePhase === 'wallet' || runtimePhase === 'waiting' ? 1 : 0
 
     const lastDist = kpis.yieldInfo?.lastDistribution
     const insight = lastDist
@@ -100,16 +97,11 @@ export function useBriefingData(
       yieldValue: formatApy(apyBps),
       yieldSubtitle: `${formatMotes(staked)} CSPR staked`,
       pendingValue: String(pendingCount),
-      pendingSubtitle:
-        pendingCount === 1
-          ? 'Awaiting your approval'
-          : pendingCount > 1
-            ? 'Multiple items need attention'
-            : 'No actions required',
+      pendingSubtitle: pendingCount === 1 ? 'Awaiting your approval' : 'No actions required',
       pendingCount,
       insight,
       recommended: recommended.slice(0, 3),
       agentHealthy: backendOk && mcpOk,
     }
-  }, [kpis, health, ready, wallet, compliance, decisions, unsignedTxPending, runtimePhase])
+  }, [kpis, health, ready, wallet, compliance, unsignedTxPending, runtimePhase])
 }

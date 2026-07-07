@@ -4,6 +4,7 @@ import { ReactElement } from 'react'
 import { Box, Chip, Stack, Typography, Skeleton } from '@mui/material'
 import IconifyIcon from '@/nickelfox/components/base/IconifyIcon'
 import { useHealth, useReady, useEvents } from '@lib/hooks/useMeridianData'
+import { useMcpHealth } from '@lib/hooks/useMcpHealth'
 import { meridianTokens } from '@/design/tokens'
 import { explorerTxUrl } from '@lib/contracts'
 
@@ -12,9 +13,10 @@ export default function StatusRibbon(): ReactElement {
   const { data: ready } = useReady()
   const { data: events } = useEvents(5)
 
+  const { data: mcpHealth } = useMcpHealth()
   const lastTx = events?.find((e) => e.transaction_hash)?.transaction_hash
   const backendOk = ready?.status === 'ok' || health?.status === 'ok'
-  const mcpTools = 13
+  const mcpTools = mcpHealth?.tools ?? null
 
   if (healthLoading) {
     return (
@@ -87,7 +89,7 @@ export default function StatusRibbon(): ReactElement {
             ))}
           </Stack>
           <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'var(--font-geist-mono, monospace)' }}>
-            {mcpTools} tools
+            {mcpTools != null ? `${String(mcpTools)} tools` : 'MCP connecting'}
             {lastTx ? (
               <>
                 {' · '}

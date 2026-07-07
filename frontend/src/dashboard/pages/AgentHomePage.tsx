@@ -134,7 +134,10 @@ export default function AgentHomePage(): ReactElement {
     >
       <StatusRibbon />
       <BriefingHeader />
-      <BriefingGrid />
+      <BriefingGrid
+        unsignedTxPending={Boolean(runtime.unsignedTx)}
+        runtimePhase={runtime.phase}
+      />
 
       {!installed ? (
         <Box textAlign="center" py={2} mb={2}>

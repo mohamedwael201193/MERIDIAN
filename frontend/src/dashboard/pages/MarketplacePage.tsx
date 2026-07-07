@@ -2,6 +2,7 @@
 
 import { useState, ReactElement } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import {
   Alert,
   Box,
@@ -108,8 +109,11 @@ export default function MarketplacePage(): ReactElement {
 
       {installedId ? (
         <Alert severity="success" sx={{ mt: 3 }}>
-          Template installed. Open the Agent Console to run missions with template policies and
-          memory loaded.
+          Template installed.{' '}
+          <Link href="/agent" style={{ color: 'inherit', fontWeight: 600 }}>
+            Open briefing
+          </Link>{' '}
+          to run missions with template policies and memory loaded.
         </Alert>
       ) : null}
     </Box>

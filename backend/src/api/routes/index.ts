@@ -198,14 +198,14 @@ export function registerApiRoutes(
     }
   }>('/api/v1/planner/execute', async (request, reply) => {
     const body = request.body
-    if (!body.objective.trim()) {
+    if (typeof body.objective !== 'string' || !body.objective.trim()) {
       return reply.code(400).send({
         error: { code: 'INVALID_BODY', message: 'objective is required' },
       })
     }
     try {
       const result = await services.planner.execute({
-        objective: body.objective,
+        objective: body.objective.trim(),
         ...(body.callerPublicKey ? { callerPublicKey: body.callerPublicKey } : {}),
         ...(body.callerAccountHash ? { callerAccountHash: body.callerAccountHash } : {}),
         ...(body.sessionId ? { sessionId: body.sessionId } : {}),
