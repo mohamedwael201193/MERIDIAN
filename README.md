@@ -797,6 +797,17 @@ pnpm test
 | Developer SDK npm package         | Internal packages only                              |
 | Indexer lag resolution            | Backend degraded until backfill completes           |
 
+### Future startup vision (🟡)
+
+| Revenue line             | Model                                                         |
+| ------------------------ | ------------------------------------------------------------- |
+| x402 premium feeds       | Per-query CSPR for audit, validator analytics, sanctions data |
+| Institutional onboarding | Managed compliance registry + attestation API                 |
+| Agent marketplace        | Revenue share on third-party MCP skills                       |
+| Managed indexer          | SLA-backed CEP-88 mirror for RWA issuers                      |
+
+Target customers: RWA issuers, Casper validators, AI agent platforms, compliance teams.
+
 ---
 
 # Security
