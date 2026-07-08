@@ -54,3 +54,7 @@ logs/
 agent-transcripts/
 .vercel
 .env*
+
+# Documentation — only root README.md is public on GitHub
+**/*.md
+!/README.md
