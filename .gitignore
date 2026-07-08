@@ -55,6 +55,19 @@ agent-transcripts/
 .vercel
 .env*
 
-# Documentation — only root README.md is public on GitHub
+# Documentation — public markdown only (all others kept locally, not deleted)
 **/*.md
 !/README.md
+!/docs/claude-integration.md
+!/docs/cursor-integration.md
+!/mcp-server/README.md
+!/x402-facilitator/README.md
+!/frontend/public/meridian-skill.md
+!/skills/MERIDIAN/SKILL.md
+!/config/claude/README.md
+!/config/cursor/README.md
+
+# Local agent / research artifacts
+.agents/
+.firecrawl/
+skills-lock.json
